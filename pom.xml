@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<packaging>pom</packaging>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.4.2</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+
+	<groupId>com.coach.flame</groupId>
+	<artifactId>flame-coach-service</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<name>flame-coach-service</name>
+
+	<description>Backend service for Flame Coach</description>
+
+	<properties>
+		<java.version>14</java.version>
+		<kotlin.version>1.4.21</kotlin.version>
+	</properties>
+
+	<dependencyManagement>
+
+	</dependencyManagement>
+
+	<modules>
+		<module>launch</module>
+	</modules>
+
+</project>
