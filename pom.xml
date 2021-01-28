@@ -231,6 +231,7 @@
         <module>launch</module>
         <module>repository</module>
         <module>application</module>
+        <module>testing</module>
     </modules>
 
 </project>
