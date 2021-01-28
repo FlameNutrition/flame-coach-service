@@ -26,6 +26,8 @@
         <java.version>14</java.version>
         <kotlin.version>1.4.21</kotlin.version>
 
+        <guava.version>30.1-jre</guava.version>
+
         <maven.compiler.source>14</maven.compiler.source>
         <maven.compiler.target>14</maven.compiler.target>
 
@@ -87,11 +89,25 @@
                 <scope>runtime</scope>
             </dependency>
 
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+
             <!-- Kotlin -->
             <dependency>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-stdlib</artifactId>
                 <version>${kotlin.version}</version>
+            </dependency>
+
+            <!-- Third party -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
             </dependency>
 
             <!-- Testing -->
@@ -107,6 +123,27 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${junit-jupiter.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit-jupiter.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-library</artifactId>
+                <version>${hamcrest.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -117,6 +154,23 @@
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire-plugin.version}</version>
+                    <configuration>
+                        <properties>
+                            <!-- Execute top-level classes in sequentially but their methods in parallel (same_thread, current) -->
+                            <configurationParameters>
+                                junit.jupiter.execution.parallel.enabled = true
+                                junit.jupiter.testinstance.lifecycle.default = per_class
+                                junit.jupiter.execution.parallel.mode.default = concurrent
+                                junit.jupiter.execution.parallel.mode.classes.default = same_thread
+                            </configurationParameters>
+                        </properties>
+                    </configuration>
                 </plugin>
 
                 <plugin>
