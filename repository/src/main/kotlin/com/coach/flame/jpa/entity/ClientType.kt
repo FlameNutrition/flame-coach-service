@@ -1,10 +1,16 @@
 package com.coach.flame.jpa.entity
 
-import javax.persistence.Entity
-import javax.persistence.Table
+import org.springframework.data.jpa.domain.AbstractPersistable
+import javax.persistence.*
 
 @Entity
 @Table(name = "ClientType")
 class ClientType(
-    val type: String
-) : AbstractJpaPersistable<Long>()
+
+    @Column(nullable = false)
+    val type: String,
+
+    @OneToMany(mappedBy = "clientType", fetch = FetchType.LAZY)
+    val clients: MutableList<Client>
+
+) : AbstractPersistable<Long>()

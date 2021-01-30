@@ -1,6 +1,15 @@
-# Getting Started
+# Flame Coach
 
-### Reference Documentation
+### TODO
+
+- [ ] Implement audit listener https://blog.jdriven.com/2019/10/spring-security-auditing-spring-data-entities/
+- [ ] Improve error handling when mapping url missed 
+- [ ] Write interface documentation
+
+
+=================
+
+### Useful Links
 For further reference, please consider the following sections:
 
 * [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)

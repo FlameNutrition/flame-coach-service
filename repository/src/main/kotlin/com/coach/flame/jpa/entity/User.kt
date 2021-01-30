@@ -1,15 +1,20 @@
 package com.coach.flame.jpa.entity
 
-import javax.persistence.Entity
-import javax.persistence.OneToOne
-import javax.persistence.Table
+import org.springframework.data.jpa.domain.AbstractAuditable
+import java.sql.Date
+import javax.persistence.*
 
 @Entity
 @Table(name = "User")
 class User(
-    val username: String,
+
+    @Column(nullable = false)
     val email: String,
+
+    @Column(nullable = false)
     val password: String,
+
     @OneToOne(mappedBy = "user")
     val client: Client
-) : AbstractJpaPersistable<Long>()
+
+) : AbstractAuditable<SysAdmin, Long>()
