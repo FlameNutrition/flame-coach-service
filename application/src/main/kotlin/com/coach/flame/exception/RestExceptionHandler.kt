@@ -1,7 +1,9 @@
 package com.coach.flame.exception
 
-import com.coach.flame.api.response.ErrorDetail
-import com.coach.flame.dailyTask.BusinessElementNotFound
+import com.coach.flame.dailyTask.DailyTaskMissingSave
+import com.coach.flame.dailyTask.DailyTaskNotFound
+import com.coach.flame.failure.domain.ErrorDetail
+import com.coach.flame.failure.exception.BusinessException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.core.Ordered
@@ -11,10 +13,8 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
-import org.springframework.web.context.request.ServletWebRequest
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
-import java.net.URI
 
 @ControllerAdvice
 class RestExceptionHandler : ResponseEntityExceptionHandler() {
@@ -24,47 +24,59 @@ class RestExceptionHandler : ResponseEntityExceptionHandler() {
     }
 
     @ExceptionHandler(Exception::class)
-    @Order(Ordered.HIGHEST_PRECEDENCE)
+    @Order(Ordered.LOWEST_PRECEDENCE)
     fun handleRootException(ex: Exception, request: WebRequest): ResponseEntity<Any> {
 
         LOGGER.warn("operation=handleRootException, message='Something unexpected happened'", ex)
 
-        val httpStatus = HttpStatus.INTERNAL_SERVER_ERROR
-
-        //FIXME: This can be improved following this guide
-        //https://blog.codecentric.de/en/2020/01/rfc-7807-problem-details-with-spring-boot-and-jax-rs/
         val errorDetail = ErrorDetail.Builder()
-            .title("Generic error.")
-            .status(httpStatus.value())
-            .detail("This was a unexpected error. Please contact the system administration.")
-            .instance(URI.create((request as ServletWebRequest).request.requestURI))
-            .debug(ex.localizedMessage)
+            .throwable(ex)
             .build()
 
         return ResponseEntity
-            .status(httpStatus)
+            .status(HttpStatus.valueOf(errorDetail.status))
             .contentType(MediaType.APPLICATION_PROBLEM_JSON)
             .body(errorDetail)
     }
 
-    @ExceptionHandler(BusinessElementNotFound::class)
-    @Order(1)
-    fun handleBusinessElementNotFound(ex: BusinessElementNotFound, request: WebRequest): ResponseEntity<Any> {
+    @ExceptionHandler(
+        value = [
+            BusinessException::class,
+        ]
+    )
+    @Order(2)
+    fun handleBusinessExceptions(ex: BusinessException, request: WebRequest): ResponseEntity<Any> {
 
-        LOGGER.warn("operation=handleBusinessElementNotFound, message='Business element not found'", ex)
-
-        val httpStatus = HttpStatus.NOT_FOUND
+        LOGGER.warn("operation=handleBusinessExceptions, exception='{}'", ex::class.java.simpleName, ex)
 
         val errorDetail = ErrorDetail.Builder()
-            .title("Business element not found.")
-            .status(httpStatus.value())
-            .detail("The business element requested was not found.")
-            .instance(URI.create((request as ServletWebRequest).request.requestURI))
-            .debug(ex.localizedMessage)
+            .throwable(ex)
             .build()
 
         return ResponseEntity
-            .status(httpStatus)
+            .status(HttpStatus.valueOf(errorDetail.status))
+            .contentType(MediaType.APPLICATION_PROBLEM_JSON)
+            .body(errorDetail)
+
+    }
+
+    @ExceptionHandler(
+        value = [
+            DailyTaskNotFound::class,
+            DailyTaskMissingSave::class,
+        ]
+    )
+    @Order(1)
+    fun handleSpecificBusinessExceptions(ex: BusinessException, request: WebRequest): ResponseEntity<Any> {
+
+        LOGGER.warn("operation=handleSpecificBusinessExceptions, exception='{}'", ex::class.java.simpleName, ex)
+
+        val errorDetail = ErrorDetail.Builder()
+            .throwable(ex)
+            .build()
+
+        return ResponseEntity
+            .status(HttpStatus.valueOf(errorDetail.status))
             .contentType(MediaType.APPLICATION_PROBLEM_JSON)
             .body(errorDetail)
 

@@ -61,6 +61,12 @@
                 <version>${project.parent.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.coach.flame</groupId>
+                <artifactId>failureDetail-logic</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+
             <!-- Spring -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -306,6 +312,7 @@
         <module>application</module>
         <module>testing</module>
         <module>dailyTask-logic</module>
+        <module>failureDetail-logic</module>
     </modules>
 
 </project>

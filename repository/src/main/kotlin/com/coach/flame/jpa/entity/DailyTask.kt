@@ -23,6 +23,9 @@ class DailyTask(
     @Column(nullable = false)
     val date: Date,
 
+    @Column(nullable = false)
+    val ticked: Boolean,
+
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "createdByFk", referencedColumnName = "id")
     val createdBy: Client,

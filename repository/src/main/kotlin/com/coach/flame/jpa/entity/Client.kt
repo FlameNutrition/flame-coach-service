@@ -1,12 +1,18 @@
 package com.coach.flame.jpa.entity
 
+import org.hibernate.annotations.Type
 import org.springframework.data.jpa.domain.AbstractAuditable
 import java.sql.Date
+import java.util.*
 import javax.persistence.*
 
 @Entity
 @Table(name = "Client")
 class Client(
+
+    @Type(type = "uuid-char")
+    @Column(nullable = false, unique = true)
+    val uuid: UUID,
 
     @Column(nullable = false)
     val firstName: String,

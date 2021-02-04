@@ -1,22 +1,16 @@
-package com.coach.flame.api.response
+package com.coach.flame.dailyTask.domain
 
-import com.fasterxml.jackson.annotation.JsonInclude
+import java.util.*
 import java.util.Objects.hash
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-data class DailyTask(
-    val identifier: String,
-    val name: String,
-    val description: String,
-    val date: String,
-    val ticked: Boolean
+data class ClientDto(
+    val identifier: UUID
 ) {
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as DailyTask
+        other as ClientDto
 
         if (identifier != other.identifier) return false
 
@@ -27,3 +21,4 @@ data class DailyTask(
         return hash(identifier)
     }
 }
+

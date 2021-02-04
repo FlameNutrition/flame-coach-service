@@ -8,7 +8,10 @@ data class DailyTaskDto(
     val identifier: UUID,
     val name: String,
     val description: String,
-    val date: LocalDate
+    val date: LocalDate,
+    val ticked: Boolean,
+    val createdBy: ClientDto? = null,
+    val owner: ClientDto? = null
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

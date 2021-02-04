@@ -1,18 +1,17 @@
 package com.coach.flame.dailyTask
 
 import com.coach.flame.dailyTask.domain.DailyTaskDto
-import org.springframework.stereotype.Service
+import java.util.*
 
 //TODO: Write documentation
-
 interface DailyTaskService {
 
     fun getDailyTaskById(taskId: Long): DailyTaskDto
 
     fun getDailyTasksByClient(clientId: Long): Set<DailyTaskDto>
 
-    fun createDailyTask(dailyTask: DailyTaskDto): Pair<String, Boolean>
+    fun createDailyTask(dailyTask: DailyTaskDto)
 
-    fun deleteDailyTask(dailyTask: DailyTaskDto): Pair<String, Boolean>
+    fun deleteDailyTask(uuid: UUID): Pair<String, Boolean>
 
 }

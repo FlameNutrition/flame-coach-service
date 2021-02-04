@@ -45,28 +45,21 @@ class DailyTaskImpl(
         @PathVariable(required = true) clientId: Long
     ): DailyTaskResponse {
 
-        if (clientId == 100L) {
-            val uuid = UUID.randomUUID()
+        val dailyTasksDto = dailyTaskService.getDailyTasksByClient(clientId)
 
-            val t1 = DailyTask(
-                identifier = uuid.toString(),
-                name = "Drink Water",
-                description = "You should drink 2L of water",
-                date = LocalDate.now().toString()
-            )
-
-            val t2 = DailyTask(
-                identifier = uuid.toString(),
-                name = "Drink Water",
-                description = "You should drink 2L of water",
-                date = LocalDate.now().toString()
-            )
-
-            return DailyTaskResponse(dailyTasks = setOf(t1, t2))
-        } else {
-            throw RuntimeException()
-        }
-
+        return DailyTaskResponse(
+            dailyTasks = dailyTasksDto
+                .map { dto ->
+                    DailyTask(
+                        identifier = dto.identifier.toString(),
+                        name = dto.name,
+                        description = dto.description,
+                        date = dto.date.toString(),
+                        ticked = dto.ticked
+                    )
+                }
+                .toSet()
+        )
     }
 
     @LoggingRequest
@@ -84,7 +77,8 @@ class DailyTaskImpl(
                     identifier = dailyTask.identifier.toString(),
                     name = dailyTask.name,
                     description = dailyTask.description,
-                    date = dailyTask.date.toString()
+                    date = dailyTask.date.toString(),
+                    ticked = dailyTask.ticked
                 )
             )
         )
