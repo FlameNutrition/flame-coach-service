@@ -68,12 +68,6 @@ class ErrorDetail private constructor(
             this.debug = throwable!!.stackTraceToString()
         }
 
-        fun type(type: URI) = apply { this.type = type }
-        fun title(title: String) = apply { this.title = title }
-        fun detail(detail: String) = apply { this.detail = detail }
-        fun status(status: Int) = apply { this.status = status }
-        fun instance(instance: URI) = apply { this.instance = instance }
-        fun debug(debug: String) = apply { this.debug = debug }
         fun throwable(throwable: Throwable) = apply {
             this.throwable = throwable
             buildType()

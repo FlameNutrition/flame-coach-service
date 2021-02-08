@@ -9,12 +9,14 @@ import org.springframework.web.bind.annotation.*
 //TODO: Write documentation
 interface DailyTaskAPI {
 
-    fun createDailyTasks(request: List<DailyTaskRequest>): DailyTaskResponse
+    fun createDailyTasks(dailyTasks: List<DailyTaskRequest>): DailyTaskResponse
+
+    fun createDailyTask(dailyTask: DailyTaskRequest): DailyTaskResponse
 
     fun getDailyTasksByClient(clientId: Long): DailyTaskResponse
 
     fun getDailyTaskById(taskId: Long): DailyTaskResponse
 
-    fun deleteDailyTaskById(taskId: Long): DailyTaskResponse
+    fun deleteDailyTaskById(taskUuid: String): DailyTaskResponse
 
 }

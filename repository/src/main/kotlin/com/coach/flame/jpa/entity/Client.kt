@@ -1,7 +1,7 @@
 package com.coach.flame.jpa.entity
 
 import org.hibernate.annotations.Type
-import org.springframework.data.jpa.domain.AbstractAuditable
+import org.springframework.data.jpa.domain.AbstractPersistable
 import java.sql.Date
 import java.util.*
 import javax.persistence.*
@@ -38,6 +38,6 @@ class Client(
     val clientMeasureWeight: MutableList<ClientMeasureWeight>,
 
     @OneToMany(mappedBy = "client", fetch = FetchType.EAGER)
-    val dailyClientTask : MutableList<DailyTask>
+    val dailyClientTask: MutableList<DailyTask>
 
-) : AbstractAuditable<SysAdmin, Long>()
+) : AbstractPersistable<Long>()

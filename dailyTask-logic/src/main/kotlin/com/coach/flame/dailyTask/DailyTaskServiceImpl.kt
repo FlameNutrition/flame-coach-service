@@ -8,8 +8,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.sql.Date
-import java.time.LocalDate
 import java.util.*
 
 @Service
@@ -24,23 +24,21 @@ class DailyTaskServiceImpl(
 
     override fun getDailyTaskById(taskId: Long): DailyTaskDto {
 
+        LOGGER.info("opr='getDailyTaskById', msg='Get task by ID', taskId=$taskId")
+
         val dailyTask = dailyTaskRepository.findById(taskId)
 
         if (dailyTask.isEmpty) {
             throw DailyTaskNotFound("Could not found any daily task with id: $taskId")
         }
 
-        return DailyTaskDto(
-            identifier = dailyTask.get().uuid,
-            name = dailyTask.get().name,
-            description = dailyTask.get().description,
-            date = dailyTask.get().date.toLocalDate(),
-            ticked = dailyTask.get().ticked
-        )
+        return entityToDailyTaskDto(dailyTask.get())
 
     }
 
     override fun getDailyTasksByClient(clientId: Long): Set<DailyTaskDto> {
+
+        LOGGER.info("opr='getDailyTasksByClient', msg='Get all tasks for a client', clientId=$clientId")
 
         val dailyTasks = dailyTaskRepository.findAllByClient(clientId)
 
@@ -50,48 +48,65 @@ class DailyTaskServiceImpl(
 
         return dailyTasks
             .get()
-            .map { entity ->
-                DailyTaskDto(
-                    identifier = entity.uuid,
-                    name = entity.name,
-                    description = entity.description,
-                    date = entity.date.toLocalDate(),
-                    ticked = entity.ticked
-                )
-            }
+            .map { entityToDailyTaskDto(it) }
             .toSet()
 
     }
 
-    override fun createDailyTask(dailyTask: DailyTaskDto) {
-
-        val createdBy = clientRepository.findByUuid(dailyTask.identifier)
-
-        checkNotNull(createdBy) { "Could not find any client with the following identifier ${dailyTask.identifier}" }
-
-        val owner = clientRepository.findByUuid(dailyTask.identifier)
-
-        checkNotNull(owner) { "Could not find any client with the following identifier ${dailyTask.identifier}" }
-
-        val newDailyTask = DailyTask(
-            uuid = dailyTask.identifier,
-            name = dailyTask.name,
-            description = dailyTask.description,
-            date = Date.valueOf(LocalDate.now()),
-            ticked = false,
-            createdBy = createdBy,
-            client = owner
-        )
+    @Transactional
+    override fun createDailyTask(dailyTask: DailyTaskDto): UUID {
 
         try {
-            dailyTaskRepository.save(newDailyTask)
-        } catch (ex: IllegalArgumentException) {
+
+            LOGGER.info("opr='createDailyTask', msg='Creating the following task', dailyTask=$dailyTask")
+
+            val createdBy = clientRepository.findByUuid(dailyTask.createdBy!!.identifier)
+
+            checkNotNull(createdBy) { "Could not find any client with the following identifier ${dailyTask.createdBy.identifier}" }
+
+            val owner = clientRepository.findByUuid(dailyTask.owner!!.identifier)
+
+            checkNotNull(owner) { "Could not find any client with the following identifier ${dailyTask.owner.identifier}" }
+
+            val newDailyTask = DailyTask(
+                uuid = dailyTask.identifier,
+                name = dailyTask.name,
+                description = dailyTask.description,
+                date = Date.valueOf(dailyTask.date),
+                ticked = false,
+                createdBy = createdBy,
+                client = owner
+            )
+
+            val entity = dailyTaskRepository.save(newDailyTask)
+
+            return entity.uuid
+        } catch (ex: IllegalStateException) {
+            throw ClientNotFound(ex)
+        } catch (ex: Exception) {
             throw DailyTaskMissingSave("Daily task couldn't be persisted.", ex)
         }
 
     }
 
-    override fun deleteDailyTask(uuid: UUID): Pair<String, Boolean> {
-        TODO("Not yet implemented")
+    @Transactional
+    override fun deleteDailyTask(uuid: UUID) {
+
+        LOGGER.info("opr='deleteDailyTask', msg='Deleting the following task', uuid=$uuid")
+
+        if (dailyTaskRepository.deleteByUuid(uuid) == 0) {
+            throw DailyTaskMissingDelete("Didn't find the following uuid task: $uuid")
+        }
     }
+
+    private val entityToDailyTaskDto = { entity: DailyTask ->
+        DailyTaskDto(
+            identifier = entity.uuid,
+            name = entity.name,
+            description = entity.description,
+            date = entity.date.toLocalDate(),
+            ticked = entity.ticked
+        )
+    }
+
 }

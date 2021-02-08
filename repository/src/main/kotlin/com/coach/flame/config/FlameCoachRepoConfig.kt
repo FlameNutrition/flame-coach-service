@@ -7,7 +7,7 @@ import org.springframework.context.annotation.PropertySources
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
-@EnableJpaRepositories(basePackages = ["com.coach.flame.jpa.repository"])
+@EnableJpaRepositories(basePackages = ["com.coach.flame.jpa.repository"], entityManagerFactoryRef = "entityManagerFactory")
 @EntityScan(basePackages = ["com.coach.flame.jpa.entity"])
 @PropertySources(
     PropertySource("classpath:application-repository.properties")

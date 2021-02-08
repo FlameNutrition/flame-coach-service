@@ -30,6 +30,8 @@
 
         <!-- Testing -->
         <mockk.version>1.9.3</mockk.version>
+        <easy-random.version>5.0.0</easy-random.version>
+        <javafaker.version>1.0.2</javafaker.version>
 
         <maven.compiler.source>14</maven.compiler.source>
         <maven.compiler.target>14</maven.compiler.target>
@@ -51,6 +53,13 @@
 
             <dependency>
                 <groupId>com.coach.flame</groupId>
+                <artifactId>repository</artifactId>
+                <type>test-jar</type>
+                <version>${project.parent.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.coach.flame</groupId>
                 <artifactId>application</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
@@ -64,6 +73,12 @@
             <dependency>
                 <groupId>com.coach.flame</groupId>
                 <artifactId>failureDetail-logic</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.coach.flame</groupId>
+                <artifactId>utilities</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
 
@@ -133,6 +148,12 @@
                 <version>${kotlin.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-reflect</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
+
             <!-- Third party -->
             <dependency>
                 <groupId>com.google.guava</groupId>
@@ -152,6 +173,13 @@
                         <artifactId>spring-boot-starter-logging</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jeasy</groupId>
+                <artifactId>easy-random-core</artifactId>
+                <version>${easy-random.version}</version>
+                <scope>test</scope>
             </dependency>
 
             <dependency>
@@ -179,6 +207,13 @@
                 <groupId>org.hamcrest</groupId>
                 <artifactId>hamcrest-library</artifactId>
                 <version>${hamcrest.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.javafaker</groupId>
+                <artifactId>javafaker</artifactId>
+                <version>${javafaker.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
@@ -211,8 +246,10 @@
                                 <goal>check</goal>
                             </goals>
                             <configuration>
-                                <!-- FIXME: Please remove -->
-                                <haltOnFailure>false</haltOnFailure>
+                                <!-- Note: -->
+                                <!-- TRUE: Fail when missing code coverage -->
+                                <!-- FALSE: Skip when missing code coverage -->
+                                <haltOnFailure>true</haltOnFailure>
                                 <rules>
                                     <rule>
                                         <element>CLASS</element>
@@ -313,6 +350,7 @@
         <module>testing</module>
         <module>dailyTask-logic</module>
         <module>failureDetail-logic</module>
+        <module>utilities</module>
     </modules>
 
 </project>

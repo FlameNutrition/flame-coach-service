@@ -1,8 +1,10 @@
 package com.coach.flame.jpa.entity
 
-import org.springframework.data.jpa.domain.AbstractAuditable
-import java.sql.Date
-import javax.persistence.*
+import org.springframework.data.jpa.domain.AbstractPersistable
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.OneToOne
+import javax.persistence.Table
 
 @Entity
 @Table(name = "User")
@@ -17,4 +19,4 @@ class User(
     @OneToOne(mappedBy = "user")
     val client: Client
 
-) : AbstractAuditable<SysAdmin, Long>()
+) : AbstractPersistable<Long>()

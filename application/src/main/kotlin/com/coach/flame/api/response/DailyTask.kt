@@ -5,11 +5,11 @@ import java.util.Objects.hash
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class DailyTask(
-    val identifier: String,
-    val name: String,
-    val description: String,
-    val date: String,
-    val ticked: Boolean
+    val identifier: String? = null,
+    val name: String? = null,
+    val description: String? = null,
+    val date: String? = null,
+    val ticked: Boolean? = null
 ) {
 
     override fun equals(other: Any?): Boolean {

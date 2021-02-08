@@ -16,4 +16,6 @@ interface DailyTaskRepository : JpaRepository<DailyTask, Long> {
     )
     fun findAllByClient(@Param("clientId") clientId: Long): Optional<Set<DailyTask>>
 
+    fun deleteByUuid(uuid: UUID): Int
+
 }

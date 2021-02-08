@@ -1,15 +1,38 @@
 package com.coach.flame.failure.domain
 
 import com.coach.flame.failure.HttpStatus
+import com.coach.flame.failure.Status
 import com.coach.flame.failure.exception.BusinessException
-import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
+import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 import java.net.URI
 
 class ErrorDetailTest {
 
+    @Status(HttpStatus.NOT_FOUND)
+    private class TestException(message: String) : BusinessException(message)
+
     @Test
     fun `test error detail domain with specific business exception`() {
+
+        val exception = TestException("This is the message")
+
+        val errorDetail = ErrorDetail.Builder()
+            .throwable(exception)
+            .build()
+
+        then(errorDetail.type)
+            .isEqualTo(URI.create("https://flame-coach/apidocs/com/coach/flame/failure/domain/ErrorDetailTest.TestException.html"))
+        then(errorDetail.status).isEqualTo(HttpStatus.NOT_FOUND.value)
+        then(errorDetail.title).isEqualTo("TestException")
+        then(errorDetail.detail).isEqualTo("This is the message")
+        then(errorDetail.instance.toString()).startsWith("urn:uuid:")
+        then(errorDetail.debug).contains("\n")
+
+    }
+
+    @Test
+    fun `test error detail domain with generic business exception`() {
 
         val arithmeticException = ArithmeticException()
 
@@ -19,13 +42,13 @@ class ErrorDetailTest {
             .throwable(businessException)
             .build()
 
-        assertThat(errorDetail.type)
-            .isEqualTo(URI.create("https://flame-coach/apidocs/com/coach/flame/failure/exception/DailyTaskNotFound.html"))
-        assertThat(errorDetail.status).isEqualTo(HttpStatus.NOT_FOUND.value)
-        assertThat(errorDetail.title).isEqualTo("DailyTaskNotFound")
-        assertThat(errorDetail.detail).isEqualTo("This is the message")
-        assertThat(errorDetail.instance.toString()).startsWith("urn:uuid:")
-        assertThat(errorDetail.debug).contains("\n")
+        then(errorDetail.type)
+            .isEqualTo(URI.create("https://flame-coach/apidocs/com/coach/flame/failure/exception/BusinessException.html"))
+        then(errorDetail.status).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value)
+        then(errorDetail.title).isEqualTo("BusinessException")
+        then(errorDetail.detail).isEqualTo("This is the message")
+        then(errorDetail.instance.toString()).startsWith("urn:uuid:")
+        then(errorDetail.debug).contains("\n")
 
     }
 

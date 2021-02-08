@@ -17,6 +17,11 @@
     <dependencies>
 
         <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-kotlin</artifactId>
         </dependency>
@@ -70,6 +75,13 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/failure/exception/**.*</exclude>
+                        <exclude>**/failure/HttpStatus.*</exclude>
+                        <exclude>**/failure/Status.*</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
         </plugins>
     </build>

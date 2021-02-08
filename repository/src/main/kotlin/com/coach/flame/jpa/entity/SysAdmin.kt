@@ -12,6 +12,5 @@ class SysAdmin(
     @Column(nullable = false)
     val reference: String,
 
-    val description: String,
-
+    val description: String?,
 ) : AbstractPersistable<Long>()
