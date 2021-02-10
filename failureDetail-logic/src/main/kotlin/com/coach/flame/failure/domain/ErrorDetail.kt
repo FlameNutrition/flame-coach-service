@@ -2,11 +2,9 @@ package com.coach.flame.failure.domain
 
 import com.coach.flame.failure.Status
 import com.fasterxml.jackson.annotation.JsonInclude
-import org.apache.logging.log4j.util.Strings
-import java.io.PrintWriter
-import java.io.StringWriter
 import java.net.URI
 import java.util.*
+import java.util.Objects.hash
 
 class ErrorDetail private constructor(
     val type: URI?,
@@ -23,13 +21,13 @@ class ErrorDetail private constructor(
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
     data class Builder(
-        var type: URI? = null,
-        var title: String? = null,
-        var detail: String? = null,
-        var status: Int = 500,
-        var instance: URI? = null,
-        var debug: String? = null,
-        var throwable: Throwable? = null
+        private var type: URI? = null,
+        private var title: String? = null,
+        private var detail: String? = null,
+        private var status: Int = 500,
+        private var instance: URI? = null,
+        private var debug: String? = null,
+        private var throwable: Throwable? = null
     ) {
 
         private fun buildType() {
@@ -79,6 +77,21 @@ class ErrorDetail private constructor(
         }
 
         fun build() = ErrorDetail(type, title, detail, status, instance, debug)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ErrorDetail
+
+        if (instance != other.instance) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return hash(instance)
     }
 
 }

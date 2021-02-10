@@ -52,4 +52,28 @@ class ErrorDetailTest {
 
     }
 
+    @Test
+    fun `test error detail hashCode and equals`() {
+
+        // given
+        val arithmeticException = ArithmeticException()
+        val businessException = BusinessException("This is the message", arithmeticException)
+
+        // when
+        val errorDetail = ErrorDetail.Builder()
+            .throwable(businessException)
+            .build()
+        val errorDetailOther = ErrorDetail.Builder()
+            .throwable(businessException)
+            .build()
+
+        // then
+        then(errorDetail.hashCode()).isNotEqualTo(errorDetailOther.hashCode())
+        then(errorDetail == errorDetailOther).isFalse
+        then(errorDetail == errorDetail).isTrue
+        then(errorDetail.equals("OTHER")).isFalse
+        then(errorDetail.equals(null)).isFalse
+
+    }
+
 }

@@ -7,36 +7,55 @@ import org.jeasy.random.FieldPredicates
 import org.jeasy.random.api.Randomizer
 import kotlin.random.Random
 
-private val FAKER = Faker()
+class SysAdminGenerator {
 
-private val randomizerId = Randomizer { Random.nextLong(1, 20000) }
-private val randomizerName = Randomizer { FAKER.book().title() }
-private val randomizerDescription = Randomizer { FAKER.book().genre() }
+    data class Builder(
+        private val randomizerId: Randomizer<Long>? = null,
+        private val randomizerRef: Randomizer<String>? = null,
+        private val randomizerDescription: Randomizer<String>? = null,
+        private var easyRandom: EasyRandom? = null
+    ) {
 
-//FIXME: This id is not recognized
-private val fieldPredicateId = FieldPredicates
-    .named("id")
-    .and(FieldPredicates.ofType(Long::class.java))
-    .and(FieldPredicates.inClass(SysAdmin::class.java))
+        private val faker = Faker()
 
-private val fieldPredicateRef = FieldPredicates
-    .named("reference")
-    .and(FieldPredicates.ofType(String::class.java))
-    .and(FieldPredicates.inClass(SysAdmin::class.java))
+        private val fieldPredicateId = FieldPredicates
+            .named("id")
+            .and(FieldPredicates.ofType(Long::class.java))
+            .and(FieldPredicates.inClass(SysAdmin::class.java))
 
-private val fieldPredicateDescription = FieldPredicates
-    .named("description")
-    .and(FieldPredicates.ofType(String::class.java))
-    .and(FieldPredicates.inClass(SysAdmin::class.java))
+        private val fieldPredicateRef = FieldPredicates
+            .named("reference")
+            .and(FieldPredicates.ofType(String::class.java))
+            .and(FieldPredicates.inClass(SysAdmin::class.java))
 
-private val RANDOM_PARAMETER = EasyRandomParameters()
-    .randomize(fieldPredicateRef, randomizerName)
-    .randomize(fieldPredicateDescription, randomizerDescription)
-    .randomize(fieldPredicateId, randomizerId)
-    .scanClasspathForConcreteTypes(true)
+        private val fieldPredicateClients = FieldPredicates
+            .named("description")
+            .and(FieldPredicates.ofType(String::class.java))
+            .and(FieldPredicates.inClass(SysAdmin::class.java))
 
-private val INSTANCE = EasyRandom(RANDOM_PARAMETER)
+        private val defaultRandomizerId = Randomizer { Random.nextLong(1, 20000) }
+        private val defaultRandomizerName = Randomizer { faker.book().genre() }
+        private val defaultRandomizerDescription = Randomizer { faker.yoda().quote() }
 
-fun generateSysAdmin(): SysAdmin {
-    return INSTANCE.nextObject(SysAdmin::class.java)
+        fun build() = apply {
+
+            val randomParameter = EasyRandomParameters()
+                .randomize(fieldPredicateId, randomizerId ?: defaultRandomizerId)
+                .randomize(fieldPredicateRef, randomizerRef ?: defaultRandomizerName)
+                .randomize(fieldPredicateClients, randomizerDescription ?: defaultRandomizerDescription)
+                .objectPoolSize(3)
+                .scanClasspathForConcreteTypes(true)
+
+            this.easyRandom = EasyRandom(randomParameter)
+        }
+
+        fun nextObject(): SysAdmin {
+
+            checkNotNull(this.easyRandom) { "please call first the build method!" }
+            return this.easyRandom!!.nextObject(SysAdmin::class.java)
+
+        }
+
+
+    }
 }

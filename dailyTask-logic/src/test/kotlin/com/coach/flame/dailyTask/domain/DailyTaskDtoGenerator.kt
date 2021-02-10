@@ -6,29 +6,48 @@ import org.jeasy.random.EasyRandom
 import org.jeasy.random.EasyRandomParameters
 import org.jeasy.random.FieldPredicates
 import org.jeasy.random.api.Randomizer
+import kotlin.random.Random
 
-private val FAKER = Faker()
+class DailyTaskDtoGenerator {
 
-private val randomizerDescription = Randomizer { FAKER.harryPotter().quote() }
+    data class Builder(
+        private val randomizerName: Randomizer<String>? = null,
+        private val randomizerDescription: Randomizer<String>? = null,
+        private var easyRandom: EasyRandom? = null
+    ) {
 
-private val randomizerName = Randomizer { FAKER.harryPotter().spell() }
+        private val faker = Faker()
 
-private val fieldPredicateName = FieldPredicates
-    .named("name")
-    .and(FieldPredicates.ofType(String::class.java))
-    .and(FieldPredicates.inClass(DailyTaskDto::class.java))
+        private val fieldPredicateName = FieldPredicates
+            .named("name")
+            .and(FieldPredicates.ofType(String::class.java))
+            .and(FieldPredicates.inClass(DailyTaskDto::class.java))
 
-private val fieldPredicateDescription = FieldPredicates
-    .named("description")
-    .and(FieldPredicates.ofType(String::class.java))
-    .and(FieldPredicates.inClass(DailyTaskDto::class.java))
+        private val fieldPredicateDescription = FieldPredicates
+            .named("description")
+            .and(FieldPredicates.ofType(String::class.java))
+            .and(FieldPredicates.inClass(DailyTaskDto::class.java))
 
-private val RANDOM_PARAMETER = EasyRandomParameters()
-    .randomize(fieldPredicateName, randomizerName)
-    .randomize(fieldPredicateDescription, randomizerDescription)
+        private val defaultRandomizerName = Randomizer { faker.harryPotter().character() }
+        private val defaultRandomizerDescription = Randomizer { faker.yoda().quote() }
 
-private val EASY_RANDOM_DAILY_TASK_DTO = EasyRandom(RANDOM_PARAMETER)
+        fun build() = apply {
 
-fun generateDailyTaskDto(): DailyTaskDto {
-    return EASY_RANDOM_DAILY_TASK_DTO.nextObject(DailyTaskDto::class.java)
+            val randomParameter = EasyRandomParameters()
+                .randomize(fieldPredicateName, randomizerName ?: defaultRandomizerName)
+                .randomize(fieldPredicateDescription, randomizerDescription ?: defaultRandomizerDescription)
+                .objectPoolSize(3)
+                .scanClasspathForConcreteTypes(true)
+
+            this.easyRandom = EasyRandom(randomParameter)
+        }
+
+        fun nextObject(): DailyTaskDto {
+
+            checkNotNull(this.easyRandom) { "please call first the build method!" }
+            return this.easyRandom!!.nextObject(DailyTaskDto::class.java)
+
+        }
+
+    }
 }

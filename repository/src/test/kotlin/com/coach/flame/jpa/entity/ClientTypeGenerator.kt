@@ -7,37 +7,54 @@ import org.jeasy.random.FieldPredicates
 import org.jeasy.random.api.Randomizer
 import kotlin.random.Random
 
-private val FAKER = Faker()
+class ClientTypeGenerator {
 
-private val randomizerId = Randomizer { Random.nextLong(1, 20000) }
-private val randomizerType = Randomizer { FAKER.book().genre() }
+    data class Builder(
+        private val randomizerId: Randomizer<Long>? = null,
+        private val randomizerName: Randomizer<String>? = null,
+        private val randomizerDescription: Randomizer<String>? = null,
+        private var easyRandom: EasyRandom? = null
+    ) {
 
-private val randomizerClients = Randomizer { mutableListOf<Client>() }
+        private val faker = Faker()
 
-//FIXME: This id is not recognized
-private val fieldPredicateId = FieldPredicates
-    .named("id")
-    .and(FieldPredicates.ofType(Long::class.java))
-    .and(FieldPredicates.inClass(ClientType::class.java))
+        private val fieldPredicateId = FieldPredicates
+            .named("id")
+            .and(FieldPredicates.ofType(Long::class.java))
+            .and(FieldPredicates.inClass(ClientType::class.java))
 
-private val fieldPredicateType = FieldPredicates
-    .named("type")
-    .and(FieldPredicates.ofType(String::class.java))
-    .and(FieldPredicates.inClass(ClientType::class.java))
+        private val fieldPredicateName = FieldPredicates
+            .named("type")
+            .and(FieldPredicates.ofType(String::class.java))
+            .and(FieldPredicates.inClass(ClientType::class.java))
 
-private val fieldPredicateClients = FieldPredicates
-    .named("clients")
-    .and(FieldPredicates.ofType(MutableList::class.java))
-    .and(FieldPredicates.inClass(ClientType::class.java))
+        private val fieldPredicateClients = FieldPredicates
+            .named("clients")
+            .and(FieldPredicates.ofType(MutableList::class.java))
+            .and(FieldPredicates.inClass(ClientType::class.java))
 
-private val RANDOM_PARAMETER = EasyRandomParameters()
-    .randomize(fieldPredicateType, randomizerType)
-    .randomize(fieldPredicateClients, randomizerClients)
-    .randomize(fieldPredicateId, randomizerId)
-    .scanClasspathForConcreteTypes(true)
+        private val defaultRandomizerId = Randomizer { Random.nextLong(1, 20000) }
+        private val defaultRandomizerType = Randomizer { faker.book().genre() }
+        private val defaultRandomizerClients = Randomizer { mutableListOf<Client>() }
 
-private val INSTANCE = EasyRandom(RANDOM_PARAMETER)
+        fun build() = apply {
 
-fun generateClientType(): ClientType {
-    return INSTANCE.nextObject(ClientType::class.java)
+            val randomParameter = EasyRandomParameters()
+                .randomize(fieldPredicateId, randomizerId ?: defaultRandomizerId)
+                .randomize(fieldPredicateName, randomizerName ?: defaultRandomizerType)
+                .randomize(fieldPredicateClients, randomizerDescription ?: defaultRandomizerClients)
+                .objectPoolSize(3)
+                .scanClasspathForConcreteTypes(true)
+
+            this.easyRandom = EasyRandom(randomParameter)
+        }
+
+        fun nextObject(): ClientType {
+
+            checkNotNull(this.easyRandom) { "please call first the build method!" }
+            return this.easyRandom!!.nextObject(ClientType::class.java)
+
+        }
+
+    }
 }

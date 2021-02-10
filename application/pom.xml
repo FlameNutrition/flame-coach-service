@@ -66,6 +66,24 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.jeasy</groupId>
+            <artifactId>easy-random-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -77,6 +95,14 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/flame/FlameCoachServiceApplication.*</exclude>
+                        <exclude>**/flame/api/request/*.*</exclude>
+                        <exclude>**/flame/api/response/*.*</exclude>
+                        <exclude>**/flame/*Config.*</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
 
             <plugin>
@@ -87,11 +113,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>**/flame/*Application.*</exclude>
-                    </excludes>
-                </configuration>
             </plugin>
         </plugins>
     </build>
