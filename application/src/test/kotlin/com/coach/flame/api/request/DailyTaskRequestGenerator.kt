@@ -5,6 +5,8 @@ import org.jeasy.random.EasyRandom
 import org.jeasy.random.EasyRandomParameters
 import org.jeasy.random.FieldPredicates
 import org.jeasy.random.api.Randomizer
+import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class DailyTaskRequestGenerator {
@@ -17,6 +19,8 @@ class DailyTaskRequestGenerator {
         private var randomizerClientIdentifierCreator: Randomizer<String>? = null,
         private var easyRandom: EasyRandom? = null
     ) {
+
+        private val dateFormatter = SimpleDateFormat("yyy-MM-dd")
 
         private val faker = Faker()
 
@@ -67,7 +71,7 @@ class DailyTaskRequestGenerator {
 
         private val defaultRandomizerName = Randomizer { faker.food().dish() }
         private val defaultRandomizerDescription = Randomizer { faker.yoda().quote() }
-        private val defaultRandomizerDate = Randomizer { faker.date().birthday() }
+        private val defaultRandomizerDate = Randomizer { dateFormatter.format(faker.date().birthday()) }
         private val defaultRandomizerClientIdentifierTask = Randomizer { UUID.randomUUID().toString() }
         private val defaultRandomizerClientIdentifierCreator = Randomizer { UUID.randomUUID().toString() }
 
@@ -90,10 +94,10 @@ class DailyTaskRequestGenerator {
             this.easyRandom = EasyRandom(randomParameter)
         }
 
-        fun nextObject(): DailyTaskRequestGenerator {
+        fun nextObject(): DailyTaskRequest {
 
             checkNotNull(this.easyRandom) { "please call first the build method!" }
-            return this.easyRandom!!.nextObject(DailyTaskRequestGenerator::class.java)
+            return this.easyRandom!!.nextObject(DailyTaskRequest::class.java)
 
         }
 

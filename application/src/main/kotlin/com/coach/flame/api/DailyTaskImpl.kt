@@ -6,9 +6,11 @@ import com.coach.flame.api.response.DailyTaskResponse
 import com.coach.flame.aspect.LoggingRequest
 import com.coach.flame.aspect.LoggingResponse
 import com.coach.flame.dailyTask.DailyTaskService
+import com.coach.flame.dailyTask.DailyTaskServiceImpl
 import com.coach.flame.dailyTask.domain.ClientDto
 import com.coach.flame.dailyTask.domain.DailyTaskDto
 import com.coach.flame.date.stringToDate
+import com.coach.flame.exception.RestException
 import com.coach.flame.exception.RestInvalidRequest
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -23,6 +25,10 @@ class DailyTaskImpl(
     @Autowired private val dailyTaskService: DailyTaskService
 ) : DailyTaskAPI {
 
+    companion object {
+        private val LOGGER: Logger = LoggerFactory.getLogger(DailyTaskImpl::class.java)
+    }
+
     @LoggingRequest
     @LoggingResponse
     @PostMapping("/create/tasks")
@@ -33,7 +39,7 @@ class DailyTaskImpl(
             throw RestInvalidRequest("Empty request structure")
         }
 
-        throw UnsupportedOperationException("This is not supported yet")
+        throw RestException("This is not supported yet")
 
     }
 
@@ -67,9 +73,13 @@ class DailyTaskImpl(
             when (ex) {
                 is IllegalArgumentException,
                 is IllegalStateException -> {
+                    LOGGER.warn("opr=createDailyTask, msg='Invalid request'", ex)
                     throw RestInvalidRequest(ex)
                 }
-                else -> throw ex
+                else -> {
+                    LOGGER.error("opr=createDailyTask, msg='Something unexpected happened!'", ex)
+                    throw RestException(ex)
+                }
             }
         }
     }
@@ -80,21 +90,27 @@ class DailyTaskImpl(
     @ResponseBody
     override fun getDailyTasksByClient(@PathVariable(required = true) clientId: Long): DailyTaskResponse {
 
-        val dailyTasksDto = dailyTaskService.getDailyTasksByClient(clientId)
+        try {
 
-        return DailyTaskResponse(
-            dailyTasks = dailyTasksDto
-                .map { dto ->
-                    DailyTask(
-                        identifier = dto.identifier.toString(),
-                        name = dto.name,
-                        description = dto.description,
-                        date = dto.date.toString(),
-                        ticked = dto.ticked
-                    )
-                }
-                .toSet()
-        )
+            val dailyTasksDto = dailyTaskService.getDailyTasksByClient(clientId)
+
+            return DailyTaskResponse(
+                dailyTasks = dailyTasksDto
+                    .map { dto ->
+                        DailyTask(
+                            identifier = dto.identifier.toString(),
+                            name = dto.name,
+                            description = dto.description,
+                            date = dto.date.toString(),
+                            ticked = dto.ticked
+                        )
+                    }
+                    .toSet()
+            )
+        } catch (ex: Exception) {
+            LOGGER.error("opr=getDailyTasksByClient, msg='Something unexpected happened!'", ex)
+            throw RestException(ex)
+        }
     }
 
     @LoggingRequest
@@ -102,19 +118,24 @@ class DailyTaskImpl(
     @GetMapping("/get/task/{taskId}")
     override fun getDailyTaskById(@PathVariable(required = true) taskId: Long): DailyTaskResponse {
 
-        val dailyTask = dailyTaskService.getDailyTaskById(taskId)
+        try {
+            val dailyTask = dailyTaskService.getDailyTaskById(taskId)
 
-        return DailyTaskResponse(
-            dailyTasks = setOf(
-                DailyTask(
-                    identifier = dailyTask.identifier.toString(),
-                    name = dailyTask.name,
-                    description = dailyTask.description,
-                    date = dailyTask.date.toString(),
-                    ticked = dailyTask.ticked
+            return DailyTaskResponse(
+                dailyTasks = setOf(
+                    DailyTask(
+                        identifier = dailyTask.identifier.toString(),
+                        name = dailyTask.name,
+                        description = dailyTask.description,
+                        date = dailyTask.date.toString(),
+                        ticked = dailyTask.ticked
+                    )
                 )
             )
-        )
+        } catch (ex: Exception) {
+            LOGGER.error("opr=getDailyTaskById, msg='Something unexpected happened!'", ex)
+            throw RestException(ex)
+        }
     }
 
     @LoggingRequest
@@ -137,9 +158,13 @@ class DailyTaskImpl(
         } catch (ex: Exception) {
             when (ex) {
                 is IllegalArgumentException -> {
+                    LOGGER.warn("opr=deleteDailyTaskById, msg='Invalid request'", ex)
                     throw RestInvalidRequest(ex)
                 }
-                else -> throw ex
+                else -> {
+                    LOGGER.error("opr=deleteDailyTaskById, msg='Something unexpected happened!'", ex)
+                    throw RestException(ex)
+                }
             }
         }
 

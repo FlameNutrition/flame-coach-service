@@ -1,7 +1,8 @@
-package com.coach.flame.exception
+package com.coach.flame.exception.handlers
 
+import com.coach.flame.exception.RestException
+import com.coach.flame.exception.RestInvalidRequest
 import com.coach.flame.failure.domain.ErrorDetail
-import com.coach.flame.failure.exception.BusinessException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.core.annotation.Order
@@ -15,7 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @ControllerAdvice
 @Order(2)
-class RestExceptionHandler : ResponseEntityExceptionHandler() {
+class RestExceptionHandler {
 
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(RestExceptionHandler::class.java)
@@ -23,12 +24,31 @@ class RestExceptionHandler : ResponseEntityExceptionHandler() {
 
     @ExceptionHandler(
         value = [
+            RestException::class,
+        ]
+    )
+    fun handleRestException(ex: RestException, request: WebRequest): ResponseEntity<Any> {
+
+        LOGGER.warn("operation=handleRestException, message='Something unexpected happened'", ex)
+
+        val errorDetail = ErrorDetail.Builder()
+            .throwable(ex)
+            .build()
+
+        return ResponseEntity
+            .status(HttpStatus.valueOf(errorDetail.status))
+            .contentType(MediaType.APPLICATION_PROBLEM_JSON)
+            .body(errorDetail)
+    }
+
+    @ExceptionHandler(
+        value = [
             RestInvalidRequest::class,
         ]
     )
-    fun handleRestException(ex: RestInvalidRequest, request: WebRequest): ResponseEntity<Any> {
+    fun handleRestSpecificException(ex: RestException, request: WebRequest): ResponseEntity<Any> {
 
-        LOGGER.warn("operation=handleRestException, message='Something unexpected happened'", ex)
+        LOGGER.warn("operation=handleRestSpecificException, message='Something unexpected happened'", ex)
 
         val errorDetail = ErrorDetail.Builder()
             .throwable(ex)

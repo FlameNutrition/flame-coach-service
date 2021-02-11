@@ -1,4 +1,4 @@
-package com.coach.flame.exception
+package com.coach.flame.exception.handlers
 
 import com.coach.flame.failure.domain.ErrorDetail
 import org.slf4j.Logger

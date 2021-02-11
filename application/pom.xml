@@ -40,6 +40,11 @@
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
@@ -67,6 +72,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.jeasy</groupId>
             <artifactId>easy-random-core</artifactId>
             <scope>test</scope>
@@ -81,6 +92,13 @@
         <dependency>
             <groupId>com.github.javafaker</groupId>
             <artifactId>javafaker</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.coach.flame</groupId>
+            <artifactId>dailyTask-logic</artifactId>
+            <type>test-jar</type>
             <scope>test</scope>
         </dependency>
 
@@ -100,7 +118,7 @@
                         <exclude>**/flame/FlameCoachServiceApplication.*</exclude>
                         <exclude>**/flame/api/request/*.*</exclude>
                         <exclude>**/flame/api/response/*.*</exclude>
-                        <exclude>**/flame/*Config.*</exclude>
+                        <exclude>**/flame/**/*Config.*</exclude>
                     </excludes>
                 </configuration>
             </plugin>

@@ -1,4 +1,4 @@
-package com.coach.flame.exception
+package com.coach.flame.exception.handlers
 
 import com.coach.flame.dailyTask.ClientNotFound
 import com.coach.flame.dailyTask.DailyTaskMissingDelete
