@@ -6,12 +6,14 @@ import com.coach.flame.jpa.entity.DailyTask
 import com.coach.flame.jpa.entity.DailyTaskGenerator
 import com.coach.flame.jpa.repository.ClientRepository
 import com.coach.flame.jpa.repository.DailyTaskRepository
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.slot
 import org.assertj.core.api.BDDAssertions.*
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.sql.Date
@@ -28,6 +30,11 @@ class DailyTaskServiceImplTest {
 
     @InjectMockKs
     private lateinit var dailyTaskServiceImpl: DailyTaskServiceImpl
+
+    @AfterEach
+    fun setUp() {
+        clearAllMocks()
+    }
 
     @Test
     fun `delete valid daily task`() {

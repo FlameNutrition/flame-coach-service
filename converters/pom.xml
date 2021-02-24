@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>client-logic</artifactId>
+    <artifactId>converters</artifactId>
 
     <dependencies>
 
@@ -24,13 +24,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.coach.flame</groupId>
-            <artifactId>converters</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.coach.flame</groupId>
-            <artifactId>failureDetail-logic</artifactId>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
         </dependency>
 
         <dependency>
@@ -44,22 +39,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-log4j2</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.mockk</groupId>
-            <artifactId>mockk</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <scope>test</scope>
@@ -68,12 +47,6 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
             <scope>test</scope>
         </dependency>
 
@@ -96,9 +69,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.coach.flame</groupId>
-            <artifactId>repository</artifactId>
-            <type>test-jar</type>
+            <groupId>io.mockk</groupId>
+            <artifactId>mockk</artifactId>
             <scope>test</scope>
         </dependency>
 
@@ -109,6 +81,12 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.coach.flame</groupId>
+            <artifactId>repository</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -130,25 +108,6 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>**/client/*Config.*</exclude>
-                        <exclude>**/client/ClientException.*</exclude>
-                        <exclude>**/client/ClientExceptionKt.*</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

@@ -21,21 +21,21 @@ class Client(
     val lastName: String,
 
     @Column(nullable = true)
-    val birthday: Date,
+    val birthday: Date?,
 
     @Column(nullable = true)
-    val phoneCode: String,
+    val phoneCode: String?,
 
     @Column(nullable = true)
-    val phoneNumber: Int,
+    val phoneNumber: Int?,
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "countryFk", referencedColumnName = "id")
-    val country: CountryConfig,
+    val country: CountryConfig?,
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "genderFk", referencedColumnName = "id")
-    val gender: GenderConfig,
+    val gender: GenderConfig?,
 
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "userFk", referencedColumnName = "id")

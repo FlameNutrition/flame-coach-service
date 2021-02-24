@@ -1,12 +1,13 @@
 package com.coach.flame.client
 
+import com.coach.flame.domain.ClientDto
 import java.util.*
 
 //TODO: Write documentation
 interface ClientService {
 
-    fun getClient(uuid: UUID)
+    fun getClient(uuid: UUID) : ClientDto
 
-    fun registerClient(taskId: Long)
+    fun registerClient(clientDto: ClientDto)
 
 }

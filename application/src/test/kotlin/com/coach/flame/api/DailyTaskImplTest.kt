@@ -7,6 +7,7 @@ import com.coach.flame.domain.DailyTaskDtoGenerator
 import com.coach.flame.date.stringToDate
 import com.coach.flame.exception.RestException
 import com.coach.flame.exception.RestInvalidRequest
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -15,6 +16,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import org.assertj.core.api.BDDAssertions.catchThrowable
 import org.assertj.core.api.BDDAssertions.then
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
@@ -31,6 +33,11 @@ class DailyTaskImplTest {
 
     @InjectMockKs
     private lateinit var dailyTaskImpl: DailyTaskImpl
+
+    @AfterEach
+    fun setUp() {
+        clearAllMocks()
+    }
 
     // region Daily Task [Create]
 

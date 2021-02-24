@@ -6,6 +6,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 
 @Configuration
-@ComponentScan("com.coach.flame.client")
+@ComponentScan(value = ["com.coach.flame.client", "com.coach.flame.domain.converters"] )
 @Import(value = [FlameCoachRepoConfig::class])
 class ClientModuleConfig
