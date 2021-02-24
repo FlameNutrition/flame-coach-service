@@ -2,8 +2,8 @@ package com.coach.flame.api
 
 import com.coach.flame.api.request.DailyTaskRequestGenerator
 import com.coach.flame.dailyTask.DailyTaskService
-import com.coach.flame.dailyTask.domain.DailyTaskDto
-import com.coach.flame.dailyTask.domain.DailyTaskDtoGenerator
+import com.coach.flame.domain.DailyTaskDto
+import com.coach.flame.domain.DailyTaskDtoGenerator
 import com.coach.flame.date.stringToDate
 import com.coach.flame.exception.RestException
 import com.coach.flame.exception.RestInvalidRequest

@@ -1,6 +1,6 @@
 package com.coach.flame.dailyTask
 
-import com.coach.flame.dailyTask.domain.DailyTaskDtoGenerator
+import com.coach.flame.domain.DailyTaskDtoGenerator
 import com.coach.flame.jpa.entity.ClientGenerator
 import com.coach.flame.jpa.entity.DailyTask
 import com.coach.flame.jpa.entity.DailyTaskGenerator

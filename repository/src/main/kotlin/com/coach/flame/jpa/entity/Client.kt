@@ -20,11 +20,22 @@ class Client(
     @Column(nullable = false)
     val lastName: String,
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     val birthday: Date,
 
-    @Column(nullable = false)
-    val height: Float,
+    @Column(nullable = true)
+    val phoneCode: String,
+
+    @Column(nullable = true)
+    val phoneNumber: Int,
+
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "countryFk", referencedColumnName = "id")
+    val country: CountryConfig,
+
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "genderFk", referencedColumnName = "id")
+    val gender: GenderConfig,
 
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "userFk", referencedColumnName = "id")

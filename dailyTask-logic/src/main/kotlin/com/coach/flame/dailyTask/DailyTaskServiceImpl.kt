@@ -1,6 +1,6 @@
 package com.coach.flame.dailyTask
 
-import com.coach.flame.dailyTask.domain.DailyTaskDto
+import com.coach.flame.domain.DailyTaskDto
 import com.coach.flame.jpa.entity.DailyTask
 import com.coach.flame.jpa.repository.ClientRepository
 import com.coach.flame.jpa.repository.DailyTaskRepository
@@ -62,11 +62,11 @@ class DailyTaskServiceImpl(
 
             val createdBy = clientRepository.findByUuid(dailyTask.createdBy!!.identifier)
 
-            checkNotNull(createdBy) { "Could not find any client with the following identifier ${dailyTask.createdBy.identifier}" }
+            checkNotNull(createdBy) { "Could not find any client with the following identifier ${dailyTask.createdBy!!.identifier}" }
 
             val owner = clientRepository.findByUuid(dailyTask.owner!!.identifier)
 
-            checkNotNull(owner) { "Could not find any client with the following identifier ${dailyTask.owner.identifier}" }
+            checkNotNull(owner) { "Could not find any client with the following identifier ${dailyTask.owner!!.identifier}" }
 
             val newDailyTask = DailyTask(
                 uuid = dailyTask.identifier,

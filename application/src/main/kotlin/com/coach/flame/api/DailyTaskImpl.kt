@@ -6,17 +6,15 @@ import com.coach.flame.api.response.DailyTaskResponse
 import com.coach.flame.aspect.LoggingRequest
 import com.coach.flame.aspect.LoggingResponse
 import com.coach.flame.dailyTask.DailyTaskService
-import com.coach.flame.dailyTask.DailyTaskServiceImpl
-import com.coach.flame.dailyTask.domain.ClientDto
-import com.coach.flame.dailyTask.domain.DailyTaskDto
 import com.coach.flame.date.stringToDate
+import com.coach.flame.domain.ClientDto
+import com.coach.flame.domain.DailyTaskDto
 import com.coach.flame.exception.RestException
 import com.coach.flame.exception.RestInvalidRequest
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
-import java.lang.UnsupportedOperationException
 import java.util.*
 
 @RestController

@@ -1,4 +1,4 @@
-package com.coach.flame.dailyTask.domain
+package com.coach.flame.domain
 
 import java.util.*
 import java.util.Objects.hash

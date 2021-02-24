@@ -66,14 +66,20 @@
 
             <dependency>
                 <groupId>com.coach.flame</groupId>
-                <artifactId>dailyTask-logic</artifactId>
+                <artifactId>domain</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.coach.flame</groupId>
+                <artifactId>domain</artifactId>
+                <type>test-jar</type>
                 <version>${project.parent.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.coach.flame</groupId>
                 <artifactId>dailyTask-logic</artifactId>
-                <type>test-jar</type>
                 <version>${project.parent.version}</version>
             </dependency>
 
@@ -365,6 +371,8 @@
         <module>dailyTask-logic</module>
         <module>failureDetail-logic</module>
         <module>utilities</module>
+        <module>client-logic</module>
+        <module>domain</module>
     </modules>
 
 </project>

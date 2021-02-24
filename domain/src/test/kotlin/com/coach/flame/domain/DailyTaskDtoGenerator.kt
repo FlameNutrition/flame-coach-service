@@ -1,12 +1,10 @@
-package com.coach.flame.dailyTask.domain
+package com.coach.flame.domain
 
-import com.coach.flame.jpa.entity.DailyTask
 import com.github.javafaker.Faker
 import org.jeasy.random.EasyRandom
 import org.jeasy.random.EasyRandomParameters
 import org.jeasy.random.FieldPredicates
 import org.jeasy.random.api.Randomizer
-import kotlin.random.Random
 
 class DailyTaskDtoGenerator {
 

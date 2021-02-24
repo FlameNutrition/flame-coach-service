@@ -20,6 +20,11 @@
 
         <dependency>
             <groupId>com.coach.flame</groupId>
+            <artifactId>domain</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.coach.flame</groupId>
             <artifactId>failureDetail-logic</artifactId>
         </dependency>
 
@@ -51,6 +56,12 @@
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-kotlin</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.coach.flame</groupId>
+            <artifactId>domain</artifactId>
+            <type>test-jar</type>
         </dependency>
 
         <dependency>
@@ -92,13 +103,6 @@
         <dependency>
             <groupId>com.github.javafaker</groupId>
             <artifactId>javafaker</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.coach.flame</groupId>
-            <artifactId>dailyTask-logic</artifactId>
-            <type>test-jar</type>
             <scope>test</scope>
         </dependency>
 

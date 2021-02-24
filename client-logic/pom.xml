@@ -9,21 +9,13 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>dailyTask-logic</artifactId>
-
-    <properties>
-    </properties>
+    <artifactId>client-logic</artifactId>
 
     <dependencies>
 
         <dependency>
             <groupId>com.coach.flame</groupId>
             <artifactId>repository</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.coach.flame</groupId>
-            <artifactId>domain</artifactId>
         </dependency>
 
         <dependency>
@@ -49,13 +41,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-log4j2</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.coach.flame</groupId>
-            <artifactId>domain</artifactId>
-            <type>test-jar</type>
-            <version>${project.parent.version}</version>
         </dependency>
 
         <dependency>
@@ -124,12 +109,23 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <configuration>
                     <excludes>
-                        <exclude>**/dailyTask/*Config.*</exclude>
-                        <exclude>**/dailyTask/domain/**.*</exclude>
+                        <exclude>**/client/*Config.*</exclude>
+                        <exclude>**/client/domain/**.*</exclude>
                     </excludes>
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

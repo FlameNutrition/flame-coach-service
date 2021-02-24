@@ -1,6 +1,6 @@
 package com.coach.flame.dailyTask
 
-import com.coach.flame.dailyTask.domain.DailyTaskDto
+import com.coach.flame.domain.DailyTaskDto
 import java.util.*
 
 //TODO: Write documentation
