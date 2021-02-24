@@ -1,4 +1,4 @@
-package com.coach.flame.api.request
+package com.coach.flame.api.dailyTask.request
 
 data class DailyTaskRequest(
     val name: String,

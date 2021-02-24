@@ -1,4 +1,4 @@
-package com.coach.flame.api.request
+package com.coach.flame.api.dailyTask.request
 
 import com.github.javafaker.Faker
 import org.jeasy.random.EasyRandom
@@ -6,7 +6,6 @@ import org.jeasy.random.EasyRandomParameters
 import org.jeasy.random.FieldPredicates
 import org.jeasy.random.api.Randomizer
 import java.text.SimpleDateFormat
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 class DailyTaskRequestGenerator {

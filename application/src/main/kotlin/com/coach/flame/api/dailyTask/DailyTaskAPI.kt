@@ -1,10 +1,7 @@
-package com.coach.flame.api
+package com.coach.flame.api.dailyTask
 
-import com.coach.flame.api.request.DailyTaskRequest
-import com.coach.flame.api.response.DailyTaskResponse
-import com.coach.flame.aspect.LoggingRequest
-import com.coach.flame.aspect.LoggingResponse
-import org.springframework.web.bind.annotation.*
+import com.coach.flame.api.dailyTask.request.DailyTaskRequest
+import com.coach.flame.api.dailyTask.response.DailyTaskResponse
 
 //TODO: Write documentation
 interface DailyTaskAPI {

@@ -1,6 +1,6 @@
-package com.coach.flame.api
+package com.coach.flame.api.dailyTask
 
-import com.coach.flame.api.request.DailyTaskRequestGenerator
+import com.coach.flame.api.dailyTask.request.DailyTaskRequestGenerator
 import com.coach.flame.dailyTask.DailyTaskService
 import com.coach.flame.domain.DailyTaskDto
 import com.coach.flame.domain.DailyTaskDtoGenerator
