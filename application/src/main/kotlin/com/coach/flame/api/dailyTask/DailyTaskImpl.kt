@@ -49,8 +49,11 @@ class DailyTaskImpl(
 
         try {
 
-            checkNotNull(dailyTask.clientIdentifierCreator) { "Missing clientIdentifierCreator param" }
-            checkNotNull(dailyTask.clientIdentifierTask) { "Missing clientIdentifierTask param" }
+            requireNotNull(dailyTask.name) { "Missing name param" }
+            requireNotNull(dailyTask.description) { "Missing description param" }
+            requireNotNull(dailyTask.date) { "Missing date param" }
+            requireNotNull(dailyTask.clientIdentifierCreator) { "Missing clientIdentifierCreator param" }
+            requireNotNull(dailyTask.clientIdentifierTask) { "Missing clientIdentifierTask param" }
 
             val dailyTaskDto = DailyTaskDto(
                 identifier = UUID.randomUUID(),
@@ -58,8 +61,8 @@ class DailyTaskImpl(
                 description = dailyTask.description,
                 date = stringToDate(dailyTask.date),
                 ticked = false,
-                createdBy = ClientDto(UUID.fromString(dailyTask.clientIdentifierCreator)),
-                owner = ClientDto(UUID.fromString(dailyTask.clientIdentifierTask)),
+                createdBy = UUID.fromString(dailyTask.clientIdentifierCreator),
+                owner = UUID.fromString(dailyTask.clientIdentifierTask),
             )
 
             val identifier = dailyTaskService.createDailyTask(dailyTaskDto)

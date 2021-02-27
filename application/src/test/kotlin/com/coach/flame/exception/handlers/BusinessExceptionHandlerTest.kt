@@ -38,21 +38,4 @@ class BusinessExceptionHandlerTest {
 
     }
 
-    @Test
-    fun `test handler for a specific business exceptions`() {
-
-        // given
-        val exception = DailyTaskNotFound("DAILY TASK NOT FOUND")
-
-        // when
-        val responseEntity = businessExceptionHandler.handleSpecificBusinessExceptions(exception, request)
-
-        // then
-        then(responseEntity.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
-        then(responseEntity.headers.contentType).isEqualTo(MediaType.APPLICATION_PROBLEM_JSON)
-        //FIXME: Add more assertions to check the error details instance
-        then(responseEntity.body).isNotEqualTo(ErrorDetail.Builder().throwable(exception).build())
-
-    }
-
 }

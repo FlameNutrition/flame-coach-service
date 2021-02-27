@@ -32,6 +32,7 @@
         <mockk.version>1.9.3</mockk.version>
         <easy-random.version>5.0.0</easy-random.version>
         <javafaker.version>1.0.2</javafaker.version>
+        <make-it-easy.version>4.0.1</make-it-easy.version>
 
         <maven.compiler.source>14</maven.compiler.source>
         <maven.compiler.target>14</maven.compiler.target>
@@ -192,6 +193,13 @@
                         <artifactId>spring-boot-starter-logging</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.natpryce</groupId>
+                <artifactId>make-it-easy</artifactId>
+                <version>${make-it-easy.version}</version>
+                <scope>test</scope>
             </dependency>
 
             <dependency>

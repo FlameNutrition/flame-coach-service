@@ -1,10 +1,11 @@
 package com.coach.flame.domain.converters
 
-import com.coach.flame.domain.ClientTypeDto
-import com.coach.flame.domain.CountryDtoGenerator
-import com.coach.flame.domain.GenderDtoGenerator
-import com.coach.flame.jpa.entity.ClientGenerator
-import com.coach.flame.jpa.entity.ClientType
+import com.coach.flame.domain.*
+import com.coach.flame.jpa.entity.*
+import com.natpryce.makeiteasy.MakeItEasy
+import com.natpryce.makeiteasy.MakeItEasy.an
+import com.natpryce.makeiteasy.MakeItEasy.with
+import com.natpryce.makeiteasy.Maker
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -29,11 +30,19 @@ class ClientDtoConverterTest {
     @InjectMockKs
     private lateinit var classToTest: ClientDtoConverter
 
-    private val countryDtoGenerator = CountryDtoGenerator.Builder().build()
-    private val genderDtoGenerator = GenderDtoGenerator.Builder().build()
+    private lateinit var clientMaker: Maker<Client>
+    private lateinit var countryDtoMaker: Maker<CountryDto>
+    private lateinit var genderDtoMaker: Maker<GenderDto>
+
+    @BeforeEach
+    fun setUp() {
+        clientMaker = an(ClientMaker.Client)
+        genderDtoMaker = an(GenderDtoMaker.GenderDto)
+        countryDtoMaker = an(CountryDtoMaker.CountryDto)
+    }
 
     @AfterEach
-    fun setUp() {
+    fun cleanUp() {
         clearAllMocks()
     }
 
@@ -41,12 +50,9 @@ class ClientDtoConverterTest {
     fun `client convert all values`() {
 
         // given
-        val client = ClientGenerator.Builder()
-            .withRandomizerClientType { ClientType(type = "client", mutableListOf()) }
-            .build()
-            .nextObject()
-        val genderDto = genderDtoGenerator.nextObject()
-        val countryDto = countryDtoGenerator.nextObject()
+        val client = clientMaker.make()
+        val genderDto = genderDtoMaker.make()
+        val countryDto = countryDtoMaker.make()
         every { genderDtoConverter.convert(any()) } returns genderDto
         every { countryDtoConverter.convert(any()) } returns countryDto
 
@@ -71,11 +77,10 @@ class ClientDtoConverterTest {
     fun `client convert without country`() {
 
         // given
-        val client = ClientGenerator.Builder()
-            .withRandomizerCountry { null }
-            .build()
-            .nextObject()
-        val genderDto = genderDtoGenerator.nextObject()
+        val client = clientMaker
+            .but(with(ClientMaker.country, null as CountryConfig?))
+            .make()
+        val genderDto = genderDtoMaker.make()
         every { genderDtoConverter.convert(any()) } returns genderDto
         check(client.country === null)
 
@@ -93,11 +98,10 @@ class ClientDtoConverterTest {
     fun `client convert without gender`() {
 
         // given
-        val client = ClientGenerator.Builder()
-            .withRandomizerGender { null }
-            .build()
-            .nextObject()
-        val countryDto = countryDtoGenerator.nextObject()
+        val client = clientMaker
+            .but(with(ClientMaker.gender, null as GenderConfig?))
+            .make()
+        val countryDto = countryDtoMaker.make()
         every { countryDtoConverter.convert(any()) } returns countryDto
         check(client.gender === null)
 

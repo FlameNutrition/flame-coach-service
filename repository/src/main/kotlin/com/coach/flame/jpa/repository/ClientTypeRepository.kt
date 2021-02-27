@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ClientTypeRepository : JpaRepository<ClientType, Long> {
 
-    fun getByType(type: String): ClientType?
+    fun getByType(type: String): ClientType
 
 }

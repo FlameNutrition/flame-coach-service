@@ -9,3 +9,15 @@ class ClientNotFound : BusinessException {
     constructor(message: String, ex: Exception?) : super(message, ex)
     constructor(message: String) : super(message)
 }
+
+@Status(httpStatus = HttpStatus.BAD_REQUEST)
+class ClientRegisterDuplicate : BusinessException {
+    constructor(message: String, ex: Exception?) : super(message, ex)
+    constructor(message: String) : super(message)
+}
+
+@Status(httpStatus = HttpStatus.INTERNAL_SERVER_ERROR)
+class ClientRegisterException : BusinessException {
+    constructor(message: String, ex: Exception?) : super(message, ex)
+    constructor(message: String) : super(message)
+}

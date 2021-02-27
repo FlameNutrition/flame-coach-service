@@ -60,13 +60,13 @@ class DailyTaskServiceImpl(
 
             LOGGER.info("opr='createDailyTask', msg='Creating the following task', dailyTask=$dailyTask")
 
-            val createdBy = clientRepository.findByUuid(dailyTask.createdBy!!.identifier)
+            val createdBy = clientRepository.findByUuid(dailyTask.createdBy!!)
 
-            checkNotNull(createdBy) { "Could not find any client with the following identifier ${dailyTask.createdBy!!.identifier}" }
+            checkNotNull(createdBy) { "Could not find any client with the following identifier ${dailyTask.createdBy}" }
 
-            val owner = clientRepository.findByUuid(dailyTask.owner!!.identifier)
+            val owner = clientRepository.findByUuid(dailyTask.owner!!)
 
-            checkNotNull(owner) { "Could not find any client with the following identifier ${dailyTask.owner!!.identifier}" }
+            checkNotNull(owner) { "Could not find any client with the following identifier ${dailyTask.owner}" }
 
             val newDailyTask = DailyTask(
                 uuid = dailyTask.identifier,

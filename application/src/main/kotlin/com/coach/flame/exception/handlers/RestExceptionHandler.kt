@@ -25,30 +25,10 @@ class RestExceptionHandler {
     @ExceptionHandler(
         value = [
             RestException::class,
+            RestInvalidRequest::class
         ]
     )
     fun handleRestException(ex: RestException, request: WebRequest): ResponseEntity<Any> {
-
-        LOGGER.warn("operation=handleRestException, message='Something unexpected happened'", ex)
-
-        val errorDetail = ErrorDetail.Builder()
-            .throwable(ex)
-            .build()
-
-        return ResponseEntity
-            .status(HttpStatus.valueOf(errorDetail.status))
-            .contentType(MediaType.APPLICATION_PROBLEM_JSON)
-            .body(errorDetail)
-    }
-
-    @ExceptionHandler(
-        value = [
-            RestInvalidRequest::class,
-        ]
-    )
-    fun handleRestSpecificException(ex: RestException, request: WebRequest): ResponseEntity<Any> {
-
-        LOGGER.warn("operation=handleRestSpecificException, message='Something unexpected happened'", ex)
 
         val errorDetail = ErrorDetail.Builder()
             .throwable(ex)

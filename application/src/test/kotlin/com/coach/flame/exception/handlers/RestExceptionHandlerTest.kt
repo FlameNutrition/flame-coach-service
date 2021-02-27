@@ -37,21 +37,4 @@ class RestExceptionHandlerTest {
 
     }
 
-    @Test
-    fun `test handler for specific rest exceptions`() {
-
-        // given
-        val restException = RestInvalidRequest("EXCEPTION")
-
-        // when
-        val responseEntity = restExceptionHandler.handleRestSpecificException(restException, request)
-
-        // then
-        then(responseEntity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        then(responseEntity.headers.contentType).isEqualTo(MediaType.APPLICATION_PROBLEM_JSON)
-        //FIXME: Add more assertions to check the error details instance
-        then(responseEntity.body).isNotEqualTo(ErrorDetail.Builder().throwable(restException).build())
-
-    }
-
 }

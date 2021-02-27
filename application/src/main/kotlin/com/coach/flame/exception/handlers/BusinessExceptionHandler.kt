@@ -1,5 +1,6 @@
 package com.coach.flame.exception.handlers
 
+import com.coach.flame.client.ClientRegisterDuplicate
 import com.coach.flame.dailyTask.ClientNotFound
 import com.coach.flame.dailyTask.DailyTaskMissingDelete
 import com.coach.flame.dailyTask.DailyTaskMissingSave
@@ -30,31 +31,6 @@ class BusinessExceptionHandler {
         ]
     )
     fun handleBusinessExceptions(ex: BusinessException, request: WebRequest): ResponseEntity<Any> {
-
-        LOGGER.warn("operation=handleBusinessExceptions, exception='{}'", ex::class.java.simpleName, ex)
-
-        val errorDetail = ErrorDetail.Builder()
-            .throwable(ex)
-            .build()
-
-        return ResponseEntity
-            .status(HttpStatus.valueOf(errorDetail.status))
-            .contentType(MediaType.APPLICATION_PROBLEM_JSON)
-            .body(errorDetail)
-
-    }
-
-    @ExceptionHandler(
-        value = [
-            DailyTaskNotFound::class,
-            DailyTaskMissingSave::class,
-            ClientNotFound::class,
-            DailyTaskMissingDelete::class,
-        ]
-    )
-    fun handleSpecificBusinessExceptions(ex: BusinessException, request: WebRequest): ResponseEntity<Any> {
-
-        LOGGER.warn("operation=handleSpecificBusinessExceptions, exception='{}'", ex::class.java.simpleName, ex)
 
         val errorDetail = ErrorDetail.Builder()
             .throwable(ex)

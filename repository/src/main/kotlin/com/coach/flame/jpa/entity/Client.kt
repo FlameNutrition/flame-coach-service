@@ -2,7 +2,6 @@ package com.coach.flame.jpa.entity
 
 import org.hibernate.annotations.Type
 import org.springframework.data.jpa.domain.AbstractPersistable
-import java.sql.Date
 import java.util.*
 import javax.persistence.*
 
@@ -21,23 +20,23 @@ class Client(
     val lastName: String,
 
     @Column(nullable = true)
-    val birthday: Date?,
+    val birthday: Date? = null,
 
     @Column(nullable = true)
-    val phoneCode: String?,
+    val phoneCode: String? = null,
 
     @Column(nullable = true)
-    val phoneNumber: Int?,
+    val phoneNumber: String? = null,
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "countryFk", referencedColumnName = "id")
-    val country: CountryConfig?,
+    val country: CountryConfig? = null,
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "genderFk", referencedColumnName = "id")
-    val gender: GenderConfig?,
+    val gender: GenderConfig? = null,
 
-    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @OneToOne(optional = false, fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST])
     @JoinColumn(name = "userFk", referencedColumnName = "id")
     val user: User,
 
@@ -46,9 +45,9 @@ class Client(
     val clientType: ClientType,
 
     @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
-    val clientMeasureWeight: MutableList<ClientMeasureWeight>,
+    val clientMeasureWeight: MutableList<ClientMeasureWeight> = mutableListOf(),
 
     @OneToMany(mappedBy = "client", fetch = FetchType.EAGER)
-    val dailyClientTask: MutableList<DailyTask>
+    val dailyClientTask: MutableList<DailyTask> = mutableListOf()
 
 ) : AbstractPersistable<Long>()

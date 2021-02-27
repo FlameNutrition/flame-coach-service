@@ -1,11 +1,12 @@
 package com.coach.flame.dailyTask
 
-import com.coach.flame.domain.DailyTaskDtoGenerator
-import com.coach.flame.jpa.entity.ClientGenerator
-import com.coach.flame.jpa.entity.DailyTask
-import com.coach.flame.jpa.entity.DailyTaskGenerator
+import com.coach.flame.domain.DailyTaskDto
+import com.coach.flame.domain.DailyTaskDtoMaker
+import com.coach.flame.jpa.entity.*
 import com.coach.flame.jpa.repository.ClientRepository
 import com.coach.flame.jpa.repository.DailyTaskRepository
+import com.natpryce.makeiteasy.MakeItEasy.an
+import com.natpryce.makeiteasy.Maker
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -14,6 +15,7 @@ import io.mockk.junit5.MockKExtension
 import io.mockk.slot
 import org.assertj.core.api.BDDAssertions.*
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.sql.Date
@@ -31,8 +33,19 @@ class DailyTaskServiceImplTest {
     @InjectMockKs
     private lateinit var dailyTaskServiceImpl: DailyTaskServiceImpl
 
-    @AfterEach
+    private lateinit var clientMaker: Maker<Client>
+    private lateinit var dailyTaskMaker: Maker<DailyTask>
+    private lateinit var dailyTaskDtoMaker: Maker<DailyTaskDto>
+
+    @BeforeEach
     fun setUp() {
+        clientMaker = an(ClientMaker.Client)
+        dailyTaskMaker = an(DailyTaskMaker.DailyTask)
+        dailyTaskDtoMaker = an(DailyTaskDtoMaker.DailyTaskDto)
+    }
+
+    @AfterEach
+    fun cleanUp() {
         clearAllMocks()
     }
 
@@ -65,7 +78,7 @@ class DailyTaskServiceImplTest {
 
         // given
         val taskId = 100L
-        val dailyTask: DailyTask = DailyTaskGenerator.Builder().build().nextObject()
+        val dailyTask: DailyTask = dailyTaskMaker.make()
 
         every { dailyTaskRepository.findById(taskId) } returns Optional.of(dailyTask)
 
@@ -100,9 +113,8 @@ class DailyTaskServiceImplTest {
 
         // given
         val clientId = 20L
-        val builder = DailyTaskGenerator.Builder().build()
-        val task1 = builder.nextObject()
-        val task2 = builder.nextObject()
+        val task1 = dailyTaskMaker.make()
+        val task2 = dailyTaskMaker.make()
         val listOfTasks = setOf(task1, task2)
         every { dailyTaskRepository.findAllByClient(clientId) } returns Optional.of(listOfTasks)
 
@@ -133,15 +145,15 @@ class DailyTaskServiceImplTest {
     fun `create daily task when not found the created client`() {
 
         // given
-        val dailyTask = DailyTaskDtoGenerator.Builder().build().nextObject()
-        every { clientRepository.findByUuid(dailyTask.createdBy!!.identifier) } returns null
+        val dailyTask = dailyTaskDtoMaker.make()
+        every { clientRepository.findByUuid(dailyTask.createdBy!!) } returns null
 
         // when & then
         thenExceptionOfType(ClientNotFound::class.java)
             .isThrownBy { dailyTaskServiceImpl.createDailyTask(dailyTask) }
             .withMessage(
                 "java.lang.IllegalStateException: Could not find any client " +
-                        "with the following identifier ${dailyTask.createdBy!!.identifier}"
+                        "with the following identifier ${dailyTask.createdBy!!}"
             )
 
     }
@@ -150,17 +162,17 @@ class DailyTaskServiceImplTest {
     fun `create daily task when not found the owner client`() {
 
         // given
-        val dailyTask = DailyTaskDtoGenerator.Builder().build().nextObject()
-        val createdByClient = ClientGenerator.Builder().build().nextObject()
-        every { clientRepository.findByUuid(dailyTask.createdBy!!.identifier) } returns createdByClient
-        every { clientRepository.findByUuid(dailyTask.owner!!.identifier) } returns null
+        val dailyTask = dailyTaskDtoMaker.make()
+        val createdByClient = clientMaker.make()
+        every { clientRepository.findByUuid(dailyTask.createdBy!!) } returns createdByClient
+        every { clientRepository.findByUuid(dailyTask.owner!!) } returns null
 
         // when & then
         thenExceptionOfType(ClientNotFound::class.java)
             .isThrownBy { dailyTaskServiceImpl.createDailyTask(dailyTask) }
             .withMessage(
                 "java.lang.IllegalStateException: Could not find any client " +
-                        "with the following identifier ${dailyTask.owner!!.identifier}"
+                        "with the following identifier ${dailyTask.owner!!}"
             )
 
     }
@@ -169,11 +181,11 @@ class DailyTaskServiceImplTest {
     fun `create daily task when something wrong happened`() {
 
         // given
-        val dailyTask = DailyTaskDtoGenerator.Builder().build().nextObject()
-        val createdByClient = ClientGenerator.Builder().build().nextObject()
-        val ownerClient = ClientGenerator.Builder().build().nextObject()
-        every { clientRepository.findByUuid(dailyTask.createdBy!!.identifier) } returns createdByClient
-        every { clientRepository.findByUuid(dailyTask.owner!!.identifier) } returns ownerClient
+        val dailyTask = dailyTaskDtoMaker.make()
+        val createdByClient = clientMaker.make()
+        val ownerClient = clientMaker.make()
+        every { clientRepository.findByUuid(dailyTask.createdBy!!) } returns createdByClient
+        every { clientRepository.findByUuid(dailyTask.owner!!) } returns ownerClient
         every { dailyTaskRepository.save(any()) } throws Exception("SQL error message")
 
         // when & then
@@ -188,15 +200,13 @@ class DailyTaskServiceImplTest {
 
         val entity = slot<DailyTask>()
 
-        val clientGenerator = ClientGenerator.Builder().build()
-
         // given
-        val dailyTaskDto = DailyTaskDtoGenerator.Builder().build().nextObject()
-        val createdByClient = clientGenerator.nextObject()
-        val ownerClient = clientGenerator.nextObject()
-        val dailyTask = DailyTaskGenerator.Builder().build().nextObject()
-        every { clientRepository.findByUuid(dailyTaskDto.createdBy!!.identifier) } returns createdByClient
-        every { clientRepository.findByUuid(dailyTaskDto.owner!!.identifier) } returns ownerClient
+        val dailyTaskDto = dailyTaskDtoMaker.make()
+        val createdByClient = clientMaker.make()
+        val ownerClient = clientMaker.make()
+        val dailyTask = dailyTaskMaker.make()
+        every { clientRepository.findByUuid(dailyTaskDto.createdBy!!) } returns createdByClient
+        every { clientRepository.findByUuid(dailyTaskDto.owner!!) } returns ownerClient
         every { dailyTaskRepository.save(capture(entity)) } returns dailyTask
 
         // when

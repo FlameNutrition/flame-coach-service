@@ -11,6 +11,6 @@ class ClientType(
     val type: String,
 
     @OneToMany(mappedBy = "clientType", fetch = FetchType.LAZY)
-    val clients: MutableList<Client>
+    val clients: MutableList<Client> = mutableListOf()
 
 ) : AbstractPersistable<Long>()

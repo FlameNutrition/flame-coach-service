@@ -1,19 +1,25 @@
 package com.coach.flame.client
 
-import com.coach.flame.domain.ClientDtoGenerator
+import com.coach.flame.domain.ClientDto
+import com.coach.flame.domain.ClientDtoMaker
 import com.coach.flame.domain.converters.ClientDtoConverter
-import com.coach.flame.jpa.entity.ClientGenerator
+import com.coach.flame.jpa.entity.Client
+import com.coach.flame.jpa.entity.ClientMaker
+import com.coach.flame.jpa.entity.UserMaker
 import com.coach.flame.jpa.repository.ClientRepository
+import com.coach.flame.jpa.repository.ClientTypeRepository
+import com.natpryce.makeiteasy.MakeItEasy.*
+import com.natpryce.makeiteasy.Maker
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
-import org.assertj.core.api.BDDAssertions
 import org.assertj.core.api.BDDAssertions.catchThrowable
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.util.*
@@ -30,8 +36,18 @@ class ClientServiceImplTest {
     @InjectMockKs
     private lateinit var classToTest: ClientServiceImpl
 
-    @AfterEach
+    private lateinit var clientDtoMaker: Maker<ClientDto>
+
+    private lateinit var clientMaker: Maker<Client>
+
+    @BeforeEach
     fun setUp() {
+        clientDtoMaker = an(ClientDtoMaker.ClientDto)
+        clientMaker = an(ClientMaker.Client)
+    }
+
+    @AfterEach
+    fun cleanUp() {
         clearAllMocks()
     }
 
@@ -40,8 +56,8 @@ class ClientServiceImplTest {
 
         // given
         val uuid = UUID.randomUUID()
-        val client = ClientGenerator.Builder().build().nextObject()
-        val clientDtoConverted = ClientDtoGenerator.Builder().build().nextObject()
+        val client = clientMaker.make()
+        val clientDtoConverted = clientDtoMaker.make()
         every { clientRepository.findByUuid(uuid) } returns client
         every { clientDtoConverter.convert(client) } returns clientDtoConverted
 

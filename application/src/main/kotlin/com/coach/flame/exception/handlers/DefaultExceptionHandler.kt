@@ -23,8 +23,6 @@ class DefaultExceptionHandler {
     @ExceptionHandler(Exception::class)
     fun handleRootException(ex: Exception, request: WebRequest): ResponseEntity<Any> {
 
-        LOGGER.warn("operation=handleRootException, message='Something unexpected happened'", ex)
-
         val errorDetail = ErrorDetail.Builder()
             .throwable(ex)
             .build()
