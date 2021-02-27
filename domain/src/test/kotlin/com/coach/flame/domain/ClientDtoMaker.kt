@@ -25,38 +25,18 @@ class ClientDtoMaker {
         val clientType: Property<ClientDto, ClientTypeDto> = newProperty()
         val loginInfo: Property<ClientDto, LoginInfoDto> = newProperty()
 
-        val nullableFields: Property<ClientDto, List<String>> = newProperty()
-
-        private fun checkNullableField(fieldName: String, it: PropertyLookup<ClientDto>): Any? {
-
-            if (it.valueOf(nullableFields, listOf()).contains(fieldName)) {
-                return null
-            }
-
-            when (fieldName) {
-                "birthday" -> return it.valueOf(birthday, fake.date().birthday())
-                "phoneCode" -> return it.valueOf(phoneCode, fake.phoneNumber().extension())
-                "phoneNumber" -> return it.valueOf(phoneNumber, fake.phoneNumber().phoneNumber())
-                "country" -> return it.valueOf(country, make(a(CountryDtoMaker.CountryDto)))
-                "gender" -> return it.valueOf(gender, make(a(GenderDtoMaker.GenderDto)))
-                "loginInfo" -> return it.valueOf(loginInfo, make(a(LoginInfoDtoMaker.LoginInfoDto)))
-            }
-
-            return null
-        }
-
         val ClientDto: Instantiator<ClientDto> = Instantiator {
             ClientDto(
                 identifier = it.valueOf(identifier, UUID.randomUUID()),
                 firstName = it.valueOf(firstName, fake.name().firstName()),
                 lastName = it.valueOf(lastName, fake.name().lastName()),
-                birthday = checkNullableField("birthday", it) as Date?,
-                phoneCode = checkNullableField("phoneCode", it) as String?,
-                phoneNumber = checkNullableField("phoneNumber", it) as String?,
-                country = checkNullableField("country", it) as CountryDto?,
-                gender = checkNullableField("gender", it) as GenderDto?,
+                birthday = it.valueOf(birthday, fake.date().birthday()),
+                phoneCode = it.valueOf(phoneCode, fake.phoneNumber().extension()),
+                phoneNumber = it.valueOf(phoneNumber, fake.phoneNumber().phoneNumber()),
+                country = it.valueOf(country, make(a(CountryDtoMaker.CountryDto))),
+                gender = it.valueOf(gender, make(a(GenderDtoMaker.GenderDto))),
                 clientType = it.valueOf(clientType, ClientTypeDto.CLIENT),
-                loginInfo = checkNullableField("loginInfo", it) as LoginInfoDto?,
+                loginInfo = it.valueOf(loginInfo, make(a(LoginInfoDtoMaker.LoginInfoDto))),
             )
         }
     }
