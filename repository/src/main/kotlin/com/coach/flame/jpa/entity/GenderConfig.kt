@@ -1,7 +1,9 @@
 package com.coach.flame.jpa.entity
 
 import org.springframework.data.jpa.domain.AbstractPersistable
-import javax.persistence.*
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.Table
 
 @Entity
 @Table(name = "GenderConfig")

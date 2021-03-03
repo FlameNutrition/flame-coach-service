@@ -2,6 +2,7 @@ package com.coach.flame.jpa.entity
 
 import org.hibernate.annotations.Type
 import org.springframework.data.jpa.domain.AbstractPersistable
+import java.time.LocalDate
 import java.util.*
 import javax.persistence.*
 
@@ -20,7 +21,7 @@ class Client(
     val lastName: String,
 
     @Column(nullable = true)
-    val birthday: Date? = null,
+    val birthday: LocalDate? = null,
 
     @Column(nullable = true)
     val phoneCode: String? = null,

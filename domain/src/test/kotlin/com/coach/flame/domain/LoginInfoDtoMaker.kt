@@ -2,10 +2,8 @@ package com.coach.flame.domain
 
 import com.github.javafaker.Faker
 import com.natpryce.makeiteasy.Instantiator
-import com.natpryce.makeiteasy.MakeItEasy
 import com.natpryce.makeiteasy.Property
 import com.natpryce.makeiteasy.Property.newProperty
-import com.natpryce.makeiteasy.PropertyLookup
 import java.time.LocalDateTime
 import java.util.*
 

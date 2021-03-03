@@ -2,7 +2,10 @@ package com.coach.flame.dailyTask
 
 import com.coach.flame.domain.DailyTaskDto
 import com.coach.flame.domain.DailyTaskDtoMaker
-import com.coach.flame.jpa.entity.*
+import com.coach.flame.jpa.entity.Client
+import com.coach.flame.jpa.entity.ClientMaker
+import com.coach.flame.jpa.entity.DailyTask
+import com.coach.flame.jpa.entity.DailyTaskMaker
 import com.coach.flame.jpa.repository.ClientRepository
 import com.coach.flame.jpa.repository.DailyTaskRepository
 import com.natpryce.makeiteasy.MakeItEasy.an
@@ -89,7 +92,7 @@ class DailyTaskServiceImplTest {
         then(dailyTaskDto.name).isEqualTo(dailyTask.name)
         then(dailyTaskDto.identifier).isEqualTo(dailyTask.uuid)
         then(dailyTaskDto.description).isEqualTo(dailyTask.description)
-        then(dailyTaskDto.date).isEqualTo(dailyTask.date.toLocalDate())
+        then(dailyTaskDto.date).isEqualTo(dailyTask.date)
         then(dailyTaskDto.ticked).isEqualTo(dailyTask.ticked)
 
     }
@@ -218,7 +221,7 @@ class DailyTaskServiceImplTest {
         then(entity.captured.uuid).isEqualTo(dailyTaskDto.identifier)
         then(entity.captured.name).isEqualTo(dailyTaskDto.name)
         then(entity.captured.description).isEqualTo(dailyTaskDto.description)
-        then(entity.captured.date).isEqualTo(Date.valueOf(dailyTaskDto.date))
+        then(entity.captured.date).isEqualTo(dailyTaskDto.date)
         then(entity.captured.ticked).isFalse
         then(entity.captured.createdBy).isEqualTo(createdByClient)
         then(entity.captured.client).isEqualTo(ownerClient)

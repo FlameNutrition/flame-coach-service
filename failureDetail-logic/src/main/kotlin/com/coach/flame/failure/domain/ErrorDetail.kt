@@ -12,7 +12,7 @@ class ErrorDetail private constructor(
     val detail: String?,
     val status: Int,
     val instance: URI?,
-    val debug: String?
+    val debug: String = "",
 ) {
 
     /**
@@ -26,8 +26,9 @@ class ErrorDetail private constructor(
         private var detail: String? = null,
         private var status: Int = 500,
         private var instance: URI? = null,
-        private var debug: String? = null,
-        private var throwable: Throwable? = null
+        private var debug: String = "",
+        private var throwable: Throwable? = null,
+        private var enableDebug: Boolean = false,
     ) {
 
         private fun buildType() {
@@ -66,14 +67,21 @@ class ErrorDetail private constructor(
             this.debug = throwable!!.stackTraceToString()
         }
 
+        fun withEnableDebug(enableDebug: Boolean) = apply {
+            this.enableDebug = enableDebug
+        }
+
         fun throwable(throwable: Throwable) = apply {
             this.throwable = throwable
             buildType()
             buildTitle()
-            buildDetail()
+            if (enableDebug) {
+                buildDebug()
+            }
             buildStatus()
             buildInstance()
-            buildDebug()
+            buildDetail()
+
         }
 
         fun build() = ErrorDetail(type, title, detail, status, instance, debug)

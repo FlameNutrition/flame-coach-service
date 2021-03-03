@@ -1,5 +1,6 @@
 package com.coach.flame.domain
 
+import java.time.LocalDate
 import java.util.*
 import java.util.Objects.hash
 
@@ -7,7 +8,7 @@ data class ClientDto(
     val identifier: UUID,
     val firstName: String,
     val lastName: String,
-    val birthday: Date? = null,
+    val birthday: LocalDate? = null,
     val phoneCode: String? = null,
     val phoneNumber: String? = null,
     val country: CountryDto? = null,

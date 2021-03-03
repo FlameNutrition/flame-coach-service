@@ -1,20 +1,18 @@
 package com.coach.flame.domain.converters
 
-import com.coach.flame.domain.ClientDto
-import com.coach.flame.domain.ClientTypeDto
-import com.coach.flame.domain.CountryDto
-import com.coach.flame.domain.GenderDto
+import com.coach.flame.domain.*
 import com.coach.flame.jpa.entity.Client
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.convert.converter.Converter
 import org.springframework.stereotype.Component
+import java.time.LocalDateTime
+import java.util.*
 
 @Component
 class ClientDtoConverter(
-    @Autowired private val countryDtoConverter: CountryDtoConverter,
-    @Autowired private val genderDtoConverter: GenderDtoConverter
+    private val countryDtoConverter: CountryDtoConverter,
+    private val genderDtoConverter: GenderDtoConverter
 ) : Converter<Client, ClientDto> {
 
     companion object {
@@ -54,7 +52,14 @@ class ClientDtoConverter(
             phoneNumber = client.phoneNumber,
             country = countryDto,
             gender = genderDto,
-            clientType = clientTypeDto
+            clientType = clientTypeDto,
+            loginInfo = LoginInfoDto(
+                username = client.user.email,
+                password = client.user.password,
+                //TODO: This values should come from database
+                expirationDate = LocalDateTime.now().plusHours(2),
+                token = UUID.randomUUID()
+            )
         )
     }
 }

@@ -18,6 +18,7 @@ class ErrorDetailTest {
         val exception = TestException("This is the message")
 
         val errorDetail = ErrorDetail.Builder()
+            .withEnableDebug(true)
             .throwable(exception)
             .build()
 
@@ -39,6 +40,7 @@ class ErrorDetailTest {
         val businessException = BusinessException("This is the message", arithmeticException)
 
         val errorDetail = ErrorDetail.Builder()
+            .withEnableDebug(true)
             .throwable(businessException)
             .build()
 
@@ -73,6 +75,27 @@ class ErrorDetailTest {
         then(errorDetail == errorDetail).isTrue
         then(errorDetail.equals("OTHER")).isFalse
         then(errorDetail.equals(null)).isFalse
+
+    }
+
+    @Test
+    fun `test error detail domain without debug enable`() {
+
+        val arithmeticException = ArithmeticException()
+
+        val businessException = BusinessException("This is the message", arithmeticException)
+
+        val errorDetail = ErrorDetail.Builder()
+            .throwable(businessException)
+            .build()
+
+        then(errorDetail.type)
+            .isEqualTo(URI.create("https://flame-coach/apidocs/com/coach/flame/failure/exception/BusinessException.html"))
+        then(errorDetail.status).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value)
+        then(errorDetail.title).isEqualTo("BusinessException")
+        then(errorDetail.detail).isEqualTo("This is the message")
+        then(errorDetail.instance.toString()).startsWith("urn:uuid:")
+        then(errorDetail.debug).isEmpty()
 
     }
 

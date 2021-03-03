@@ -4,7 +4,6 @@ import com.coach.flame.failure.HttpStatus
 import com.coach.flame.failure.Status
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
-import java.lang.RuntimeException
 
 class DailyTaskExceptionTest {
 

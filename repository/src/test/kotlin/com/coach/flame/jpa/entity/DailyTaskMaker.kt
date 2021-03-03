@@ -6,6 +6,7 @@ import com.natpryce.makeiteasy.MakeItEasy.a
 import com.natpryce.makeiteasy.MakeItEasy.make
 import com.natpryce.makeiteasy.Property
 import com.natpryce.makeiteasy.Property.newProperty
+import java.time.LocalDate
 import java.util.*
 
 class DailyTaskMaker {
@@ -16,7 +17,7 @@ class DailyTaskMaker {
         val uuid: Property<DailyTask, UUID> = newProperty()
         val name: Property<DailyTask, String> = newProperty()
         val description: Property<DailyTask, String> = newProperty()
-        val date: Property<DailyTask, Date> = newProperty()
+        val date: Property<DailyTask, LocalDate> = newProperty()
         val ticked: Property<DailyTask, Boolean> = newProperty()
         val createdBy: Property<DailyTask, Client> = newProperty()
         val client: Property<DailyTask, Client> = newProperty()
@@ -26,7 +27,7 @@ class DailyTaskMaker {
                 uuid = it.valueOf(uuid, UUID.randomUUID()),
                 name = it.valueOf(name, fake.food().fruit()),
                 description = it.valueOf(name, fake.friends().quote()),
-                date = it.valueOf(date, fake.date().birthday()),
+                date = it.valueOf(date, LocalDate.now()),
                 ticked = it.valueOf(ticked, false),
                 createdBy = it.valueOf(createdBy, make(a(ClientMaker.Client))),
                 client = it.valueOf(client, make(a(ClientMaker.Client))),

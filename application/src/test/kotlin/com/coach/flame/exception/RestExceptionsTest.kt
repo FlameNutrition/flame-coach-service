@@ -4,7 +4,6 @@ import com.coach.flame.failure.HttpStatus
 import com.coach.flame.failure.Status
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
-import java.lang.RuntimeException
 
 class RestExceptionsTest {
 
@@ -27,7 +26,7 @@ class RestExceptionsTest {
     fun `check status RestInvalidRequest exception`() {
 
         // given
-        val invalidRequest = RestInvalidRequest(RuntimeException("EXCEPTION"))
+        val invalidRequest = RestInvalidRequestException(RuntimeException("EXCEPTION"))
 
         // when
         val annotationStatus = invalidRequest::class.java.getAnnotation(Status::class.java)

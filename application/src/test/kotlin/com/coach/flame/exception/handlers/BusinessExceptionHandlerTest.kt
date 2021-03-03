@@ -1,7 +1,5 @@
 package com.coach.flame.exception.handlers
 
-import com.coach.flame.dailyTask.DailyTaskNotFound
-import com.coach.flame.exception.handlers.BusinessExceptionHandler
 import com.coach.flame.failure.domain.ErrorDetail
 import com.coach.flame.failure.exception.BusinessException
 import io.mockk.impl.annotations.MockK
@@ -19,7 +17,7 @@ class BusinessExceptionHandlerTest {
     @MockK
     private lateinit var request: WebRequest
 
-    private val businessExceptionHandler = BusinessExceptionHandler()
+    private val businessExceptionHandler = BusinessExceptionHandler(true)
 
     @Test
     fun `test handler for business exceptions`() {

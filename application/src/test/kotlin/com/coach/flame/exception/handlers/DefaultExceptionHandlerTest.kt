@@ -1,6 +1,5 @@
 package com.coach.flame.exception.handlers
 
-import com.coach.flame.exception.handlers.DefaultExceptionHandler
 import com.coach.flame.failure.domain.ErrorDetail
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
@@ -17,7 +16,7 @@ class DefaultExceptionHandlerTest {
     @MockK
     private lateinit var request: WebRequest
 
-    private val defaultExceptionHandler = DefaultExceptionHandler()
+    private val defaultExceptionHandler = DefaultExceptionHandler(true)
 
     @Test
     fun `test handler for business exceptions`() {

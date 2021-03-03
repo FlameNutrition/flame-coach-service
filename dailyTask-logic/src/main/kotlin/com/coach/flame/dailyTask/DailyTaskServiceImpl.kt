@@ -9,13 +9,12 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.sql.Date
 import java.util.*
 
 @Service
 class DailyTaskServiceImpl(
-    @Autowired private val dailyTaskRepository: DailyTaskRepository,
-    @Autowired private val clientRepository: ClientRepository
+    private val dailyTaskRepository: DailyTaskRepository,
+    private val clientRepository: ClientRepository
 ) : DailyTaskService {
 
     companion object {
@@ -72,7 +71,7 @@ class DailyTaskServiceImpl(
                 uuid = dailyTask.identifier,
                 name = dailyTask.name,
                 description = dailyTask.description,
-                date = Date.valueOf(dailyTask.date),
+                date = dailyTask.date,
                 ticked = false,
                 createdBy = createdBy,
                 client = owner
@@ -104,7 +103,7 @@ class DailyTaskServiceImpl(
             identifier = entity.uuid,
             name = entity.name,
             description = entity.description,
-            date = entity.date.toLocalDate(),
+            date = entity.date,
             ticked = entity.ticked
         )
     }

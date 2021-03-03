@@ -138,9 +138,13 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <configuration>
                     <excludes>
-                        <exclude>**/client/*Config.*</exclude>
-                        <exclude>**/client/ClientException.*</exclude>
-                        <exclude>**/client/ClientExceptionKt.*</exclude>
+                        <!-- Configs -->
+                        <exclude>**/client/ClientModuleConfig.*</exclude>
+
+                        <!-- Exceptions -->
+                        <exclude>**/client/ClientNotFoundException.*</exclude>
+                        <exclude>**/client/ClientRegisterDuplicateException.*</exclude>
+                        <exclude>**/client/ClientRegisterException.*</exclude>
                     </excludes>
                 </configuration>
             </plugin>

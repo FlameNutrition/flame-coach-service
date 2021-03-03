@@ -1,14 +1,10 @@
 package com.coach.flame.exception.handlers
 
-import com.coach.flame.client.ClientRegisterDuplicate
-import com.coach.flame.dailyTask.ClientNotFound
-import com.coach.flame.dailyTask.DailyTaskMissingDelete
-import com.coach.flame.dailyTask.DailyTaskMissingSave
-import com.coach.flame.dailyTask.DailyTaskNotFound
 import com.coach.flame.failure.domain.ErrorDetail
 import com.coach.flame.failure.exception.BusinessException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.annotation.Order
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -19,7 +15,9 @@ import org.springframework.web.context.request.WebRequest
 
 @ControllerAdvice
 @Order(1)
-class BusinessExceptionHandler {
+class BusinessExceptionHandler(
+    @Value(value = "\${flamecoach.rest.debug.enable}") private val restDebugEnable: Boolean,
+) {
 
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(BusinessExceptionHandler::class.java)
@@ -33,6 +31,7 @@ class BusinessExceptionHandler {
     fun handleBusinessExceptions(ex: BusinessException, request: WebRequest): ResponseEntity<Any> {
 
         val errorDetail = ErrorDetail.Builder()
+            .withEnableDebug(restDebugEnable)
             .throwable(ex)
             .build()
 

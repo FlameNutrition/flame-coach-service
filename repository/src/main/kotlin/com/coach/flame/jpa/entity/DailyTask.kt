@@ -2,6 +2,7 @@ package com.coach.flame.jpa.entity
 
 import org.hibernate.annotations.Type
 import org.springframework.data.jpa.domain.AbstractPersistable
+import java.time.LocalDate
 import java.util.*
 import javax.persistence.*
 
@@ -20,7 +21,7 @@ class DailyTask(
     val description: String,
 
     @Column(nullable = false)
-    val date: Date,
+    val date: LocalDate,
 
     @Column(nullable = false)
     val ticked: Boolean,

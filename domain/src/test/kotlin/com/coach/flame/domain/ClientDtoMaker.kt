@@ -6,7 +6,7 @@ import com.natpryce.makeiteasy.MakeItEasy.a
 import com.natpryce.makeiteasy.MakeItEasy.make
 import com.natpryce.makeiteasy.Property
 import com.natpryce.makeiteasy.Property.newProperty
-import com.natpryce.makeiteasy.PropertyLookup
+import java.time.LocalDate
 import java.util.*
 
 class ClientDtoMaker {
@@ -17,11 +17,11 @@ class ClientDtoMaker {
         val identifier: Property<ClientDto, UUID> = newProperty()
         val firstName: Property<ClientDto, String> = newProperty()
         val lastName: Property<ClientDto, String> = newProperty()
-        val birthday: Property<ClientDto, Date> = newProperty()
-        val phoneCode: Property<ClientDto, String> = newProperty()
-        val phoneNumber: Property<ClientDto, String> = newProperty()
-        val country: Property<ClientDto, CountryDto> = newProperty()
-        val gender: Property<ClientDto, GenderDto> = newProperty()
+        val birthday: Property<ClientDto, LocalDate?> = newProperty()
+        val phoneCode: Property<ClientDto, String?> = newProperty()
+        val phoneNumber: Property<ClientDto, String?> = newProperty()
+        val country: Property<ClientDto, CountryDto?> = newProperty()
+        val gender: Property<ClientDto, GenderDto?> = newProperty()
         val clientType: Property<ClientDto, ClientTypeDto> = newProperty()
         val loginInfo: Property<ClientDto, LoginInfoDto> = newProperty()
 
@@ -30,7 +30,7 @@ class ClientDtoMaker {
                 identifier = it.valueOf(identifier, UUID.randomUUID()),
                 firstName = it.valueOf(firstName, fake.name().firstName()),
                 lastName = it.valueOf(lastName, fake.name().lastName()),
-                birthday = it.valueOf(birthday, fake.date().birthday()),
+                birthday = it.valueOf(birthday, LocalDate.now()),
                 phoneCode = it.valueOf(phoneCode, fake.phoneNumber().extension()),
                 phoneNumber = it.valueOf(phoneNumber, fake.phoneNumber().phoneNumber()),
                 country = it.valueOf(country, make(a(CountryDtoMaker.CountryDto))),

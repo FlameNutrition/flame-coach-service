@@ -3,12 +3,13 @@ package com.coach.flame.api.dailyTask
 import com.coach.flame.api.dailyTask.request.DailyTaskRequest
 import com.coach.flame.api.dailyTask.request.DailyTaskRequestMaker
 import com.coach.flame.dailyTask.DailyTaskService
-import com.coach.flame.domain.DailyTaskDto
 import com.coach.flame.date.stringToDate
+import com.coach.flame.domain.DailyTaskDto
 import com.coach.flame.domain.DailyTaskDtoMaker
 import com.coach.flame.exception.RestException
-import com.coach.flame.exception.RestInvalidRequest
-import com.natpryce.makeiteasy.MakeItEasy.*
+import com.coach.flame.exception.RestInvalidRequestException
+import com.natpryce.makeiteasy.MakeItEasy.an
+import com.natpryce.makeiteasy.MakeItEasy.with
 import com.natpryce.makeiteasy.Maker
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -133,7 +134,7 @@ class DailyTaskImplTest {
 
         //then
         then(thrown)
-            .isInstanceOf(RestException::class.java)
+            .isInstanceOf(RuntimeException::class.java)
             .hasMessageContaining("OHH NOOOO!")
     }
 
@@ -178,7 +179,7 @@ class DailyTaskImplTest {
 
         //then
         then(thrown)
-            .isInstanceOf(RestException::class.java)
+            .isInstanceOf(RuntimeException::class.java)
             .hasMessageContaining("OHH NOOOO!")
     }
 
@@ -194,7 +195,7 @@ class DailyTaskImplTest {
 
         //then
         then(thrown)
-            .isInstanceOf(RestException::class.java)
+            .isInstanceOf(RuntimeException::class.java)
             .hasMessageContaining("OHH NOOOO!")
     }
 
@@ -263,7 +264,7 @@ class DailyTaskImplTest {
 
         //then
         then(thrown)
-            .isInstanceOf(RestInvalidRequest::class.java)
+            .isInstanceOf(RestInvalidRequestException::class.java)
             .hasMessageContaining("Invalid UUID string:")
 
     }
@@ -280,7 +281,7 @@ class DailyTaskImplTest {
 
         //then
         then(thrown)
-            .isInstanceOf(RestException::class.java)
+            .isInstanceOf(RuntimeException::class.java)
             .hasMessageContaining("OHH NOOOO!")
 
     }
@@ -316,14 +317,14 @@ class DailyTaskImplTest {
                     null,
                     UUID.randomUUID().toString(),
                     "2020-04-04",
-                    RestInvalidRequest::class.java,
+                    RestInvalidRequestException::class.java,
                     "Missing clientIdentifierCreator param"
                 ),
                 Arguments.of(
                     UUID.randomUUID().toString(),
                     null,
                     "2020-04-04",
-                    RestInvalidRequest::class.java,
+                    RestInvalidRequestException::class.java,
                     "Missing clientIdentifierTask param"
                 ),
             )
@@ -336,21 +337,21 @@ class DailyTaskImplTest {
                     "INVALID",
                     UUID.randomUUID().toString(),
                     "2020-04-04",
-                    RestInvalidRequest::class.java,
+                    RestInvalidRequestException::class.java,
                     "Invalid UUID string:"
                 ),
                 Arguments.of(
                     UUID.randomUUID().toString(),
                     "INVALID",
                     "2020-04-04",
-                    RestInvalidRequest::class.java,
+                    RestInvalidRequestException::class.java,
                     "Invalid UUID string:"
                 ),
                 Arguments.of(
                     UUID.randomUUID().toString(),
                     UUID.randomUUID().toString(),
                     "2020-04",
-                    RestInvalidRequest::class.java,
+                    RestInvalidRequestException::class.java,
                     "Invalid format date. Date:"
                 ),
             )

@@ -11,7 +11,7 @@ open class RestException : BusinessException {
 }
 
 @Status(httpStatus = HttpStatus.BAD_REQUEST)
-class RestInvalidRequest : RestException {
+class RestInvalidRequestException : RestException {
     constructor(message: String) : super(message)
     constructor(ex: Exception) : super(ex)
 }

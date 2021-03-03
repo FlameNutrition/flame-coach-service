@@ -1,8 +1,10 @@
 package com.coach.flame.domain.converters
 
 import com.coach.flame.domain.*
-import com.coach.flame.jpa.entity.*
-import com.natpryce.makeiteasy.MakeItEasy
+import com.coach.flame.jpa.entity.Client
+import com.coach.flame.jpa.entity.ClientMaker
+import com.coach.flame.jpa.entity.CountryConfig
+import com.coach.flame.jpa.entity.GenderConfig
 import com.natpryce.makeiteasy.MakeItEasy.an
 import com.natpryce.makeiteasy.MakeItEasy.with
 import com.natpryce.makeiteasy.Maker

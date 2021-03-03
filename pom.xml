@@ -54,8 +54,7 @@
 
             <dependency>
                 <groupId>com.coach.flame</groupId>
-                <artifactId>repository</artifactId>
-                <type>test-jar</type>
+                <artifactId>client-logic</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
 
@@ -79,13 +78,6 @@
 
             <dependency>
                 <groupId>com.coach.flame</groupId>
-                <artifactId>domain</artifactId>
-                <type>test-jar</type>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.coach.flame</groupId>
                 <artifactId>dailyTask-logic</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
@@ -99,6 +91,20 @@
             <dependency>
                 <groupId>com.coach.flame</groupId>
                 <artifactId>utilities</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.coach.flame</groupId>
+                <artifactId>domain</artifactId>
+                <type>test-jar</type>
+                <version>${project.parent.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.coach.flame</groupId>
+                <artifactId>repository</artifactId>
+                <type>test-jar</type>
                 <version>${project.parent.version}</version>
             </dependency>
 
@@ -283,7 +289,7 @@
                                 <!-- Note: -->
                                 <!-- TRUE: Fail when missing code coverage -->
                                 <!-- FALSE: Skip when missing code coverage -->
-                                <haltOnFailure>true</haltOnFailure>
+                                <haltOnFailure>false</haltOnFailure>
                                 <rules>
                                     <rule>
                                         <element>CLASS</element>

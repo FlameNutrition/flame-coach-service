@@ -1,7 +1,6 @@
 package com.coach.flame.exception.handlers
 
 import com.coach.flame.exception.RestException
-import com.coach.flame.exception.RestInvalidRequest
 import com.coach.flame.failure.domain.ErrorDetail
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
@@ -18,7 +17,7 @@ class RestExceptionHandlerTest {
     @MockK
     private lateinit var request: WebRequest
 
-    private val restExceptionHandler = RestExceptionHandler()
+    private val restExceptionHandler = RestExceptionHandler(true)
 
     @Test
     fun `test handler for rest exceptions`() {

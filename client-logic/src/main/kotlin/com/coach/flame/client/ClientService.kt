@@ -8,6 +8,6 @@ interface ClientService {
 
     fun getClient(uuid: UUID) : ClientDto
 
-    fun registerClient(clientDto: ClientDto)
+    fun registerClient(clientDto: ClientDto): ClientDto
 
 }

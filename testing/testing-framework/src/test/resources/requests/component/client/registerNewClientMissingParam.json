@@ -1,0 +1,7 @@
+{
+  "firstname": "Nuno",
+  "email": "test@gmail.com",
+  "password": "test",
+  "type": "CLIENT",
+  "policy": true
+}

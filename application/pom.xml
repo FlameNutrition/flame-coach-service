@@ -11,6 +11,10 @@
 
     <artifactId>application</artifactId>
 
+    <properties>
+        <rest.debug.enable>true</rest.debug.enable>
+    </properties>
+
     <dependencies>
 
         <dependency>
@@ -21,6 +25,11 @@
         <dependency>
             <groupId>com.coach.flame</groupId>
             <artifactId>domain</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.coach.flame</groupId>
+            <artifactId>client-logic</artifactId>
         </dependency>
 
         <dependency>
@@ -118,6 +127,13 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
         <plugins>
 
             <plugin>
@@ -125,10 +141,17 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <configuration>
                     <excludes>
+                        <!-- Configs -->
                         <exclude>**/flame/FlameCoachServiceApplication.*</exclude>
-                        <exclude>**/flame/api/request/*.*</exclude>
-                        <exclude>**/flame/api/response/*.*</exclude>
-                        <exclude>**/flame/**/*Config.*</exclude>
+                        <exclude>**/flame/aspect/LoggingServiceConfig.*</exclude>
+
+                        <!-- API Domain -->
+                        <exclude>**/flame/api/**/request/*.*</exclude>
+                        <exclude>**/flame/api/**/response/*.*</exclude>
+
+                        <!-- Exceptions -->
+                        <exclude>**/flame/exception/RestException.*</exclude>
+                        <exclude>**/flame/exception/RestInvalidRequestException.*</exclude>
                     </excludes>
                 </configuration>
             </plugin>
