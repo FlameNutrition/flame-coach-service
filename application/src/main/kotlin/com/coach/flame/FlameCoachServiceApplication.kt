@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Import
     value = [
         ClientModuleConfig::class,
         DailyTaskModuleConfig::class,
-        LoggingServiceConfig::class]
+        LoggingServiceConfig::class,
+        FlameCoachWebConfig::class]
 )
 class FlameCoachServiceApplication
