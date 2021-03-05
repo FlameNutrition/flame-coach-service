@@ -5,9 +5,7 @@ import com.coach.flame.domain.ClientDtoMaker
 import com.coach.flame.domain.CountryDto
 import com.coach.flame.domain.GenderDto
 import com.coach.flame.domain.converters.ClientDtoConverter
-import com.coach.flame.jpa.entity.Client
-import com.coach.flame.jpa.entity.ClientMaker
-import com.coach.flame.jpa.entity.UserMaker
+import com.coach.flame.jpa.entity.*
 import com.coach.flame.jpa.repository.ClientRepository
 import com.coach.flame.jpa.repository.ClientTypeRepository
 import com.natpryce.makeiteasy.MakeItEasy.*
@@ -17,6 +15,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.BDDAssertions.catchThrowable
 import org.assertj.core.api.BDDAssertions.then
@@ -26,6 +25,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.dao.DataIntegrityViolationException
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.*
 
 @ExtendWith(MockKExtension::class)
@@ -109,30 +109,35 @@ class ClientServiceImplTest {
             .but(with(ClientDtoMaker.gender, null as GenderDto?))
             .make()
 
+        val expirationDate = LocalDateTime.now()
+        val token = UUID.randomUUID()
         val entityClient = clientMaker
             .but(
                 with(ClientMaker.firstname, preClientDto.firstName),
                 with(ClientMaker.lastname, preClientDto.lastName),
-                with(
-                    ClientMaker.user, make(
-                        a(
-                            UserMaker.User,
-                            with(UserMaker.email, preClientDto.loginInfo!!.username),
-                            with(UserMaker.password, preClientDto.loginInfo!!.password)
-                        )
-                    )
-                )
-            )
+                with(ClientMaker.userSession,
+                    make(a(UserSessionMaker.UserSession,
+                        with(UserSessionMaker.token, token),
+                        with(UserSessionMaker.expirationDate, expirationDate)))),
+                with(ClientMaker.user,
+                    make(a(UserMaker.User,
+                        with(UserMaker.email, preClientDto.loginInfo!!.username),
+                        with(UserMaker.password, preClientDto.loginInfo!!.password)))))
             .make()
+        val clientCaptorSlot = slot<Client>()
         every { clientTypeRepository.getByType(any()) } returns entityClient.clientType
-        every { clientRepository.saveAndFlush(any()) } returns entityClient
-        every { clientDtoConverter.convert(any()) } returns preClientDto
+        every { clientRepository.saveAndFlush(capture(clientCaptorSlot)) } returns entityClient
+        every { clientDtoConverter.convert(entityClient) } returns preClientDto
 
         // when
         val postClientDto = classToTest.registerClient(preClientDto)
 
         // then
         verify(exactly = 1) { clientDtoConverter.convert(any()) }
+        then(clientCaptorSlot.isCaptured).isTrue
+        then(clientCaptorSlot.captured.userSession!!.token).isNotNull
+        then(clientCaptorSlot.captured.userSession!!.expirationDate).isBetween(expirationDate,
+            expirationDate.plusHours(2).plusMinutes(10))
         then(postClientDto.loginInfo).isNotNull
         then(postClientDto.firstName).isEqualTo(entityClient.firstName)
         then(postClientDto.lastName).isEqualTo(entityClient.lastName)
@@ -140,6 +145,7 @@ class ClientServiceImplTest {
         then(postClientDto.loginInfo!!.password).isEqualTo(preClientDto.loginInfo!!.password)
         then(postClientDto.loginInfo!!.expirationDate).isNotNull
         then(postClientDto.loginInfo!!.token).isNotNull
+
 
     }
 

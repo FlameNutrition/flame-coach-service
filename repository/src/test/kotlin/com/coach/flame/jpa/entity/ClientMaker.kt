@@ -8,6 +8,7 @@ import com.natpryce.makeiteasy.Property
 import com.natpryce.makeiteasy.Property.newProperty
 import java.time.LocalDate
 import java.util.*
+import kotlin.random.Random
 
 class ClientMaker {
 
@@ -24,6 +25,7 @@ class ClientMaker {
         val gender: Property<Client, GenderConfig?> = newProperty()
         val user: Property<Client, User> = newProperty()
         val clientType: Property<Client, ClientType> = newProperty()
+        val userSession: Property<Client, UserSession> = newProperty()
         val clientMeasureWeight: Property<Client, MutableList<ClientMeasureWeight>> = newProperty()
         val dailyClientTask: Property<Client, MutableList<DailyTask>> = newProperty()
         
@@ -38,6 +40,7 @@ class ClientMaker {
                 country = it.valueOf(country, make(a(CountryMaker.CountryConfig))),
                 gender = it.valueOf(gender, make(a(GenderMaker.GenderConfig))),
                 user = it.valueOf(user, make(a(UserMaker.User))),
+                userSession = it.valueOf(userSession, make(a(UserSessionMaker.UserSession))),
                 clientType = it.valueOf(clientType, make(a(ClientTypeMaker.ClientType))),
                 clientMeasureWeight = it.valueOf(clientMeasureWeight, mutableListOf()),
                 dailyClientTask = it.valueOf(dailyClientTask, mutableListOf()),

@@ -6,8 +6,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.core.convert.converter.Converter
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
-import java.util.*
 
 @Component
 class ClientDtoConverter(
@@ -56,9 +54,8 @@ class ClientDtoConverter(
             loginInfo = LoginInfoDto(
                 username = client.user.email,
                 password = client.user.password,
-                //TODO: This values should come from database
-                expirationDate = LocalDateTime.now().plusHours(2),
-                token = UUID.randomUUID()
+                expirationDate = client.userSession?.expirationDate,
+                token = client.userSession?.token
             )
         )
     }

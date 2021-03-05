@@ -4,6 +4,7 @@ import com.coach.flame.domain.ClientDto
 import com.coach.flame.domain.converters.ClientDtoConverter
 import com.coach.flame.jpa.entity.Client
 import com.coach.flame.jpa.entity.User
+import com.coach.flame.jpa.entity.UserSession
 import com.coach.flame.jpa.repository.ClientRepository
 import com.coach.flame.jpa.repository.ClientTypeRepository
 import org.slf4j.Logger
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 import java.util.*
 
 @Service
@@ -29,7 +31,8 @@ class ClientServiceImpl(
         LOGGER.info("opr='getClient', msg='Get client by uuid', uuid=$uuid")
 
         val client =
-            clientRepository.findByUuid(uuid) ?: throw ClientNotFoundException("Could not found any client with uuid: $uuid")
+            clientRepository.findByUuid(uuid)
+                ?: throw ClientNotFoundException("Could not found any client with uuid: $uuid")
 
         return clientDtoConverter.convert(client)
 
@@ -43,6 +46,8 @@ class ClientServiceImpl(
         try {
             val clientType = clientTypeRepository.getByType(clientDto.clientType.name)
 
+            val expirationDate = LocalDateTime.now().plusHours(2)
+
             val entity = Client(
                 uuid = clientDto.identifier,
                 firstName = clientDto.firstName,
@@ -50,8 +55,12 @@ class ClientServiceImpl(
                 clientType = clientType,
                 user = User(
                     email = clientDto.loginInfo!!.username,
-                    //TODO: Encript password
+                    //TODO: Encrypt password
                     password = clientDto.loginInfo!!.password
+                ),
+                userSession = UserSession(
+                    expirationDate = expirationDate,
+                    token = UUID.randomUUID()
                 )
             )
 

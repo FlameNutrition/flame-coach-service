@@ -1,10 +1,7 @@
 package com.coach.flame.domain.converters
 
 import com.coach.flame.domain.*
-import com.coach.flame.jpa.entity.Client
-import com.coach.flame.jpa.entity.ClientMaker
-import com.coach.flame.jpa.entity.CountryConfig
-import com.coach.flame.jpa.entity.GenderConfig
+import com.coach.flame.jpa.entity.*
 import com.natpryce.makeiteasy.MakeItEasy.an
 import com.natpryce.makeiteasy.MakeItEasy.with
 import com.natpryce.makeiteasy.Maker
@@ -115,6 +112,30 @@ class ClientDtoConverterTest {
         verify(exactly = 1) { countryDtoConverter.convert(any()) }
         then(clientDto).isNotNull
         then(clientDto.gender).isNull()
+    }
+
+    @Test
+    fun `client convert without user session`() {
+
+        // given
+        val client = clientMaker
+            .but(with(ClientMaker.userSession, null as UserSession?))
+            .make()
+        val countryDto = countryDtoMaker.make()
+        val genderDto = genderDtoMaker.make()
+        every { genderDtoConverter.convert(any()) } returns genderDto
+        every { countryDtoConverter.convert(any()) } returns countryDto
+        check(client.userSession === null)
+
+        // when
+        val clientDto = classToTest.convert(client)
+
+        //then
+        verify(exactly = 1) { genderDtoConverter.convert(any()) }
+        verify(exactly = 1) { countryDtoConverter.convert(any()) }
+        then(clientDto).isNotNull
+        then(clientDto.loginInfo!!.token).isNull()
+        then(clientDto.loginInfo!!.expirationDate).isNull()
     }
 
 

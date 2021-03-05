@@ -37,12 +37,14 @@ abstract class BaseComponentTest {
     protected lateinit var clientMaker: Maker<Client>
     protected lateinit var clientTypeMaker: Maker<ClientType>
     protected lateinit var userMaker: Maker<User>
+    protected lateinit var userSessionMaker: Maker<UserSession>
 
     @BeforeEach
     fun setup() {
         clientMaker = an(ClientMaker.Client)
         clientTypeMaker = an(ClientTypeMaker.ClientType)
         userMaker = an(UserMaker.User)
+        userSessionMaker = an(UserSessionMaker.UserSession)
     }
 
     protected fun thenErrorMessageType(body: JsonObject): AbstractStringAssert<*> {

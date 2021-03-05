@@ -2,12 +2,13 @@ package com.coach.flame.testing.component.client
 
 import com.coach.flame.jpa.entity.ClientMaker
 import com.coach.flame.jpa.entity.UserMaker
+import com.coach.flame.jpa.entity.UserSessionMaker
 import com.coach.flame.jpa.repository.ClientRepository
 import com.coach.flame.jpa.repository.ClientTypeRepository
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
-import com.natpryce.makeiteasy.MakeItEasy.with
+import com.natpryce.makeiteasy.MakeItEasy.*
 import io.mockk.every
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
@@ -42,15 +43,16 @@ class AuthClientTest : BaseComponentTest() {
     fun `register new client`() {
 
         // given
+        val expirationDate = LocalDateTime.now()
         val user = userMaker.but(
             with(UserMaker.email, "test@gmail.com"),
-            with(UserMaker.password, "test")
-        ).make()
+            with(UserMaker.password, "test")).make()
         val client = clientMaker.but(
             with(ClientMaker.firstname, "Nuno"),
             with(ClientMaker.lastname, "Bento"),
             with(ClientMaker.user, user),
-        ).make()
+            with(ClientMaker.userSession, userSessionMaker.but(
+                with(UserSessionMaker.expirationDate, expirationDate.plusHours(2))))).make()
         every { clientTypeRepositoryMock.getByType("CLIENT") } returns clientTypeMaker.make()
         every { clientRepositoryMock.saveAndFlush(any()) } returns client
 
@@ -73,7 +75,7 @@ class AuthClientTest : BaseComponentTest() {
 
         val expiration = LocalDateTime.parse(jsonResponse.getAsJsonPrimitive("expiration").asString)
 
-        then(expiration).isAfter(LocalDateTime.now().plusHours(1))
+        then(expiration).isEqualTo(expirationDate.plusHours(2))
 
     }
 
