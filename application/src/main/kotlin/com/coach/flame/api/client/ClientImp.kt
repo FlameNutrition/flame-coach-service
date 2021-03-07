@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*
 class ClientImp(
     private val clientService: ClientService,
     private val clientRequestConverter: ClientRequestConverter,
-    private val clientResponseConverter: ClientResponseConverter
+    private val clientResponseConverter: ClientResponseConverter,
 ) : ClientAPI {
 
     companion object {
@@ -52,6 +52,38 @@ class ClientImp(
                 }
                 is IllegalStateException -> {
                     LOGGER.warn("opr='registerNewClient', msg='Please check following problem'", ex)
+                    throw RestException(ex)
+                }
+                else -> {
+                    throw ex
+                }
+            }
+        }
+    }
+
+    @LoggingRequest
+    @LoggingResponse
+    @PostMapping("/newSession")
+    @ResponseBody
+    override fun getNewClientSession(@RequestBody(required = true) client: ClientRequest): ClientResponse {
+        try {
+
+            requireNotNull(client.email) { "Missing required parameter request: email" }
+            requireNotNull(client.password) { "Missing required parameter request: password" }
+
+            //FIXME: Send the password encrypted
+            val clientPersisted = clientService.getNewClientSession(client.email, client.password)
+
+            return clientResponseConverter.convert(clientPersisted)
+
+        } catch (ex: Exception) {
+            when (ex) {
+                is IllegalArgumentException -> {
+                    LOGGER.warn("opr='getNewClientSession', msg='Invalid request'", ex)
+                    throw RestInvalidRequestException(ex)
+                }
+                is IllegalStateException -> {
+                    LOGGER.warn("opr='getNewClientSession', msg='Please check following problem'", ex)
                     throw RestException(ex)
                 }
                 else -> {

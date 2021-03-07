@@ -45,4 +45,34 @@ class AuthClientIntegrationTest : BaseIntegrationTest() {
         then(body.getAsJsonPrimitive("expiration").asString).isNotEmpty
     }
 
+    @Test
+    @Transactional
+    @LoadRequest(
+        pathOfRequest = "requests/integration/client/newClientSession.json",
+        endpoint = "/api/client/newSession",
+        httpMethod = RequestMethod.POST
+    )
+    @Sql(value = [
+        "/sql/configs/clientTypeConfig.sql",
+        "/sql/clientRegister.sql"])
+    fun `get new client session`() {
+
+        // when
+        val response = restTemplate.restTemplate.exchange(request!!, String::class.java)
+
+        // then
+        then(response).isNotNull
+        then(response.statusCode).isEqualTo(HttpStatus.OK)
+        then(response.headers.contentType).isEqualTo(MediaType.APPLICATION_JSON)
+
+        val body = JsonBuilder.getJsonFromString(response.body!!)
+
+        then(body.getAsJsonPrimitive("firstname").asString).isEqualTo("Miguel")
+        then(body.getAsJsonPrimitive("lastname").asString).isEqualTo("Teixeira")
+        then(body.getAsJsonPrimitive("username").asString).isEqualTo("test@gmail.com")
+        then(body.getAsJsonPrimitive("token").asString).isNotEmpty
+        then(body.getAsJsonPrimitive("expiration").asString).isNotEmpty
+
+    }
+
 }

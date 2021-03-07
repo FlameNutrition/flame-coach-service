@@ -6,8 +6,10 @@ import java.util.*
 //TODO: Write documentation
 interface ClientService {
 
-    fun getClient(uuid: UUID) : ClientDto
+    fun getClient(uuid: UUID): ClientDto
 
     fun registerClient(clientDto: ClientDto): ClientDto
+
+    fun getNewClientSession(username: String, password: String): ClientDto
 
 }

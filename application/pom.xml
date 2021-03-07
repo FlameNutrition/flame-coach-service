@@ -143,6 +143,7 @@
                     <excludes>
                         <!-- Configs -->
                         <exclude>**/flame/FlameCoachServiceApplication.*</exclude>
+                        <exclude>**/flame/FlameCoachWebConfig.*</exclude>
                         <exclude>**/flame/aspect/LoggingServiceConfig.*</exclude>
 
                         <!-- API Domain -->
@@ -152,6 +153,10 @@
                         <!-- Exceptions -->
                         <exclude>**/flame/exception/RestException.*</exclude>
                         <exclude>**/flame/exception/RestInvalidRequestException.*</exclude>
+                        <exclude>**/flame/exception/InternalServerException.*</exclude>
+
+                        <!-- FIXME: Review this classes -->
+                        <exclude>**/flame/api/dailyTask/DailyTaskImpl.*</exclude>
                     </excludes>
                 </configuration>
             </plugin>

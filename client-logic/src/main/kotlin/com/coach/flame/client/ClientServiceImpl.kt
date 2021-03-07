@@ -7,6 +7,8 @@ import com.coach.flame.jpa.entity.User
 import com.coach.flame.jpa.entity.UserSession
 import com.coach.flame.jpa.repository.ClientRepository
 import com.coach.flame.jpa.repository.ClientTypeRepository
+import com.coach.flame.jpa.repository.UserRepository
+import com.coach.flame.jpa.repository.UserSessionRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.dao.DataIntegrityViolationException
@@ -19,6 +21,8 @@ import java.util.*
 class ClientServiceImpl(
     private val clientRepository: ClientRepository,
     private val clientTypeRepository: ClientTypeRepository,
+    private val userSessionRepository: UserSessionRepository,
+    private val userRepository: UserRepository,
     private val clientDtoConverter: ClientDtoConverter,
 ) : ClientService {
 
@@ -44,19 +48,26 @@ class ClientServiceImpl(
         LOGGER.info("opr='registerClient', msg='Register a new client'")
 
         try {
-            val clientType = clientTypeRepository.getByType(clientDto.clientType.name)
+
+            checkNotNull(clientDto.clientType) { "clientType is a mandatory parameter" }
+            checkNotNull(clientDto.firstName) { "firstName is a mandatory parameter" }
+            checkNotNull(clientDto.lastName) { "lastName is a mandatory parameter" }
+            checkNotNull(clientDto.loginInfo?.username) { "loginInfo->username is a mandatory parameter" }
+            checkNotNull(clientDto.loginInfo?.password) { "loginInfo->password is a mandatory parameter" }
+
+            val clientType = clientTypeRepository.getByType(clientDto.clientType!!.name)
 
             val expirationDate = LocalDateTime.now().plusHours(2)
 
             val entity = Client(
                 uuid = clientDto.identifier,
-                firstName = clientDto.firstName,
-                lastName = clientDto.lastName,
+                firstName = clientDto.firstName!!,
+                lastName = clientDto.lastName!!,
                 clientType = clientType,
                 user = User(
-                    email = clientDto.loginInfo!!.username,
+                    email = clientDto.loginInfo?.username!!,
                     //TODO: Encrypt password
-                    password = clientDto.loginInfo!!.password
+                    password = clientDto.loginInfo?.password!!
                 ),
                 userSession = UserSession(
                     expirationDate = expirationDate,
@@ -71,9 +82,33 @@ class ClientServiceImpl(
             LOGGER.error("opr='registerClient'", ex)
             when (ex) {
                 is DataIntegrityViolationException -> throw ClientRegisterDuplicateException("The following client already exists")
-                else -> throw ClientRegisterException("Problem occurred when try to register a new client")
+                else -> throw ex
             }
         }
     }
+
+    @Transactional
+    override fun getNewClientSession(username: String, password: String): ClientDto {
+
+        LOGGER.info("opr='getNewClientSession', msg='Get a new client session'")
+
+        val user = userRepository.findUserByEmailAndPassword(username, password)
+            ?: throw ClientUsernameOrPasswordException("Username or password invalid")
+
+        LOGGER.info("opr='getNewClientSession', msg='Update the session'")
+
+        // Set the expiration date with more 2 hours
+        val expirationDate = LocalDateTime.now().plusHours(2)
+
+        LOGGER.info("opr='getNewClientSession', msg='Update expiration date', expirationDate={}", expirationDate)
+
+        user.client?.userSession?.expirationDate = expirationDate
+
+        userSessionRepository.saveAndFlush(user.client?.userSession!!)
+
+        return clientDtoConverter.convert(user.client!!)
+
+    }
+
 
 }

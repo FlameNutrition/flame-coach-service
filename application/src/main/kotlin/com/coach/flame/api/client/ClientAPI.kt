@@ -6,5 +6,7 @@ import com.coach.flame.api.client.response.ClientResponse
 interface ClientAPI {
 
     fun registerNewClient(client: ClientRequest): ClientResponse
+    
+    fun getNewClientSession(client: ClientRequest): ClientResponse
 
 }

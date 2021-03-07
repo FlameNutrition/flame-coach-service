@@ -14,9 +14,9 @@ import com.coach.flame.domain.ClientDto
 import com.coach.flame.domain.ClientDtoMaker
 import com.coach.flame.domain.ClientDtoMaker.Companion.ClientDto
 import com.coach.flame.domain.LoginInfoDto
+import com.coach.flame.domain.LoginInfoDtoMaker
 import com.coach.flame.exception.RestInvalidRequestException
-import com.natpryce.makeiteasy.MakeItEasy.an
-import com.natpryce.makeiteasy.MakeItEasy.with
+import com.natpryce.makeiteasy.MakeItEasy.*
 import com.natpryce.makeiteasy.Maker
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -67,9 +67,11 @@ class ClientImpTest {
         clearAllMocks()
     }
 
-    @ParameterizedTest(name = "[{index}] register new user missing parameter: {0}")
+    // region Register new client
+
+    @ParameterizedTest(name = "[{index}] register new client missing parameter: {0}")
     @MethodSource("userRegisterMandatoryParameters")
-    fun `register new user with missing mandatory parameters`(missingParam: String) {
+    fun `register new client with missing mandatory parameters`(missingParam: String) {
 
         // given
         val userRequestMakerCopy = when (missingParam) {
@@ -102,7 +104,7 @@ class ClientImpTest {
     }
 
     @Test
-    fun `register new user with illegal state`() {
+    fun `register new client with illegal state`() {
 
         // given
         val userRequest = clientRequestMaker.but(with(TYPE, "INVALID")).make()
@@ -118,7 +120,7 @@ class ClientImpTest {
     }
 
     @Test
-    fun `register new user with unexpected error`() {
+    fun `register new client with unexpected error`() {
 
         // given
         val userRequest = clientRequestMaker.make()
@@ -136,7 +138,7 @@ class ClientImpTest {
     }
 
     @Test
-    fun `register new user successfully`() {
+    fun `register new client successfully`() {
 
         // given
         val userRequest = clientRequestMaker.make()
@@ -171,6 +173,79 @@ class ClientImpTest {
 
     }
 
+    // endregion
+
+    // region Get new client session
+
+    @Test
+    fun `get a new client session`() {
+
+        // given
+        val clientRequest = clientRequestMaker
+            .but(with(UserRequestMaker.EMAIL, "test@test.com"))
+            .but(with(UserRequestMaker.PASSWORD, "12345"))
+            .make()
+        val postClientDto = clientDtoMaker
+            .but(with(ClientDtoMaker.loginInfo,
+                make(a(
+                    LoginInfoDtoMaker.LoginInfoDto,
+                    with(LoginInfoDtoMaker.username, "test@test.com"),
+                    with(LoginInfoDtoMaker.password, "12345")
+                ))
+            )).make()
+        val userResponse = clientResponseMaker
+            .but(
+                with(UserResponseMaker.USERNAME, "test@test.com"),
+                with(UserResponseMaker.FIRSTNAME, postClientDto.firstName),
+                with(UserResponseMaker.LASTNAME, postClientDto.lastName),
+                with(UserResponseMaker.EXPIRATION, postClientDto.loginInfo?.expirationDate),
+                with(UserResponseMaker.TOKEN, postClientDto.loginInfo?.token),
+            )
+            .make()
+
+        every { clientService.getNewClientSession("test@test.com", "12345") } returns postClientDto
+        every { clientResponseConverter.convert(any()) } returns userResponse
+
+        // when
+        val response = classToTest.getNewClientSession(clientRequest)
+
+        // then
+        then(response).isNotNull
+        then(response.firstname).isEqualTo(postClientDto.firstName)
+        then(response.lastname).isEqualTo(postClientDto.lastName)
+        then(response.username).isEqualTo(postClientDto.loginInfo?.username)
+        then(response.expiration).isEqualTo(postClientDto.loginInfo?.expirationDate)
+        then(response.token).isEqualTo(postClientDto.loginInfo?.token)
+
+    }
+
+    @ParameterizedTest(name = "[{index}] get client session missing parameter: {0}")
+    @MethodSource("getClientSessionMandatoryParameters")
+    fun `get a new client session with missing mandatory parameters`(missingParam: String) {
+
+        // given
+        val userRequestMakerCopy = when (missingParam) {
+            "email" -> clientRequestMaker
+                .but(with(UserRequestMaker.EMAIL, null as String?))
+                .make()
+            "password" -> clientRequestMaker
+                .but(with(UserRequestMaker.PASSWORD, null as String?))
+                .make()
+            else -> clientRequestMaker.make()
+        }
+
+        // when
+        val thrown = catchThrowable { classToTest.getNewClientSession(userRequestMakerCopy) }
+
+        //then
+        then(thrown)
+            .isInstanceOf(RestInvalidRequestException::class.java)
+            .hasMessageContaining("Missing required parameter request: $missingParam")
+
+    }
+
+    // endregion
+
     // region Parameters
 
     companion object {
@@ -182,6 +257,14 @@ class ClientImpTest {
                 Arguments.of("email"),
                 Arguments.of("password"),
                 Arguments.of("type")
+            )
+        }
+
+        @JvmStatic
+        fun getClientSessionMandatoryParameters(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of("email"),
+                Arguments.of("password"),
             )
         }
     }

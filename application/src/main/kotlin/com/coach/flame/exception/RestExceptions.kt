@@ -5,6 +5,11 @@ import com.coach.flame.failure.Status
 import com.coach.flame.failure.exception.BusinessException
 
 @Status(httpStatus = HttpStatus.INTERNAL_SERVER_ERROR)
+open class InternalServerException : BusinessException {
+    constructor(message: String) : super(message)
+}
+
+@Status(httpStatus = HttpStatus.INTERNAL_SERVER_ERROR)
 open class RestException : BusinessException {
     constructor(message: String) : super(message)
     constructor(ex: Exception) : super(ex)

@@ -28,17 +28,16 @@ class LoadRequestExecutionListener : TestExecutionListener {
 
         requireNotNull(loadRequestAnnotation) { "please apply a @LoadRequest annotation in your test" }
 
+        val json: JsonObject = if (loadRequestAnnotation.pathOfRequest.isEmpty()) {
+            LOGGER.info("opr='beforeTestMethod', 'Loading test using request'")
+            JsonBuilder.getJsonFromString(loadRequestAnnotation.request)
+        } else {
+            LOGGER.info("opr='beforeTestMethod', 'Loading test using request file'")
+            JsonBuilder.getJsonFromFile(loadRequestAnnotation.pathOfRequest)
+        }
+
         val request: RequestEntity<*> = when (loadRequestAnnotation.httpMethod) {
             RequestMethod.POST -> {
-
-                val json: JsonObject = if (loadRequestAnnotation.pathOfRequest.isEmpty()) {
-                    LOGGER.info("opr='beforeTestMethod', 'Loading test using request'")
-                    JsonBuilder.getJsonFromString(loadRequestAnnotation.request)
-                } else {
-                    LOGGER.info("opr='beforeTestMethod', 'Loading test using request file'")
-                    JsonBuilder.getJsonFromFile(loadRequestAnnotation.pathOfRequest)
-                }
-
                 RequestEntity.post(URL("http://localhost:${loadRequestAnnotation.port}/${loadRequestAnnotation.endpoint}").toURI())
                     .contentType(MediaType.valueOf(loadRequestAnnotation.contentType))
                     .body(json.toString())

@@ -6,5 +6,5 @@ data class ClientRequest(
     val email: String?,
     val password: String?,
     val type: String?,
-    val policy: Boolean = false
+    val policy: Boolean?
 )

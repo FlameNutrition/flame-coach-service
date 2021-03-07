@@ -1,5 +1,6 @@
 package com.coach.flame.exception.handlers
 
+import com.coach.flame.exception.InternalServerException
 import com.coach.flame.failure.domain.ErrorDetail
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -26,9 +27,14 @@ class DefaultExceptionHandler(
     @ExceptionHandler(Exception::class)
     fun handleRootException(ex: Exception, request: WebRequest): ResponseEntity<Any> {
 
+        LOGGER.error("opr=handleRootException, msg='Unexpected error happened'", ex)
+        LOGGER.info("opr=handleRootException, msg='Mapping unexpected problem to InternalServerException'")
+
+        val internalException = InternalServerException("This is an internal problem, please contact the admin system")
+
         val errorDetail = ErrorDetail.Builder()
             .withEnableDebug(restDebugEnable)
-            .throwable(ex)
+            .throwable(internalException)
             .build()
 
         return ResponseEntity

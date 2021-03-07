@@ -9,16 +9,19 @@ class ClientResponseConverter : Converter<ClientDto, ClientResponse> {
 
     override fun convert(clientDto: ClientDto): ClientResponse {
 
-        checkNotNull(clientDto.loginInfo) { "loginInfo should not be null" }
-        checkNotNull(clientDto.loginInfo!!.token) { "loginInfo->token should not be null" }
-        checkNotNull(clientDto.loginInfo!!.expirationDate) { "loginInfo->expirationDate should not be null" }
+        requireNotNull(clientDto.firstName) { "firstName should not be null" }
+        requireNotNull(clientDto.lastName) { "lastName should not be null" }
+        requireNotNull(clientDto.loginInfo) { "loginInfo should not be null" }
+        requireNotNull(clientDto.loginInfo?.token) { "loginInfo->token should not be null" }
+        requireNotNull(clientDto.loginInfo?.username) { "loginInfo->username should not be null" }
+        requireNotNull(clientDto.loginInfo?.expirationDate) { "loginInfo->expirationDate should not be null" }
 
         return ClientResponse(
-            username = clientDto.loginInfo!!.username,
-            firstname = clientDto.firstName,
-            lastname = clientDto.lastName,
-            token = clientDto.loginInfo!!.token!!,
-            expiration = clientDto.loginInfo!!.expirationDate!!
+            username = clientDto.loginInfo?.username!!,
+            firstname = clientDto.firstName!!,
+            lastname = clientDto.lastName!!,
+            token = clientDto.loginInfo?.token!!,
+            expiration = clientDto.loginInfo?.expirationDate!!
         )
 
     }

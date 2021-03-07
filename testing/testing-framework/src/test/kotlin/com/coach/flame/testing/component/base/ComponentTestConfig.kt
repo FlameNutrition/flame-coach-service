@@ -1,8 +1,6 @@
 package com.coach.flame.testing.component.base
 
-import com.coach.flame.jpa.repository.ClientRepository
-import com.coach.flame.jpa.repository.ClientTypeRepository
-import com.coach.flame.jpa.repository.DailyTaskRepository
+import com.coach.flame.jpa.repository.*
 import io.mockk.mockk
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.*
@@ -16,6 +14,18 @@ class ComponentTestConfig {
     @Primary
     @Bean(name = ["clientRepositoryMock"])
     fun clientRepository(): ClientRepository {
+        return mockk()
+    }
+
+    @Primary
+    @Bean(name = ["userRepositoryMock"])
+    fun userRepository(): UserRepository {
+        return mockk()
+    }
+
+    @Primary
+    @Bean(name = ["userSessionRepositoryMock"])
+    fun userSessionRepository(): UserSessionRepository {
         return mockk()
     }
 

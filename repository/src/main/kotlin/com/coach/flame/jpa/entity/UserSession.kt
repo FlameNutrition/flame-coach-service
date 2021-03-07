@@ -18,6 +18,6 @@ class UserSession(
     val token: UUID,
 
     @Column(nullable = false)
-    val expirationDate: LocalDateTime,
+    var expirationDate: LocalDateTime,
 
 ) : AbstractPersistable<Long>()

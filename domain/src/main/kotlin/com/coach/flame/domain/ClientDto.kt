@@ -6,15 +6,15 @@ import java.util.Objects.hash
 
 data class ClientDto(
     val identifier: UUID,
-    val firstName: String,
-    val lastName: String,
+    val firstName: String?,
+    val lastName: String?,
     val birthday: LocalDate? = null,
     val phoneCode: String? = null,
     val phoneNumber: String? = null,
     val country: CountryDto? = null,
     val gender: GenderDto? = null,
-    val clientType: ClientTypeDto,
-    val loginInfo: LoginInfoDto? = null
+    val clientType: ClientTypeDto?,
+    val loginInfo: LoginInfoDto? = null,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

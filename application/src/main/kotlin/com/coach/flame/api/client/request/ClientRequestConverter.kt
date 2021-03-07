@@ -12,20 +12,23 @@ class ClientRequestConverter : Converter<ClientRequest, ClientDto> {
 
     override fun convert(clientRequest: ClientRequest): ClientDto {
 
-        val clientTypeDto = try {
-            ClientTypeDto.valueOf(clientRequest.type!!.toUpperCase())
-        } catch (ex: Exception) {
-            throw IllegalArgumentException("Invalid value in type parameter")
+
+        val clientTypeDto = clientRequest.type?.let {
+            try {
+                ClientTypeDto.valueOf(clientRequest.type.toUpperCase())
+            } catch (ex: Exception) {
+                throw IllegalArgumentException("Invalid value in type parameter")
+            }
         }
 
         return ClientDto(
             identifier = UUID.randomUUID(),
-            firstName = clientRequest.firstname!!,
-            lastName = clientRequest.lastname!!,
+            firstName = clientRequest.firstname,
+            lastName = clientRequest.lastname,
             clientType = clientTypeDto,
             loginInfo = LoginInfoDto(
-                username = clientRequest.email!!,
-                password = clientRequest.password!!,
+                username = clientRequest.email,
+                password = clientRequest.password,
             )
         )
     }

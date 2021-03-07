@@ -15,7 +15,7 @@ class UserRequestMaker {
         val EMAIL: Property<ClientRequest, String?> = newProperty()
         val PASSWORD: Property<ClientRequest, String?> = newProperty()
         val TYPE: Property<ClientRequest, String?> = newProperty()
-        val POLICY: Property<ClientRequest, Boolean> = newProperty()
+        val POLICY: Property<ClientRequest, Boolean?> = newProperty()
 
         val ClientRequest: Instantiator<ClientRequest> = Instantiator {
             ClientRequest(
@@ -24,7 +24,7 @@ class UserRequestMaker {
                 email = it.valueOf(EMAIL, fake.internet().emailAddress()),
                 password = it.valueOf(PASSWORD, fake.internet().password()),
                 type = it.valueOf(TYPE, "CLIENT"),
-                policy = it.valueOf(POLICY, false)
+                policy = it.valueOf(POLICY, null as Boolean?)
             )
         }
     }

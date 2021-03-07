@@ -145,6 +145,7 @@
                         <exclude>**/client/ClientNotFoundException.*</exclude>
                         <exclude>**/client/ClientRegisterDuplicateException.*</exclude>
                         <exclude>**/client/ClientRegisterException.*</exclude>
+                        <exclude>**/client/ClientUsernameOrPasswordException.*</exclude>
                     </excludes>
                 </configuration>
             </plugin>
