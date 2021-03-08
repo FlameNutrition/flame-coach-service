@@ -10,7 +10,7 @@ import javax.persistence.OneToOne
 import javax.persistence.Table
 
 @Entity
-@Table(name = "UserSession")
+@Table(name = "User_Session")
 class UserSession(
 
     @Type(type = "uuid-char")

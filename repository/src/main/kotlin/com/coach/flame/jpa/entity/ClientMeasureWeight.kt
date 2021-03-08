@@ -5,7 +5,7 @@ import java.time.LocalDate
 import javax.persistence.*
 
 @Entity
-@Table(name = "ClientMeasureWeight")
+@Table(name = "Client_Measure_Weight")
 class ClientMeasureWeight(
 
     @Column(nullable = false)

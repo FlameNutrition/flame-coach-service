@@ -4,7 +4,7 @@ import org.springframework.data.jpa.domain.AbstractPersistable
 import javax.persistence.*
 
 @Entity
-@Table(name = "ClientType")
+@Table(name = "Client_Type")
 class ClientType(
 
     @Column(nullable = false)

@@ -6,7 +6,7 @@ import javax.persistence.Entity
 import javax.persistence.Table
 
 @Entity
-@Table(name = "CountryConfig")
+@Table(name = "Country_Config")
 class CountryConfig(
 
     @Column(nullable = false)

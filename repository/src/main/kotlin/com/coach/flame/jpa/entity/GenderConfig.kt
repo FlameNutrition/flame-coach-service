@@ -6,7 +6,7 @@ import javax.persistence.Entity
 import javax.persistence.Table
 
 @Entity
-@Table(name = "GenderConfig")
+@Table(name = "Gender_Config")
 class GenderConfig(
 
     @Column(nullable = false)

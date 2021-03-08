@@ -7,7 +7,7 @@ import java.util.*
 import javax.persistence.*
 
 @Entity
-@Table(name = "DailyTask")
+@Table(name = "Daily_Task")
 class DailyTask(
 
     @Type(type = "uuid-char")
