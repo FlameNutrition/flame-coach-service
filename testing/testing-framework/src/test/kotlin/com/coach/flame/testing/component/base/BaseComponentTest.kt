@@ -2,15 +2,28 @@ package com.coach.flame.testing.component.base
 
 import com.coach.flame.FlameCoachServiceApplication
 import com.coach.flame.jpa.entity.*
+import com.coach.flame.jpa.repository.ClientRepository
+import com.coach.flame.jpa.repository.ClientTypeRepository
+import com.coach.flame.jpa.repository.UserRepository
+import com.coach.flame.jpa.repository.UserSessionRepository
 import com.google.gson.JsonObject
 import com.natpryce.makeiteasy.MakeItEasy.an
 import com.natpryce.makeiteasy.Maker
+import io.mockk.clearAllMocks
+import io.mockk.clearMocks
+import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import org.assertj.core.api.AbstractStringAssert
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
+import org.mockito.Spy
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.ApplicationContext
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.TestExecutionListeners
 import org.springframework.test.web.servlet.RequestBuilder
@@ -34,10 +47,27 @@ abstract class BaseComponentTest {
 
     var request: RequestBuilder? = null
 
+    @Autowired
+    protected lateinit var clientTypeRepositoryMock: ClientTypeRepository
+
+    @Autowired
+    protected lateinit var clientRepositoryMock: ClientRepository
+
+    @Autowired
+    protected lateinit var userRepositoryMock: UserRepository
+
+    @Autowired
+    protected lateinit var userSessionRepositoryMock: UserSessionRepository
+
     protected lateinit var clientMaker: Maker<Client>
     protected lateinit var clientTypeMaker: Maker<ClientType>
     protected lateinit var userMaker: Maker<User>
     protected lateinit var userSessionMaker: Maker<UserSession>
+
+    @AfterEach
+    fun cleanUp() {
+        clearAllMocks()
+    }
 
     @BeforeEach
     fun setup() {

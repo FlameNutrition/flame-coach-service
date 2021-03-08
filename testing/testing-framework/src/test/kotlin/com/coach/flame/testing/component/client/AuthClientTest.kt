@@ -1,33 +1,25 @@
 package com.coach.flame.testing.component.client
 
 import com.coach.flame.jpa.entity.ClientMaker
-import com.coach.flame.jpa.entity.User
 import com.coach.flame.jpa.entity.UserMaker
 import com.coach.flame.jpa.entity.UserSessionMaker
-import com.coach.flame.jpa.repository.ClientRepository
-import com.coach.flame.jpa.repository.ClientTypeRepository
-import com.coach.flame.jpa.repository.UserRepository
-import com.coach.flame.jpa.repository.UserSessionRepository
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
 import com.natpryce.makeiteasy.MakeItEasy.*
-import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import org.assertj.core.api.BDDAssertions.then
-import org.junit.After
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
+import org.junit.FixMethodOrder
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+import org.junit.runners.MethodSorters
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMethod
 import java.sql.SQLException
 import java.time.LocalDateTime
@@ -36,23 +28,6 @@ class AuthClientTest : BaseComponentTest() {
 
     @Autowired
     private lateinit var mockMvc: MockMvc
-
-    @Autowired
-    private lateinit var clientTypeRepositoryMock: ClientTypeRepository
-
-    @Autowired
-    private lateinit var clientRepositoryMock: ClientRepository
-
-    @Autowired
-    private lateinit var userRepositoryMock: UserRepository
-
-    @Autowired
-    private lateinit var userSessionRepositoryMock: UserSessionRepository
-
-    @AfterEach
-    fun cleanUp() {
-        clearAllMocks()
-    }
 
     @Test
     @LoadRequest(
@@ -92,6 +67,7 @@ class AuthClientTest : BaseComponentTest() {
         then(jsonResponse.getAsJsonPrimitive("firstname").asString).isEqualTo("Nuno")
         then(jsonResponse.getAsJsonPrimitive("lastname").asString).isEqualTo("Bento")
         then(jsonResponse.getAsJsonPrimitive("token").asString).isNotNull
+        then(jsonResponse.getAsJsonPrimitive("type").asString).isEqualTo("CLIENT")
 
         val expiration = LocalDateTime.parse(jsonResponse.getAsJsonPrimitive("expiration").asString)
 
@@ -184,9 +160,9 @@ class AuthClientTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromString(mvnResponse.response.contentAsString)
 
-        thenErrorMessageType(body).endsWith("ClientRegisterException.html")
-        thenErrorMessageTitle(body).isEqualTo("ClientRegisterException")
-        thenErrorMessageDetail(body).isEqualTo("Problem occurred when try to register a new client")
+        thenErrorMessageType(body).endsWith("InternalServerException.html")
+        thenErrorMessageTitle(body).isEqualTo("InternalServerException")
+        thenErrorMessageDetail(body).isEqualTo("This is an internal problem, please contact the admin system")
         thenErrorMessageStatus(body).isEqualTo("500")
         thenErrorMessageInstance(body).isNotEmpty
         thenErrorMessageDebug(body).isEmpty()
@@ -234,6 +210,7 @@ class AuthClientTest : BaseComponentTest() {
         then(jsonResponse.getAsJsonPrimitive("firstname").asString).isNotEmpty
         then(jsonResponse.getAsJsonPrimitive("lastname").asString).isNotEmpty
         then(jsonResponse.getAsJsonPrimitive("token").asString).isNotNull
+        then(jsonResponse.getAsJsonPrimitive("type").asString).isEqualTo("CLIENT")
 
         val expiration = LocalDateTime.parse(jsonResponse.getAsJsonPrimitive("expiration").asString)
         then(oldDate).isNotEqualTo(expiration)

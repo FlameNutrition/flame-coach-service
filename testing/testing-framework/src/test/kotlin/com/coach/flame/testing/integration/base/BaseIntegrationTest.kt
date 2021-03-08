@@ -1,9 +1,17 @@
 package com.coach.flame.testing.integration.base
 
 import com.coach.flame.FlameCoachServiceApplication
+import com.coach.flame.jpa.entity.*
+import com.coach.flame.jpa.repository.ClientRepository
+import com.coach.flame.jpa.repository.ClientTypeRepository
+import com.coach.flame.jpa.repository.UserRepository
 import com.google.gson.JsonObject
+import com.natpryce.makeiteasy.MakeItEasy.an
+import com.natpryce.makeiteasy.Maker
 import org.assertj.core.api.AbstractStringAssert
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.RequestEntity
@@ -26,10 +34,32 @@ import org.springframework.test.context.TestExecutionListeners
 )
 abstract class BaseIntegrationTest {
 
+    @Autowired
+    private lateinit var sqlClean: SQLClean
+
+    @Autowired
+    protected lateinit var clientTypeRepository: ClientTypeRepository
+
+    @Autowired
+    protected lateinit var userRepository: UserRepository
+
+    @Autowired
+    protected lateinit var clientRepository: ClientRepository
+
+    protected val userMaker: Maker<User> = an(UserMaker.User)
+    protected val clientTypeMaker: Maker<ClientType> = an(ClientTypeMaker.ClientType)
+    protected val clientMaker: Maker<Client> = an(ClientMaker.Client)
+    protected val userSessionMaker: Maker<UserSession> = an(UserSessionMaker.UserSession)
+
     /**
      * Use this request for integration tests
      */
     var request: RequestEntity<String>? = null
+
+    @BeforeEach
+    fun beforeEach() {
+        sqlClean.beforeEach()
+    }
 
     protected fun thenErrorMessageType(body: JsonObject): AbstractStringAssert<*> {
         val param = body.getAsJsonPrimitive("type").asString
