@@ -17,6 +17,7 @@ class UserResponseMaker {
         val LASTNAME: Property<ClientResponse, String> = newProperty()
         val TOKEN: Property<ClientResponse, UUID> = newProperty()
         val EXPIRATION: Property<ClientResponse, LocalDateTime> = newProperty()
+        val TYPE: Property<ClientResponse, String> = newProperty()
 
         val ClientResponse: Instantiator<ClientResponse> = Instantiator {
             ClientResponse(
@@ -25,6 +26,7 @@ class UserResponseMaker {
                 lastname = it.valueOf(LASTNAME, fake.name().lastName()),
                 token = it.valueOf(TOKEN, UUID.randomUUID()),
                 expiration = it.valueOf(EXPIRATION, LocalDateTime.now()),
+                type = it.valueOf(TYPE, "UNDEFINED")
             )
         }
     }

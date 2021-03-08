@@ -15,13 +15,15 @@ class ClientResponseConverter : Converter<ClientDto, ClientResponse> {
         requireNotNull(clientDto.loginInfo?.token) { "loginInfo->token should not be null" }
         requireNotNull(clientDto.loginInfo?.username) { "loginInfo->username should not be null" }
         requireNotNull(clientDto.loginInfo?.expirationDate) { "loginInfo->expirationDate should not be null" }
+        requireNotNull(clientDto.clientType) { "clientType should not be null" }
 
         return ClientResponse(
             username = clientDto.loginInfo?.username!!,
             firstname = clientDto.firstName!!,
             lastname = clientDto.lastName!!,
             token = clientDto.loginInfo?.token!!,
-            expiration = clientDto.loginInfo?.expirationDate!!
+            expiration = clientDto.loginInfo?.expirationDate!!,
+            type = clientDto.clientType!!.name
         )
 
     }

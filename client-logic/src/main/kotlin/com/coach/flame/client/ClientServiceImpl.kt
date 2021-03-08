@@ -79,7 +79,6 @@ class ClientServiceImpl(
 
             return clientDtoConverter.convert(client)
         } catch (ex: Exception) {
-            LOGGER.error("opr='registerClient'", ex)
             when (ex) {
                 is DataIntegrityViolationException -> throw ClientRegisterDuplicateException("The following client already exists")
                 else -> throw ex

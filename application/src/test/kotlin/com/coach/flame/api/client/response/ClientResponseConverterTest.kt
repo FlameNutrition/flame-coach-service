@@ -59,6 +59,7 @@ class ClientResponseConverterTest {
         then(response.token).isEqualTo(clientDto.loginInfo!!.token)
         then(response.expiration).isEqualTo(clientDto.loginInfo!!.expirationDate)
         then(response.username).isEqualTo(clientDto.loginInfo!!.username)
+        then(response.type).isEqualTo(clientDto.clientType?.name)
 
     }
 

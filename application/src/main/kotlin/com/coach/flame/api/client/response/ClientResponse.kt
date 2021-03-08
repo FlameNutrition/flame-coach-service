@@ -8,5 +8,6 @@ data class ClientResponse(
     val firstname: String,
     val lastname: String,
     val token: UUID,
-    val expiration: LocalDateTime
+    val expiration: LocalDateTime,
+    val type: String
 )
