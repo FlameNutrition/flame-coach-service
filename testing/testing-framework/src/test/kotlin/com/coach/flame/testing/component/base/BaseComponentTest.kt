@@ -2,10 +2,7 @@ package com.coach.flame.testing.component.base
 
 import com.coach.flame.FlameCoachServiceApplication
 import com.coach.flame.jpa.entity.*
-import com.coach.flame.jpa.repository.ClientRepository
-import com.coach.flame.jpa.repository.ClientTypeRepository
-import com.coach.flame.jpa.repository.UserRepository
-import com.coach.flame.jpa.repository.UserSessionRepository
+import com.coach.flame.jpa.repository.*
 import com.google.gson.JsonObject
 import com.natpryce.makeiteasy.MakeItEasy.an
 import com.natpryce.makeiteasy.Maker
@@ -59,10 +56,14 @@ abstract class BaseComponentTest {
     @Autowired
     protected lateinit var userSessionRepositoryMock: UserSessionRepository
 
+    @Autowired
+    protected lateinit var dailyTaskRepositoryMock: DailyTaskRepository
+
     protected lateinit var clientMaker: Maker<Client>
     protected lateinit var clientTypeMaker: Maker<ClientType>
     protected lateinit var userMaker: Maker<User>
     protected lateinit var userSessionMaker: Maker<UserSession>
+    protected lateinit var dailyTaskMaker: Maker<DailyTask>
 
     @AfterEach
     fun cleanUp() {
@@ -75,6 +76,7 @@ abstract class BaseComponentTest {
         clientTypeMaker = an(ClientTypeMaker.ClientType)
         userMaker = an(UserMaker.User)
         userSessionMaker = an(UserSessionMaker.UserSession)
+        dailyTaskMaker = an(DailyTaskMaker.DailyTask)
     }
 
     protected fun thenErrorMessageType(body: JsonObject): AbstractStringAssert<*> {

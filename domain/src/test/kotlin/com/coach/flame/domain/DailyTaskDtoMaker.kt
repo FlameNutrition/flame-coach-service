@@ -17,18 +17,18 @@ class DailyTaskDtoMaker {
         val description: Property<DailyTaskDto, String> = newProperty()
         val date: Property<DailyTaskDto, LocalDate> = newProperty()
         val ticked: Property<DailyTaskDto, Boolean> = newProperty()
-        val createdBy: Property<DailyTaskDto, UUID> = newProperty()
-        val owner: Property<DailyTaskDto, UUID> = newProperty()
+        val coachToken: Property<DailyTaskDto, UUID> = newProperty()
+        val clientIdentifier: Property<DailyTaskDto, UUID> = newProperty()
 
         val DailyTaskDto: Instantiator<DailyTaskDto> = Instantiator {
             DailyTaskDto(
                 identifier = it.valueOf(uuid, UUID.randomUUID()),
-                name = it.valueOf(name, "Eat $fake.food().fruit()"),
+                name = it.valueOf(name, "Eat ${fake.food().fruit()}"),
                 description = it.valueOf(description, fake.friends().quote()),
                 date = it.valueOf(date, LocalDate.now()),
                 ticked = it.valueOf(ticked, false),
-                createdBy = it.valueOf(createdBy, UUID.randomUUID()),
-                owner = it.valueOf(owner, UUID.randomUUID()),
+                coachToken = it.valueOf(coachToken, UUID.randomUUID()),
+                clientIdentifier = it.valueOf(clientIdentifier, UUID.randomUUID()),
             )
         }
     }

@@ -12,5 +12,11 @@ annotation class LoadRequest(
     val contentType: String = MediaType.APPLICATION_JSON_VALUE,
     val endpoint: String,
     val port: String = "5000",
-    val httpMethod: RequestMethod
+    val httpMethod: RequestMethod,
+
+    /**
+     * Please use the character ":" to set the headers
+     * E.g: "<header>:<value>"
+     */
+    val headers: Array<String> = [],
 )

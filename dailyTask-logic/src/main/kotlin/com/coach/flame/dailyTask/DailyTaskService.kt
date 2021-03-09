@@ -10,7 +10,7 @@ interface DailyTaskService {
 
     fun getDailyTasksByClient(clientId: Long): Set<DailyTaskDto>
 
-    fun createDailyTask(dailyTask: DailyTaskDto): UUID
+    fun createDailyTask(dailyTask: DailyTaskDto): DailyTaskDto
 
     fun deleteDailyTask(uuid: UUID)
 

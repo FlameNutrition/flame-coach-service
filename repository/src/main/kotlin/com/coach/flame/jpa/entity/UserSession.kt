@@ -20,4 +20,6 @@ class UserSession(
     @Column(nullable = false)
     var expirationDate: LocalDateTime,
 
+    @OneToOne(mappedBy = "userSession")
+    val client: Client? = null,
 ) : AbstractPersistable<Long>()

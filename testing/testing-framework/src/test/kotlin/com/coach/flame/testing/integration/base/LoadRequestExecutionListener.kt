@@ -5,6 +5,7 @@ import com.coach.flame.testing.framework.LoadRequest
 import com.google.gson.JsonObject
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
 import org.springframework.test.context.TestContext
@@ -36,9 +37,19 @@ class LoadRequestExecutionListener : TestExecutionListener {
             JsonBuilder.getJsonFromFile(loadRequestAnnotation.pathOfRequest)
         }
 
+        val headers = HttpHeaders()
+        loadRequestAnnotation.headers.forEach {
+            val pair = it.split(":")
+            val header = pair[0]
+            val value = pair[1]
+
+            headers.set(header, value)
+        }
+
         val request: RequestEntity<*> = when (loadRequestAnnotation.httpMethod) {
             RequestMethod.POST -> {
                 RequestEntity.post(URL("http://localhost:${loadRequestAnnotation.port}/${loadRequestAnnotation.endpoint}").toURI())
+                    .headers(headers)
                     .contentType(MediaType.valueOf(loadRequestAnnotation.contentType))
                     .body(json.toString())
             }

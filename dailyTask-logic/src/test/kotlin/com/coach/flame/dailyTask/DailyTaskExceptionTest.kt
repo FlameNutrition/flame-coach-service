@@ -11,7 +11,7 @@ class DailyTaskExceptionTest {
     fun `check status ClientNotFound exception`() {
 
         // given
-        val clientNotFound = ClientNotFound("ex1", RuntimeException("EXCEPTION"))
+        val clientNotFound = ClientNotFoundException("ex1", RuntimeException("EXCEPTION"))
 
         // when
         val annotationStatus = clientNotFound::class.java.getAnnotation(Status::class.java)

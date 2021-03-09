@@ -5,12 +5,14 @@ import com.coach.flame.jpa.entity.*
 import com.coach.flame.jpa.repository.ClientRepository
 import com.coach.flame.jpa.repository.ClientTypeRepository
 import com.coach.flame.jpa.repository.UserRepository
+import com.coach.flame.jpa.repository.UserSessionRepository
 import com.google.gson.JsonObject
 import com.natpryce.makeiteasy.MakeItEasy.an
 import com.natpryce.makeiteasy.Maker
 import org.assertj.core.api.AbstractStringAssert
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
@@ -34,6 +36,10 @@ import org.springframework.test.context.TestExecutionListeners
 )
 abstract class BaseIntegrationTest {
 
+    companion object {
+        private val LOGGER = LoggerFactory.getLogger(BaseIntegrationTest::class.java)
+    }
+
     @Autowired
     private lateinit var sqlClean: SQLClean
 
@@ -45,6 +51,9 @@ abstract class BaseIntegrationTest {
 
     @Autowired
     protected lateinit var clientRepository: ClientRepository
+
+    @Autowired
+    protected lateinit var userSessionRepository: UserSessionRepository
 
     protected val userMaker: Maker<User> = an(UserMaker.User)
     protected val clientTypeMaker: Maker<ClientType> = an(ClientTypeMaker.ClientType)
@@ -58,6 +67,7 @@ abstract class BaseIntegrationTest {
 
     @BeforeEach
     fun beforeEach() {
+        LOGGER.info("opr='beforeEach', msg='Cleaning database...this process will truncate all tables'")
         sqlClean.beforeEach()
     }
 

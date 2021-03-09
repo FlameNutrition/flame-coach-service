@@ -131,7 +131,9 @@
                 <configuration>
                     <excludes>
                         <exclude>**/dailyTask/*Config.*</exclude>
-                        <exclude>**/dailyTask/domain/**.*</exclude>
+
+                        <!-- Exceptions -->
+                        <exclude>**/client/ClientNotFoundException.*</exclude>
                     </excludes>
                 </configuration>
             </plugin>

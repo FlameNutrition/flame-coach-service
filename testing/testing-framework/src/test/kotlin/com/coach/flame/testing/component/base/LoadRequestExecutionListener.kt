@@ -5,7 +5,9 @@ import com.coach.flame.testing.framework.LoadRequest
 import com.google.gson.JsonObject
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
+import org.springframework.http.RequestEntity
 import org.springframework.test.context.TestContext
 import org.springframework.test.context.TestExecutionListener
 import org.springframework.test.web.servlet.RequestBuilder
@@ -28,6 +30,15 @@ class LoadRequestExecutionListener : TestExecutionListener {
 
         requireNotNull(loadRequestAnnotation) { "please apply a @LoadRequest annotation in your test" }
 
+        val headers = HttpHeaders()
+        loadRequestAnnotation.headers.forEach {
+            val pair = it.split(":")
+            val header = pair[0]
+            val value = pair[1]
+
+            headers.set(header, value)
+        }
+
         val request: RequestBuilder = when (loadRequestAnnotation.httpMethod) {
             RequestMethod.POST -> {
 
@@ -40,6 +51,7 @@ class LoadRequestExecutionListener : TestExecutionListener {
                 }
 
                 MockMvcRequestBuilders.post(loadRequestAnnotation.endpoint)
+                    .headers(headers)
                     .contentType(MediaType.valueOf(loadRequestAnnotation.contentType))
                     .content(json.toString())
             }

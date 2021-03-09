@@ -35,7 +35,7 @@ class AuthClientTest : BaseComponentTest() {
         endpoint = "/api/client/create",
         httpMethod = RequestMethod.POST
     )
-    fun `register new client`() {
+    fun `test register new client`() {
 
         // given
         val expirationDate = LocalDateTime.now()
@@ -81,7 +81,7 @@ class AuthClientTest : BaseComponentTest() {
         endpoint = "/api/client/create",
         httpMethod = RequestMethod.POST
     )
-    fun `register new client with missing mandatory param`() {
+    fun `test register new client with missing mandatory param`() {
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -110,7 +110,7 @@ class AuthClientTest : BaseComponentTest() {
         endpoint = "/api/client/create",
         httpMethod = RequestMethod.POST
     )
-    fun `register new client duplicated`() {
+    fun `test register new client duplicated`() {
 
         every { clientTypeRepositoryMock.getByType("CLIENT") } returns clientTypeMaker.make()
         every { clientRepositoryMock.saveAndFlush(any()) } throws DataIntegrityViolationException("SQL Error -> Duplicate client")
@@ -142,7 +142,7 @@ class AuthClientTest : BaseComponentTest() {
         endpoint = "/api/client/create",
         httpMethod = RequestMethod.POST
     )
-    fun `register new client but occurred an internal exception`() {
+    fun `test register new client but occurred an internal exception`() {
 
         every { clientTypeRepositoryMock.getByType("CLIENT") } returns clientTypeMaker.make()
         every { clientRepositoryMock.saveAndFlush(any()) } throws Exception("Ops...something is wrong!")
@@ -174,7 +174,7 @@ class AuthClientTest : BaseComponentTest() {
         endpoint = "/api/client/newSession",
         httpMethod = RequestMethod.POST
     )
-    fun `get a new client session`() {
+    fun `test get a new client session`() {
 
         // given
         val oldDate = LocalDateTime.now()
@@ -223,7 +223,7 @@ class AuthClientTest : BaseComponentTest() {
         endpoint = "/api/client/newSession",
         httpMethod = RequestMethod.POST
     )
-    fun `get a new client session but username is invalid`() {
+    fun `test get a new client session but username is invalid`() {
 
         // given
         every { userRepositoryMock.findUserByEmailAndPassword("test.test@gmail.com", "12345") } returns null
@@ -256,7 +256,7 @@ class AuthClientTest : BaseComponentTest() {
         endpoint = "/api/client/newSession",
         httpMethod = RequestMethod.POST
     )
-    fun `get a new client session but throws unexpected exception`() {
+    fun `test get a new client session but throws unexpected exception`() {
 
         // given
         val user = userMaker.make()

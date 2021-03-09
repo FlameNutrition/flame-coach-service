@@ -56,7 +56,7 @@ class DailyTaskImplTest {
     // region Daily Task [Create]
 
     @Test
-    fun `create multiple Daily Task`() {
+    fun `test create multiple Daily Task`() {
 
         // given
         val listOfTasks = listOf(dailyTaskRequestMaker.make(), dailyTaskRequestMaker.make())
@@ -72,23 +72,23 @@ class DailyTaskImplTest {
 
     @ParameterizedTest
     @MethodSource("dailyTaskCheckMandatoryParams")
-    fun `create Daily Task with mandatory params`(
-        clientIdentCreator: String?,
-        clientIdentTask: String?,
+    fun `create create Daily Task with mandatory params`(
+        taskName: String?,
+        taskDescription: String?,
         date: String?,
         expectedException: Class<Any>,
-        expectedMessage: String
+        expectedMessage: String,
     ) {
 
         // given
         val task = dailyTaskRequestMaker
-            .but(with(DailyTaskRequestMaker.clientIdentifierCreator, clientIdentCreator))
-            .but(with(DailyTaskRequestMaker.clientIdentifierTask, clientIdentTask))
+            .but(with(DailyTaskRequestMaker.name, taskName))
+            .but(with(DailyTaskRequestMaker.description, taskDescription))
             .but(with(DailyTaskRequestMaker.date, date))
             .make()
 
         // when
-        val thrown = catchThrowable { dailyTaskImpl.createDailyTask(task) }
+        val thrown = catchThrowable { dailyTaskImpl.createDailyTask(UUID.randomUUID(), UUID.randomUUID(), task) }
 
         //then
         then(thrown)
@@ -98,23 +98,19 @@ class DailyTaskImplTest {
 
     @ParameterizedTest
     @MethodSource("dailyTaskCheckInvalidParams")
-    fun `create Daily Task with invalid format params`(
-        clientIdentCreator: String?,
-        clientIdentTask: String?,
+    fun `test create Daily Task with invalid format params`(
         date: String?,
         expectedException: Class<Any>,
-        expectedMessage: String
+        expectedMessage: String,
     ) {
 
         // given
         val task = dailyTaskRequestMaker
-            .but(with(DailyTaskRequestMaker.clientIdentifierCreator, clientIdentCreator))
-            .but(with(DailyTaskRequestMaker.clientIdentifierTask, clientIdentTask))
             .but(with(DailyTaskRequestMaker.date, date))
             .make()
 
         // when
-        val thrown = catchThrowable { dailyTaskImpl.createDailyTask(task) }
+        val thrown = catchThrowable { dailyTaskImpl.createDailyTask(UUID.randomUUID(), UUID.randomUUID(), task) }
 
         //then
         then(thrown)
@@ -123,14 +119,14 @@ class DailyTaskImplTest {
     }
 
     @Test
-    fun `create Daily Task when business throw an exception`() {
+    fun `test create Daily Task when business throw an exception`() {
 
         // given
         val task = dailyTaskRequestMaker.make()
         every { dailyTaskService.createDailyTask(any()) } throws RuntimeException("OHH NOOOO!")
 
         // when
-        val thrown = catchThrowable { dailyTaskImpl.createDailyTask(task) }
+        val thrown = catchThrowable { dailyTaskImpl.createDailyTask(UUID.randomUUID(), UUID.randomUUID(), task) }
 
         //then
         then(thrown)
@@ -139,27 +135,35 @@ class DailyTaskImplTest {
     }
 
     @Test
-    fun `create Daily Task`() {
+    fun `test create Daily Task`() {
 
         // given
         val taskDto = slot<DailyTaskDto>()
+        val coachToken = UUID.randomUUID()
+        val clientToken = UUID.randomUUID()
         val task = dailyTaskRequestMaker.make()
-        every { dailyTaskService.createDailyTask(capture(taskDto)) } answers { taskDto.captured.identifier }
+        every { dailyTaskService.createDailyTask(capture(taskDto)) } answers { taskDto.captured }
 
         // when
-        val response = dailyTaskImpl.createDailyTask(task)
+        val response = dailyTaskImpl.createDailyTask(clientToken, coachToken, task)
 
         //then
         then(taskDto.captured.identifier).isNotNull
-        then(taskDto.captured.name).isEqualTo(task.name)
-        then(taskDto.captured.description).isEqualTo(task.description)
+        then(taskDto.captured.name).isEqualTo(task.taskName)
+        then(taskDto.captured.description).isEqualTo(task.taskDescription)
         then(taskDto.captured.date).isEqualTo(stringToDate(task.date!!))
         then(taskDto.captured.ticked).isFalse
-        then(taskDto.captured.createdBy!!.toString()).isEqualTo(task.clientIdentifierCreator)
-        then(taskDto.captured.owner!!.toString()).isEqualTo(task.clientIdentifierTask)
-        then(response.error).isNull()
+        then(taskDto.captured.clientIdentifier).isEqualTo(clientToken)
+        then(taskDto.captured.coachToken).isEqualTo(coachToken)
         then(response.dailyTasks).isNotEmpty
-        then(response.dailyTasks!!.first().identifier).isEqualTo(taskDto.captured.identifier.toString())
+
+        val dailyTask = response.dailyTasks.first()
+
+        then(dailyTask.identifier).isEqualTo(taskDto.captured.identifier.toString())
+        then(dailyTask.taskName).isEqualTo(taskDto.captured.name)
+        then(dailyTask.taskDescription).isEqualTo(taskDto.captured.description)
+        then(dailyTask.date).isEqualTo(taskDto.captured.date.toString())
+        then(dailyTask.ticked).isFalse
 
     }
 
@@ -212,13 +216,12 @@ class DailyTaskImplTest {
         val response = dailyTaskImpl.getDailyTasksByClient(clientId)
 
         //then
-        then(response.error).isNull()
         then(response.dailyTasks).isNotEmpty
-        then(response.dailyTasks!!.size).isEqualTo(2)
+        then(response.dailyTasks.size).isEqualTo(2)
 
-        val taskResponseT1 = response.dailyTasks!!.find { task1.identifier.toString() == it.identifier }
-        then(taskResponseT1?.name).isEqualTo(task1.name)
-        then(taskResponseT1?.description).isEqualTo(task1.description)
+        val taskResponseT1 = response.dailyTasks.find { task1.identifier.toString() == it.identifier }
+        then(taskResponseT1?.taskName).isEqualTo(task1.name)
+        then(taskResponseT1?.taskDescription).isEqualTo(task1.description)
         then(taskResponseT1?.date).isEqualTo(task1.date.toString())
         then(taskResponseT1?.ticked).isEqualTo(task1.ticked)
 
@@ -236,14 +239,13 @@ class DailyTaskImplTest {
         val response = dailyTaskImpl.getDailyTaskById(taskId)
 
         //then
-        then(response.error).isNull()
         then(response.dailyTasks).isNotEmpty
-        then(response.dailyTasks!!.size).isEqualTo(1)
+        then(response.dailyTasks.size).isEqualTo(1)
 
-        val taskResponse = response.dailyTasks!!.first()
+        val taskResponse = response.dailyTasks.first()
         then(taskResponse.identifier).isEqualTo(task.identifier.toString())
-        then(taskResponse.name).isEqualTo(task.name)
-        then(taskResponse.description).isEqualTo(task.description)
+        then(taskResponse.taskName).isEqualTo(task.name)
+        then(taskResponse.taskDescription).isEqualTo(task.description)
         then(taskResponse.date).isEqualTo(task.date.toString())
         then(taskResponse.ticked).isEqualTo(task.ticked)
 
@@ -297,10 +299,9 @@ class DailyTaskImplTest {
         val response = dailyTaskImpl.deleteDailyTaskById(taskUuid.toString())
 
         //then
-        then(response.error).isNull()
         then(response.dailyTasks).isNotEmpty
-        then(response.dailyTasks!!.size).isEqualTo(1)
-        then(response.dailyTasks!!.first().identifier).isEqualTo(taskUuid.toString())
+        then(response.dailyTasks.size).isEqualTo(1)
+        then(response.dailyTasks.first().identifier).isEqualTo(taskUuid.toString())
 
     }
 
@@ -315,17 +316,24 @@ class DailyTaskImplTest {
             return Stream.of(
                 Arguments.of(
                     null,
-                    UUID.randomUUID().toString(),
+                    "Drink 1L water",
                     "2020-04-04",
                     RestInvalidRequestException::class.java,
-                    "Missing clientIdentifierCreator param"
+                    "Missing taskName param"
                 ),
                 Arguments.of(
-                    UUID.randomUUID().toString(),
+                    "Drink Water",
                     null,
                     "2020-04-04",
                     RestInvalidRequestException::class.java,
-                    "Missing clientIdentifierTask param"
+                    "Missing taskDescription param"
+                ),
+                Arguments.of(
+                    "Drink Water",
+                    "Drink 1L of Water",
+                    null,
+                    RestInvalidRequestException::class.java,
+                    "Missing date param"
                 ),
             )
         }
@@ -334,22 +342,6 @@ class DailyTaskImplTest {
         fun dailyTaskCheckInvalidParams(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of(
-                    "INVALID",
-                    UUID.randomUUID().toString(),
-                    "2020-04-04",
-                    RestInvalidRequestException::class.java,
-                    "Invalid UUID string:"
-                ),
-                Arguments.of(
-                    UUID.randomUUID().toString(),
-                    "INVALID",
-                    "2020-04-04",
-                    RestInvalidRequestException::class.java,
-                    "Invalid UUID string:"
-                ),
-                Arguments.of(
-                    UUID.randomUUID().toString(),
-                    UUID.randomUUID().toString(),
                     "2020-04",
                     RestInvalidRequestException::class.java,
                     "Invalid format date. Date:"

@@ -2,19 +2,22 @@ package com.coach.flame.dailyTask
 
 import com.coach.flame.domain.DailyTaskDto
 import com.coach.flame.jpa.entity.DailyTask
+import com.coach.flame.jpa.entity.UserSession
 import com.coach.flame.jpa.repository.ClientRepository
 import com.coach.flame.jpa.repository.DailyTaskRepository
+import com.coach.flame.jpa.repository.UserSessionRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
+import kotlin.jvm.Throws
 
 @Service
 class DailyTaskServiceImpl(
     private val dailyTaskRepository: DailyTaskRepository,
-    private val clientRepository: ClientRepository
+    private val clientRepository: ClientRepository,
+    private val userSessionRepository: UserSessionRepository,
 ) : DailyTaskService {
 
     companion object {
@@ -53,38 +56,41 @@ class DailyTaskServiceImpl(
     }
 
     @Transactional
-    override fun createDailyTask(dailyTask: DailyTaskDto): UUID {
+    override fun createDailyTask(dailyTask: DailyTaskDto): DailyTaskDto {
 
-        try {
+        LOGGER.info("opr='createDailyTask', msg='Creating the following task', dailyTask=$dailyTask")
 
-            LOGGER.info("opr='createDailyTask', msg='Creating the following task', dailyTask=$dailyTask")
+        checkNotNull(dailyTask.coachToken) { "coachToken is a mandatory parameter" }
+        checkNotNull(dailyTask.clientIdentifier) { "clientIdentifier is a mandatory parameter" }
 
-            val createdBy = clientRepository.findByUuid(dailyTask.createdBy!!)
+        val coachSession = userSessionRepository.findByToken(dailyTask.coachToken!!)
+            ?: run {
+                LOGGER.warn("opr='createDailyTask', msg='Invalid coach token', coachToken={}", dailyTask.coachToken)
+                throw ClientNotFoundException("Didn't find any coach session, please check the coachToken identifier.")
+            }
 
-            checkNotNull(createdBy) { "Could not find any client with the following identifier ${dailyTask.createdBy}" }
+        val client = clientRepository.findByUuid(dailyTask.clientIdentifier!!)
+            ?: run {
+                LOGGER.warn("opr='createDailyTask', msg='Invalid client identifier', clientIdentifier={}",
+                    dailyTask.clientIdentifier)
+                throw ClientNotFoundException("Didn't find any client with this identifier, please check the client identifier.")
+            }
 
-            val owner = clientRepository.findByUuid(dailyTask.owner!!)
+        val newDailyTask = DailyTask(
+            uuid = dailyTask.identifier,
+            name = dailyTask.name,
+            description = dailyTask.description,
+            date = dailyTask.date,
+            ticked = false,
+            createdBy = coachSession.client!!,
+            client = client
+        )
 
-            checkNotNull(owner) { "Could not find any client with the following identifier ${dailyTask.owner}" }
+        val entity = dailyTaskRepository.saveAndFlush(newDailyTask)
 
-            val newDailyTask = DailyTask(
-                uuid = dailyTask.identifier,
-                name = dailyTask.name,
-                description = dailyTask.description,
-                date = dailyTask.date,
-                ticked = false,
-                createdBy = createdBy,
-                client = owner
-            )
-
-            val entity = dailyTaskRepository.save(newDailyTask)
-
-            return entity.uuid
-        } catch (ex: IllegalStateException) {
-            throw ClientNotFound(ex)
-        } catch (ex: Exception) {
-            throw DailyTaskMissingSave("Daily task couldn't be persisted.", ex)
-        }
+        return dailyTask.copy(
+            coachToken = entity.createdBy.userSession?.token,
+            clientIdentifier = entity.client.uuid)
 
     }
 

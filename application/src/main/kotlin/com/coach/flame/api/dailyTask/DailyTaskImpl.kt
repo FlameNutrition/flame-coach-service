@@ -18,7 +18,7 @@ import java.util.*
 @RestController
 @RequestMapping("/api/dailyTask")
 class DailyTaskImpl(
-    private val dailyTaskService: DailyTaskService
+    private val dailyTaskService: DailyTaskService,
 ) : DailyTaskAPI {
 
     companion object {
@@ -43,30 +43,43 @@ class DailyTaskImpl(
     @LoggingResponse
     @PostMapping("/create/task")
     @ResponseBody
-    override fun createDailyTask(@RequestBody(required = true) dailyTask: DailyTaskRequest): DailyTaskResponse {
+    override fun createDailyTask(
+        @RequestHeader("clientToken") clientToken: UUID,
+        @RequestHeader("coachToken") coachToken: UUID,
+        @RequestBody(required = true) dailyTask: DailyTaskRequest,
+    ): DailyTaskResponse {
 
         try {
 
-            requireNotNull(dailyTask.name) { "Missing name param" }
-            requireNotNull(dailyTask.description) { "Missing description param" }
+            requireNotNull(dailyTask.taskName) { "Missing taskName param" }
+            requireNotNull(dailyTask.taskDescription) { "Missing taskDescription param" }
             requireNotNull(dailyTask.date) { "Missing date param" }
-            requireNotNull(dailyTask.clientIdentifierCreator) { "Missing clientIdentifierCreator param" }
-            requireNotNull(dailyTask.clientIdentifierTask) { "Missing clientIdentifierTask param" }
+
+            if (dailyTask.toDate !== null) {
+                throw UnsupportedOperationException("Multiple daily tasks is not supported")
+            }
 
             val dailyTaskDto = DailyTaskDto(
                 identifier = UUID.randomUUID(),
-                name = dailyTask.name,
-                description = dailyTask.description,
+                name = dailyTask.taskName,
+                description = dailyTask.taskDescription,
                 date = stringToDate(dailyTask.date),
                 ticked = false,
-                createdBy = UUID.fromString(dailyTask.clientIdentifierCreator),
-                owner = UUID.fromString(dailyTask.clientIdentifierTask),
+                clientIdentifier = clientToken,
+                coachToken = coachToken,
             )
 
-            val identifier = dailyTaskService.createDailyTask(dailyTaskDto)
+            val createdDailyTask = dailyTaskService.createDailyTask(dailyTaskDto)
 
             return DailyTaskResponse(
-                dailyTasks = setOf(DailyTask(identifier = identifier.toString()))
+                dailyTasks = setOf(
+                    DailyTask(
+                        identifier = createdDailyTask.identifier.toString(),
+                        taskName = createdDailyTask.name,
+                        taskDescription = createdDailyTask.description,
+                        ticked = createdDailyTask.ticked,
+                        date = createdDailyTask.date.toString()
+                    ))
             )
         } catch (ex: Exception) {
             when (ex) {
@@ -98,8 +111,8 @@ class DailyTaskImpl(
                 .map { dto ->
                     DailyTask(
                         identifier = dto.identifier.toString(),
-                        name = dto.name,
-                        description = dto.description,
+                        taskName = dto.name,
+                        taskDescription = dto.description,
                         date = dto.date.toString(),
                         ticked = dto.ticked
                     )
@@ -118,8 +131,8 @@ class DailyTaskImpl(
             dailyTasks = setOf(
                 DailyTask(
                     identifier = dailyTask.identifier.toString(),
-                    name = dailyTask.name,
-                    description = dailyTask.description,
+                    taskName = dailyTask.name,
+                    taskDescription = dailyTask.description,
                     date = dailyTask.date.toString(),
                     ticked = dailyTask.ticked
                 )

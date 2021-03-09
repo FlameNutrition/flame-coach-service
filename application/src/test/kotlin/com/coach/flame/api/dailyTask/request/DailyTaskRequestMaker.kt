@@ -15,16 +15,14 @@ class DailyTaskRequestMaker {
         val name: Property<DailyTaskRequest, String?> = newProperty()
         val description: Property<DailyTaskRequest, String?> = newProperty()
         val date: Property<DailyTaskRequest, String?> = newProperty()
-        val clientIdentifierTask: Property<DailyTaskRequest, String?> = newProperty()
-        val clientIdentifierCreator: Property<DailyTaskRequest, String?> = newProperty()
+        val toDate: Property<DailyTaskRequest, String?> = newProperty()
 
         val DailyTaskRequest: Instantiator<DailyTaskRequest> = Instantiator {
             DailyTaskRequest(
-                name = it.valueOf(name, "Eat  $fake.food().fruit()"),
-                description = it.valueOf(description, fake.friends().quote()),
+                taskName = it.valueOf(name, "Eat  $fake.food().fruit()"),
+                taskDescription = it.valueOf(description, fake.friends().quote()),
                 date = it.valueOf(date, LocalDate.now().toString()),
-                clientIdentifierTask = it.valueOf(clientIdentifierTask, UUID.randomUUID().toString()),
-                clientIdentifierCreator = it.valueOf(clientIdentifierCreator, UUID.randomUUID().toString()),
+                toDate = it.valueOf(toDate, null as String?),
             )
         }
     }
