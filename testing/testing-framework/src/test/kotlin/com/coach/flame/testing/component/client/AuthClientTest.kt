@@ -39,15 +39,18 @@ class AuthClientTest : BaseComponentTest() {
 
         // given
         val expirationDate = LocalDateTime.now()
-        val user = userMaker.but(
-            with(UserMaker.email, "test@gmail.com"),
-            with(UserMaker.password, "test")).make()
-        val client = clientMaker.but(
-            with(ClientMaker.firstname, "Nuno"),
-            with(ClientMaker.lastname, "Bento"),
-            with(ClientMaker.user, user),
-            with(ClientMaker.userSession, userSessionMaker.but(
-                with(UserSessionMaker.expirationDate, expirationDate.plusHours(2))))).make()
+        val user = userMaker
+            .but(with(UserMaker.email, "test@gmail.com"),
+                with(UserMaker.password, "test"),
+                with(UserMaker.userSession, userSessionMaker
+                    .but(with(UserSessionMaker.expirationDate, expirationDate.plusHours(2)))))
+            .make()
+        val client = clientMaker
+            .but(
+                with(ClientMaker.firstname, "Nuno"),
+                with(ClientMaker.lastname, "Bento"),
+                with(ClientMaker.user, user))
+            .make()
         every { clientTypeRepositoryMock.getByType("CLIENT") } returns clientTypeMaker.make()
         every { clientRepositoryMock.saveAndFlush(any()) } returns client
 

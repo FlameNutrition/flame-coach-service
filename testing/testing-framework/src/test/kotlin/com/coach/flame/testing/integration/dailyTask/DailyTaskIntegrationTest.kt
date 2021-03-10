@@ -50,20 +50,23 @@ class DailyTaskIntegrationTest : BaseIntegrationTest() {
         // given
         // Client
         clientRepository.saveAndFlush(clientMaker
-            .but(with(ClientMaker.uuid, clientUUID))
-            .but(with(ClientMaker.clientType, clientTypeRepository.getByType("CLIENT")))
-            .but(with(ClientMaker.country, null as CountryConfig?))
-            .but(with(ClientMaker.gender, null as GenderConfig?))
+            .but(with(ClientMaker.uuid, clientUUID),
+                with(ClientMaker.clientType, clientTypeRepository.getByType("CLIENT")),
+                with(ClientMaker.country, null as CountryConfig?),
+                with(ClientMaker.gender, null as GenderConfig?))
             .make())
+
         // Coach
         clientRepository.saveAndFlush(clientMaker
-            .but(with(ClientMaker.uuid, coachUUID))
-            .but(with(ClientMaker.clientType, clientTypeRepository.getByType("COACH")))
-            .but(with(ClientMaker.country, null as CountryConfig?))
-            .but(with(ClientMaker.gender, null as GenderConfig?))
-            .but(with(ClientMaker.userSession, userSessionMaker
-                .but(with(UserSessionMaker.token, coachUUIDSession))
-                .make()))
+            .but(with(ClientMaker.uuid, coachUUID),
+                with(ClientMaker.clientType, clientTypeRepository.getByType("COACH")),
+                with(ClientMaker.country, null as CountryConfig?),
+                with(ClientMaker.gender, null as GenderConfig?),
+                with(ClientMaker.user, userMaker
+                    .but(with(UserMaker.userSession, userSessionMaker
+                        .but(with(UserSessionMaker.token, coachUUIDSession))
+                        .make()))
+                    .make()))
             .make())
 
         // when

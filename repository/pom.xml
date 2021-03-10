@@ -45,6 +45,23 @@
         </dependency>
 
         <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-reflect</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
@@ -119,9 +136,9 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <configuration>
                     <excludes>
-                        <exclude>**/*Config.*</exclude>
-                        <exclude>**/jpa/entity/**.*</exclude>
-                        <exclude>**/jpa/repository/**.*</exclude>
+                        <exclude>**/flame/jpa/FlameCoachRepoConfig.*</exclude>
+                        <exclude>**/flame/jpa/entity/**.*</exclude>
+                        <exclude>**/flame/jpa/repository/**.*</exclude>
                     </excludes>
                 </configuration>
             </plugin>

@@ -2,8 +2,8 @@ package com.coach.flame.jpa.entity
 
 import com.github.javafaker.Faker
 import com.natpryce.makeiteasy.Instantiator
-import com.natpryce.makeiteasy.MakeItEasy.a
-import com.natpryce.makeiteasy.MakeItEasy.make
+import com.natpryce.makeiteasy.MakeItEasy
+import com.natpryce.makeiteasy.MakeItEasy.*
 import com.natpryce.makeiteasy.Property
 import com.natpryce.makeiteasy.Property.newProperty
 import java.time.LocalDate
@@ -28,19 +28,24 @@ class ClientMaker {
         val userSession: Property<Client, UserSession> = newProperty()
         val clientMeasureWeight: Property<Client, MutableList<ClientMeasureWeight>> = newProperty()
         val dailyClientTask: Property<Client, MutableList<DailyTask>> = newProperty()
-        
+
         val Client: Instantiator<Client> = Instantiator {
+
+            val userSession = make(a(UserSessionMaker.UserSession))
+
+            val userInit = make(a(UserMaker.User,
+                with(UserMaker.userSession, userSession)))
+
             Client(
                 uuid = it.valueOf(uuid, UUID.randomUUID()),
                 firstName = it.valueOf(firstname, fake.name().firstName()),
                 lastName = it.valueOf(lastname, fake.name().lastName()),
-                birthday = it.valueOf(birthday, LocalDate.now()),
-                phoneCode = it.valueOf(phoneCode, fake.phoneNumber().extension()),
-                phoneNumber = it.valueOf(phoneNumber, fake.phoneNumber().phoneNumber()),
-                country = it.valueOf(country, make(a(CountryMaker.CountryConfig))),
-                gender = it.valueOf(gender, make(a(GenderMaker.GenderConfig))),
-                user = it.valueOf(user, make(a(UserMaker.User))),
-                userSession = it.valueOf(userSession, make(a(UserSessionMaker.UserSession))),
+                birthday = it.valueOf(birthday, null as LocalDate?),
+                phoneCode = it.valueOf(phoneCode, null as String?),
+                phoneNumber = it.valueOf(phoneNumber, null as String?),
+                country = it.valueOf(country, null as CountryConfig?),
+                gender = it.valueOf(gender, null as GenderConfig?),
+                user = it.valueOf(user, userInit),
                 clientType = it.valueOf(clientType, make(a(ClientTypeMaker.ClientType))),
                 clientMeasureWeight = it.valueOf(clientMeasureWeight, mutableListOf()),
                 dailyClientTask = it.valueOf(dailyClientTask, mutableListOf()),

@@ -26,7 +26,7 @@ class DailyTaskMaker {
             DailyTask(
                 uuid = it.valueOf(uuid, UUID.randomUUID()),
                 name = it.valueOf(name, fake.food().fruit()),
-                description = it.valueOf(name, fake.friends().quote()),
+                description = it.valueOf(description, fake.friends().quote()),
                 date = it.valueOf(date, LocalDate.now()),
                 ticked = it.valueOf(ticked, false),
                 createdBy = it.valueOf(createdBy, make(a(ClientMaker.Client))),

@@ -70,6 +70,14 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="domain" scope="TEST" />
+    <orderEntry type="module" module-name="failureDetail-logic" scope="TEST" />
+    <orderEntry type="module" module-name="utilities" scope="TEST" />
+    <orderEntry type="module" module-name="domain" scope="TEST" production-on-test="" />
+    <orderEntry type="module" module-name="domain" scope="TEST" />
+    <orderEntry type="module" module-name="failureDetail-logic" scope="TEST" />
+    <orderEntry type="module" module-name="utilities" scope="TEST" />
+    <orderEntry type="module" module-name="domain" scope="TEST" production-on-test="" />
     <orderEntry type="module" module-name="application" scope="TEST" />
     <orderEntry type="module" module-name="dailyTask-logic" scope="TEST" />
     <orderEntry type="module" module-name="repository" scope="TEST" />

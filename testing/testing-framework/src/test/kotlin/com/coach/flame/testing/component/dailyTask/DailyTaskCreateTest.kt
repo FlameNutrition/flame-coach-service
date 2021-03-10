@@ -1,6 +1,7 @@
 package com.coach.flame.testing.component.dailyTask
 
 import com.coach.flame.jpa.entity.DailyTask
+import com.coach.flame.jpa.entity.UserMaker
 import com.coach.flame.jpa.entity.UserSessionMaker
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
@@ -40,11 +41,13 @@ class DailyTaskCreateTest : BaseComponentTest() {
         val dailyTaskSlot = slot<DailyTask>()
         val clientToken = UUID.fromString("3c5845f1-4a90-4396-8610-7261761369ae")
         val coachToken = UUID.fromString("b2957c86-e493-4f9a-a277-2e24b77f0ffe")
-        val coach = clientMaker
+        val coachClient = clientMaker.make()
+        val userCoach = userMaker
+            .but(with(UserMaker.client, coachClient))
             .make()
         val coachSession = userSessionMaker
-            .but(with(UserSessionMaker.token, coachToken))
-            .but(with(UserSessionMaker.client, coach))
+            .but(with(UserSessionMaker.token, coachToken),
+                with(UserSessionMaker.user, userCoach))
             .make()
         val client = clientMaker
             .make()
@@ -67,7 +70,7 @@ class DailyTaskCreateTest : BaseComponentTest() {
         then(dailyTaskSlot.isCaptured).isTrue
         then(dailyTaskSlot.captured.name).isEqualTo("Drink Water")
         then(dailyTaskSlot.captured.description).isEqualTo("Drink a 1L of water")
-        then(dailyTaskSlot.captured.createdBy).isEqualTo(coach)
+        then(dailyTaskSlot.captured.createdBy).isEqualTo(coachSession.user?.client)
         then(dailyTaskSlot.captured.client).isEqualTo(client)
 
         val jsonResponse = JsonBuilder.getJsonFromString(mvnResponse.response.contentAsString)
@@ -97,11 +100,8 @@ class DailyTaskCreateTest : BaseComponentTest() {
         val dailyTaskSlot = slot<DailyTask>()
         val clientToken = UUID.fromString("3c5845f1-4a90-4396-8610-7261761369ae")
         val coachToken = UUID.fromString("b2957c86-e493-4f9a-a277-2e24b77f0ffe")
-        val coach = clientMaker
-            .make()
         val coachSession = userSessionMaker
             .but(with(UserSessionMaker.token, coachToken))
-            .but(with(UserSessionMaker.client, coach))
             .make()
         val client = clientMaker
             .make()

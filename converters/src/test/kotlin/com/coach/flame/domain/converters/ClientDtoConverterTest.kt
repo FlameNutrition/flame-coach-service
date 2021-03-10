@@ -2,8 +2,7 @@ package com.coach.flame.domain.converters
 
 import com.coach.flame.domain.*
 import com.coach.flame.jpa.entity.*
-import com.natpryce.makeiteasy.MakeItEasy.an
-import com.natpryce.makeiteasy.MakeItEasy.with
+import com.natpryce.makeiteasy.MakeItEasy.*
 import com.natpryce.makeiteasy.Maker
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -16,6 +15,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import java.time.LocalDate
 
 @ExtendWith(MockKExtension::class)
 class ClientDtoConverterTest {
@@ -49,7 +49,13 @@ class ClientDtoConverterTest {
     fun `client convert all values`() {
 
         // given
-        val client = clientMaker.make()
+        val client = clientMaker
+            .but(with(ClientMaker.gender, make(a(GenderMaker.GenderConfig))),
+                with(ClientMaker.country, make(a(CountryMaker.CountryConfig))),
+                with(ClientMaker.birthday, LocalDate.now()),
+                with(ClientMaker.phoneCode, "333"),
+                with(ClientMaker.phoneNumber, "222222111111"))
+            .make()
         val genderDto = genderDtoMaker.make()
         val countryDto = countryDtoMaker.make()
         every { genderDtoConverter.convert(any()) } returns genderDto
@@ -77,7 +83,8 @@ class ClientDtoConverterTest {
 
         // given
         val client = clientMaker
-            .but(with(ClientMaker.country, null as CountryConfig?))
+            .but(with(ClientMaker.country, null as CountryConfig?),
+                with(ClientMaker.gender, make(a(GenderMaker.GenderConfig))))
             .make()
         val genderDto = genderDtoMaker.make()
         every { genderDtoConverter.convert(any()) } returns genderDto
@@ -98,7 +105,8 @@ class ClientDtoConverterTest {
 
         // given
         val client = clientMaker
-            .but(with(ClientMaker.gender, null as GenderConfig?))
+            .but(with(ClientMaker.gender, null as GenderConfig?),
+                with(ClientMaker.country, make(a(CountryMaker.CountryConfig))))
             .make()
         val countryDto = countryDtoMaker.make()
         every { countryDtoConverter.convert(any()) } returns countryDto
@@ -113,30 +121,5 @@ class ClientDtoConverterTest {
         then(clientDto).isNotNull
         then(clientDto.gender).isNull()
     }
-
-    @Test
-    fun `client convert without user session`() {
-
-        // given
-        val client = clientMaker
-            .but(with(ClientMaker.userSession, null as UserSession?))
-            .make()
-        val countryDto = countryDtoMaker.make()
-        val genderDto = genderDtoMaker.make()
-        every { genderDtoConverter.convert(any()) } returns genderDto
-        every { countryDtoConverter.convert(any()) } returns countryDto
-        check(client.userSession === null)
-
-        // when
-        val clientDto = classToTest.convert(client)
-
-        //then
-        verify(exactly = 1) { genderDtoConverter.convert(any()) }
-        verify(exactly = 1) { countryDtoConverter.convert(any()) }
-        then(clientDto).isNotNull
-        then(clientDto.loginInfo!!.token).isNull()
-        then(clientDto.loginInfo!!.expirationDate).isNull()
-    }
-
 
 }

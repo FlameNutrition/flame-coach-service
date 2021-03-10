@@ -82,14 +82,14 @@ class DailyTaskServiceImpl(
             description = dailyTask.description,
             date = dailyTask.date,
             ticked = false,
-            createdBy = coachSession.client!!,
+            createdBy = coachSession.user?.client!!,
             client = client
         )
 
         val entity = dailyTaskRepository.saveAndFlush(newDailyTask)
 
         return dailyTask.copy(
-            coachToken = entity.createdBy.userSession?.token,
+            coachToken = entity.createdBy.user.userSession.token,
             clientIdentifier = entity.client.uuid)
 
     }

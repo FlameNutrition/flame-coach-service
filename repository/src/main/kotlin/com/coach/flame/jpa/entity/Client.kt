@@ -41,10 +41,6 @@ class Client(
     @JoinColumn(name = "userFk", referencedColumnName = "id")
     val user: User,
 
-    @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST])
-    @JoinColumn(name = "userSessionFk", referencedColumnName = "id")
-    val userSession: UserSession? = null,
-
     @ManyToOne(optional = false)
     @JoinColumn(name = "clientTypeFk", referencedColumnName = "id")
     val clientType: ClientType,

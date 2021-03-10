@@ -67,11 +67,11 @@ class ClientServiceImpl(
                 user = User(
                     email = clientDto.loginInfo?.username!!,
                     //TODO: Encrypt password
-                    password = clientDto.loginInfo?.password!!
-                ),
-                userSession = UserSession(
-                    expirationDate = expirationDate,
-                    token = UUID.randomUUID()
+                    password = clientDto.loginInfo?.password!!,
+                    userSession = UserSession(
+                        expirationDate = expirationDate,
+                        token = UUID.randomUUID()
+                    )
                 )
             )
 
@@ -101,9 +101,9 @@ class ClientServiceImpl(
 
         LOGGER.info("opr='getNewClientSession', msg='Update expiration date', expirationDate={}", expirationDate)
 
-        user.client?.userSession?.expirationDate = expirationDate
+        user.userSession.expirationDate = expirationDate
 
-        userSessionRepository.saveAndFlush(user.client?.userSession!!)
+        userSessionRepository.saveAndFlush(user.client?.user?.userSession!!)
 
         return clientDtoConverter.convert(user.client!!)
 

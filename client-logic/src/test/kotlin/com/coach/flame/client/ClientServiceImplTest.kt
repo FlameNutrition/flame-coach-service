@@ -156,8 +156,8 @@ class ClientServiceImplTest {
         // then
         verify(exactly = 1) { clientDtoConverter.convert(any()) }
         then(clientCaptorSlot.isCaptured).isTrue
-        then(clientCaptorSlot.captured.userSession!!.token).isNotNull
-        then(clientCaptorSlot.captured.userSession!!.expirationDate).isBetween(expirationDate,
+        then(clientCaptorSlot.captured.user.userSession.token).isNotNull
+        then(clientCaptorSlot.captured.user.userSession.expirationDate).isBetween(expirationDate,
             expirationDate.plusHours(2).plusMinutes(10))
         then(postClientDto.loginInfo).isNotNull
         then(postClientDto.firstName).isEqualTo(entityClient.firstName)

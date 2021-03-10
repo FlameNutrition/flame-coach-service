@@ -12,13 +12,13 @@ class UserSessionMaker {
 
         val token: Property<UserSession, UUID> = newProperty()
         val expirationDate: Property<UserSession, LocalDateTime> = newProperty()
-        val client: Property<UserSession, Client?> = newProperty()
+        val user: Property<UserSession, User?> = newProperty()
 
         val UserSession: Instantiator<UserSession> = Instantiator {
             UserSession(
                 token = it.valueOf(token, UUID.randomUUID()),
                 expirationDate = it.valueOf(expirationDate, LocalDateTime.now()),
-                client = it.valueOf(client, null as Client?)
+                user = it.valueOf(user, null as User?)
             )
         }
     }
