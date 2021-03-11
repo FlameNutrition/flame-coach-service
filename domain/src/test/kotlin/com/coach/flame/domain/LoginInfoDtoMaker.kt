@@ -21,8 +21,8 @@ class LoginInfoDtoMaker {
             LoginInfoDto(
                 username = it.valueOf(username, fake.internet().emailAddress()),
                 password = it.valueOf(password, fake.internet().password()),
-                expirationDate = it.valueOf(expirationDate, LocalDateTime.now()),
-                token = it.valueOf(token, UUID.randomUUID())
+                expirationDate = it.valueOf(expirationDate, null as LocalDateTime?),
+                token = it.valueOf(token, null as UUID?)
             )
         }
     }

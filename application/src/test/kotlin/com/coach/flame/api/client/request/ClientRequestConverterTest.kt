@@ -25,7 +25,7 @@ class ClientRequestConverterTest {
 
         // given
         val userRequest = clientRequestMaker
-            .but(with(UserRequestMaker.TYPE, "INVALID"))
+            .but(with(UserRequestMaker.type, "INVALID"))
             .make()
 
         // when

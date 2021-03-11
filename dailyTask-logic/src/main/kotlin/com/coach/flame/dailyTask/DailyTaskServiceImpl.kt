@@ -2,7 +2,6 @@ package com.coach.flame.dailyTask
 
 import com.coach.flame.domain.DailyTaskDto
 import com.coach.flame.jpa.entity.DailyTask
-import com.coach.flame.jpa.entity.UserSession
 import com.coach.flame.jpa.repository.ClientRepository
 import com.coach.flame.jpa.repository.DailyTaskRepository
 import com.coach.flame.jpa.repository.UserSessionRepository
@@ -11,7 +10,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
-import kotlin.jvm.Throws
 
 @Service
 class DailyTaskServiceImpl(
@@ -60,12 +58,12 @@ class DailyTaskServiceImpl(
 
         LOGGER.info("opr='createDailyTask', msg='Creating the following task', dailyTask=$dailyTask")
 
-        checkNotNull(dailyTask.coachToken) { "coachToken is a mandatory parameter" }
+        checkNotNull(dailyTask.coachIdentifier) { "coachToken is a mandatory parameter" }
         checkNotNull(dailyTask.clientIdentifier) { "clientIdentifier is a mandatory parameter" }
 
-        val coachSession = userSessionRepository.findByToken(dailyTask.coachToken!!)
+        val coachSession = userSessionRepository.findByToken(dailyTask.coachIdentifier!!)
             ?: run {
-                LOGGER.warn("opr='createDailyTask', msg='Invalid coach token', coachToken={}", dailyTask.coachToken)
+                LOGGER.warn("opr='createDailyTask', msg='Invalid coach token', coachToken={}", dailyTask.coachIdentifier)
                 throw ClientNotFoundException("Didn't find any coach session, please check the coachToken identifier.")
             }
 
@@ -89,7 +87,7 @@ class DailyTaskServiceImpl(
         val entity = dailyTaskRepository.saveAndFlush(newDailyTask)
 
         return dailyTask.copy(
-            coachToken = entity.createdBy.user.userSession.token,
+            coachIdentifier = entity.createdBy.user.userSession.token,
             clientIdentifier = entity.client.uuid)
 
     }
@@ -110,7 +108,9 @@ class DailyTaskServiceImpl(
             name = entity.name,
             description = entity.description,
             date = entity.date,
-            ticked = entity.ticked
+            ticked = entity.ticked,
+            coachIdentifier = null,
+            clientIdentifier = null
         )
     }
 

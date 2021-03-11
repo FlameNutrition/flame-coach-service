@@ -19,11 +19,11 @@ class ClientResponseConverter : Converter<ClientDto, ClientResponse> {
 
         return ClientResponse(
             username = clientDto.loginInfo?.username!!,
-            firstname = clientDto.firstName!!,
-            lastname = clientDto.lastName!!,
+            firstname = clientDto.firstName,
+            lastname = clientDto.lastName,
             token = clientDto.loginInfo?.token!!,
             expiration = clientDto.loginInfo?.expirationDate!!,
-            type = clientDto.clientType!!.name
+            type = clientDto.clientType.name
         )
 
     }

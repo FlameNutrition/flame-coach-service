@@ -23,12 +23,12 @@ class ClientRequestConverter : Converter<ClientRequest, ClientDto> {
 
         return ClientDto(
             identifier = UUID.randomUUID(),
-            firstName = clientRequest.firstname,
-            lastName = clientRequest.lastname,
-            clientType = clientTypeDto,
+            firstName = clientRequest.firstname!!,
+            lastName = clientRequest.lastname!!,
+            clientType = clientTypeDto!!,
             loginInfo = LoginInfoDto(
-                username = clientRequest.email,
-                password = clientRequest.password,
+                username = clientRequest.email!!,
+                password = clientRequest.password!!,
             )
         )
     }

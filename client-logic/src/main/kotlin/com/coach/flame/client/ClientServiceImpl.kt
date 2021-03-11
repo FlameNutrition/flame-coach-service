@@ -55,14 +55,14 @@ class ClientServiceImpl(
             checkNotNull(clientDto.loginInfo?.username) { "loginInfo->username is a mandatory parameter" }
             checkNotNull(clientDto.loginInfo?.password) { "loginInfo->password is a mandatory parameter" }
 
-            val clientType = clientTypeRepository.getByType(clientDto.clientType!!.name)
+            val clientType = clientTypeRepository.getByType(clientDto.clientType.name)
 
             val expirationDate = LocalDateTime.now().plusHours(2)
 
             val entity = Client(
                 uuid = clientDto.identifier,
-                firstName = clientDto.firstName!!,
-                lastName = clientDto.lastName!!,
+                firstName = clientDto.firstName,
+                lastName = clientDto.lastName,
                 clientType = clientType,
                 user = User(
                     email = clientDto.loginInfo?.username!!,

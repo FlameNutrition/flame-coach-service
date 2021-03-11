@@ -22,10 +22,12 @@ class ClientResponseConverterTest {
     private val classToTest = ClientResponseConverter()
 
     private lateinit var clientDtoMaker: Maker<ClientDto>
+    private lateinit var loginInfoDtoMaker: Maker<LoginInfoDto>
 
     @BeforeEach
     fun setUp() {
         clientDtoMaker = an(ClientDtoMaker.ClientDto)
+        loginInfoDtoMaker = an(LoginInfoDtoMaker.LoginInfoDto)
     }
 
     @ParameterizedTest(name = "[{index}] convert response with illegal state: {1}")
@@ -47,6 +49,10 @@ class ClientResponseConverterTest {
 
         // given
         val clientDto = clientDtoMaker
+            .but(with(ClientDtoMaker.loginInfo, loginInfoDtoMaker
+                .but(with(LoginInfoDtoMaker.token, UUID.randomUUID()),
+                    with(LoginInfoDtoMaker.expirationDate, LocalDateTime.now()))
+                .make()))
             .make()
 
         // when
@@ -59,7 +65,7 @@ class ClientResponseConverterTest {
         then(response.token).isEqualTo(clientDto.loginInfo!!.token)
         then(response.expiration).isEqualTo(clientDto.loginInfo!!.expirationDate)
         then(response.username).isEqualTo(clientDto.loginInfo!!.username)
-        then(response.type).isEqualTo(clientDto.clientType?.name)
+        then(response.type).isEqualTo(clientDto.clientType.name)
 
     }
 
@@ -76,30 +82,22 @@ class ClientResponseConverterTest {
 
             val loginInfoTokenNull = make(a(ClientDtoMaker.ClientDto,
                 with(ClientDtoMaker.loginInfo,
-                    loginInfoMaker.but(with(LoginInfoDtoMaker.token, null as UUID?)).make())))
+                    loginInfoMaker
+                        .but(with(LoginInfoDtoMaker.token, null as UUID?),
+                            with(LoginInfoDtoMaker.expirationDate, LocalDateTime.now()))
+                        .make())))
 
             val loginInfoExpirationNull = make(a(ClientDtoMaker.ClientDto,
                 with(ClientDtoMaker.loginInfo,
-                    loginInfoMaker.but(with(LoginInfoDtoMaker.expirationDate, null as LocalDateTime?)).make())))
-
-            val clientUsernameNull = make(a(ClientDtoMaker.ClientDto,
-                with(ClientDtoMaker.loginInfo,
-                    loginInfoMaker.but(with(LoginInfoDtoMaker.username, null as String?)).make())))
-
-            val clientFirstnameNull = make(a(ClientDtoMaker.ClientDto,
-                with(ClientDtoMaker.firstName, null as String?)))
-
-            val clientLastnameNull = make(a(ClientDtoMaker.ClientDto,
-                with(ClientDtoMaker.lastName, null as String?)))
-
+                    loginInfoMaker
+                        .but(with(LoginInfoDtoMaker.expirationDate, null as LocalDateTime?),
+                            with(LoginInfoDtoMaker.token, UUID.randomUUID()))
+                        .make())))
 
             return Stream.of(
                 Arguments.of(loginInfoNull, "loginInfo"),
                 Arguments.of(loginInfoTokenNull, "loginInfo->token"),
                 Arguments.of(loginInfoExpirationNull, "loginInfo->expirationDate"),
-                Arguments.of(clientUsernameNull, "loginInfo->username"),
-                Arguments.of(clientFirstnameNull, "firstName"),
-                Arguments.of(clientLastnameNull, "lastName")
             )
         }
     }

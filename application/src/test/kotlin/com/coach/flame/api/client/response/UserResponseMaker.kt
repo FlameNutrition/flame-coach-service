@@ -12,21 +12,21 @@ class UserResponseMaker {
     companion object {
 
         private val fake = Faker()
-        val USERNAME: Property<ClientResponse, String> = newProperty()
-        val FIRSTNAME: Property<ClientResponse, String> = newProperty()
-        val LASTNAME: Property<ClientResponse, String> = newProperty()
-        val TOKEN: Property<ClientResponse, UUID> = newProperty()
-        val EXPIRATION: Property<ClientResponse, LocalDateTime> = newProperty()
-        val TYPE: Property<ClientResponse, String> = newProperty()
+        val username: Property<ClientResponse, String> = newProperty()
+        val firstName: Property<ClientResponse, String> = newProperty()
+        val lastName: Property<ClientResponse, String> = newProperty()
+        val token: Property<ClientResponse, UUID> = newProperty()
+        val expiration: Property<ClientResponse, LocalDateTime> = newProperty()
+        val type: Property<ClientResponse, String> = newProperty()
 
         val ClientResponse: Instantiator<ClientResponse> = Instantiator {
             ClientResponse(
-                username = it.valueOf(USERNAME, fake.internet().emailAddress()),
-                firstname = it.valueOf(FIRSTNAME, fake.name().firstName()),
-                lastname = it.valueOf(LASTNAME, fake.name().lastName()),
-                token = it.valueOf(TOKEN, UUID.randomUUID()),
-                expiration = it.valueOf(EXPIRATION, LocalDateTime.now()),
-                type = it.valueOf(TYPE, "UNDEFINED")
+                username = it.valueOf(username, fake.internet().emailAddress()),
+                firstname = it.valueOf(firstName, fake.name().firstName()),
+                lastname = it.valueOf(lastName, fake.name().lastName()),
+                token = it.valueOf(token, UUID.randomUUID()),
+                expiration = it.valueOf(expiration, LocalDateTime.now()),
+                type = it.valueOf(type, "UNDEFINED")
             )
         }
     }

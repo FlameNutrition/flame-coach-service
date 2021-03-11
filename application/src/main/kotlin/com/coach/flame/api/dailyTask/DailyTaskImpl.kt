@@ -66,7 +66,7 @@ class DailyTaskImpl(
                 date = stringToDate(dailyTask.date),
                 ticked = false,
                 clientIdentifier = clientToken,
-                coachToken = coachToken,
+                coachIdentifier = coachToken,
             )
 
             val createdDailyTask = dailyTaskService.createDailyTask(dailyTaskDto)

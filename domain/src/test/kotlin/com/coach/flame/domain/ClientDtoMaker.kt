@@ -23,20 +23,20 @@ class ClientDtoMaker {
         val country: Property<ClientDto, CountryDto?> = newProperty()
         val gender: Property<ClientDto, GenderDto?> = newProperty()
         val clientType: Property<ClientDto, ClientTypeDto> = newProperty()
-        val loginInfo: Property<ClientDto, LoginInfoDto> = newProperty()
+        val loginInfo: Property<ClientDto, LoginInfoDto?> = newProperty()
 
         val ClientDto: Instantiator<ClientDto> = Instantiator {
             ClientDto(
                 identifier = it.valueOf(identifier, UUID.randomUUID()),
                 firstName = it.valueOf(firstName, fake.name().firstName()),
                 lastName = it.valueOf(lastName, fake.name().lastName()),
-                birthday = it.valueOf(birthday, LocalDate.now()),
-                phoneCode = it.valueOf(phoneCode, fake.phoneNumber().extension()),
-                phoneNumber = it.valueOf(phoneNumber, fake.phoneNumber().phoneNumber()),
-                country = it.valueOf(country, make(a(CountryDtoMaker.CountryDto))),
-                gender = it.valueOf(gender, make(a(GenderDtoMaker.GenderDto))),
+                birthday = it.valueOf(birthday, null as LocalDate?),
+                phoneCode = it.valueOf(phoneCode, null as String?),
+                phoneNumber = it.valueOf(phoneNumber, null as String?),
+                country = it.valueOf(country, null as CountryDto?),
+                gender = it.valueOf(gender, null as GenderDto?),
                 clientType = it.valueOf(clientType, ClientTypeDto.CLIENT),
-                loginInfo = it.valueOf(loginInfo, make(a(LoginInfoDtoMaker.LoginInfoDto))),
+                loginInfo = it.valueOf(loginInfo, null as LoginInfoDto?),
             )
         }
     }

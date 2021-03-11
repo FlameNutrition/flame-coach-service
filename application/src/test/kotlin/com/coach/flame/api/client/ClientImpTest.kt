@@ -4,7 +4,7 @@ import com.coach.flame.api.client.request.ClientRequest
 import com.coach.flame.api.client.request.ClientRequestConverter
 import com.coach.flame.api.client.request.UserRequestMaker
 import com.coach.flame.api.client.request.UserRequestMaker.Companion.ClientRequest
-import com.coach.flame.api.client.request.UserRequestMaker.Companion.TYPE
+import com.coach.flame.api.client.request.UserRequestMaker.Companion.type
 import com.coach.flame.api.client.response.ClientResponse
 import com.coach.flame.api.client.response.ClientResponseConverter
 import com.coach.flame.api.client.response.UserResponseMaker
@@ -15,6 +15,7 @@ import com.coach.flame.domain.ClientDtoMaker
 import com.coach.flame.domain.ClientDtoMaker.Companion.ClientDto
 import com.coach.flame.domain.LoginInfoDto
 import com.coach.flame.domain.LoginInfoDtoMaker
+import com.coach.flame.domain.LoginInfoDtoMaker.Companion.LoginInfoDto
 import com.coach.flame.exception.RestInvalidRequestException
 import com.natpryce.makeiteasy.MakeItEasy.*
 import com.natpryce.makeiteasy.Maker
@@ -32,6 +33,8 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import java.time.LocalDateTime
+import java.util.*
 import java.util.stream.Stream
 
 @ExtendWith(MockKExtension::class)
@@ -50,16 +53,16 @@ class ClientImpTest {
     private lateinit var classToTest: ClientImp
 
     private lateinit var clientRequestMaker: Maker<ClientRequest>
-
     private lateinit var clientResponseMaker: Maker<ClientResponse>
-
     private lateinit var clientDtoMaker: Maker<ClientDto>
+    private lateinit var loginInfoDtoMaker: Maker<LoginInfoDto>
 
     @BeforeEach
     fun setUp() {
         clientRequestMaker = an(ClientRequest)
         clientResponseMaker = an(ClientResponse)
         clientDtoMaker = an(ClientDto)
+        loginInfoDtoMaker = an(LoginInfoDto)
     }
 
     @AfterEach
@@ -76,19 +79,19 @@ class ClientImpTest {
         // given
         val userRequestMakerCopy = when (missingParam) {
             "firstname" -> clientRequestMaker
-                .but(with(UserRequestMaker.FIRST_NAME, null as String?))
+                .but(with(UserRequestMaker.firstName, null as String?))
                 .make()
             "lastname" -> clientRequestMaker
-                .but(with(UserRequestMaker.LASTNAME, null as String?))
+                .but(with(UserRequestMaker.lastName, null as String?))
                 .make()
             "email" -> clientRequestMaker
-                .but(with(UserRequestMaker.EMAIL, null as String?))
+                .but(with(UserRequestMaker.email, null as String?))
                 .make()
             "password" -> clientRequestMaker
-                .but(with(UserRequestMaker.PASSWORD, null as String?))
+                .but(with(UserRequestMaker.password, null as String?))
                 .make()
             "type" -> clientRequestMaker
-                .but(with(TYPE, null as String?))
+                .but(with(type, null as String?))
                 .make()
             else -> clientRequestMaker.make()
         }
@@ -107,7 +110,7 @@ class ClientImpTest {
     fun `register new client with illegal state`() {
 
         // given
-        val userRequest = clientRequestMaker.but(with(TYPE, "INVALID")).make()
+        val userRequest = clientRequestMaker.but(with(type, "INVALID")).make()
         every { clientRequestConverter.convert(userRequest) } throws IllegalArgumentException("Invalid parameter request: type")
 
         // when
@@ -146,14 +149,18 @@ class ClientImpTest {
             .but(with(ClientDtoMaker.loginInfo, null as LoginInfoDto?))
             .make()
         val postClientDto = clientDtoMaker
+            .but(with(ClientDtoMaker.loginInfo, loginInfoDtoMaker
+                .but(with(LoginInfoDtoMaker.token, UUID.randomUUID()),
+                    with(LoginInfoDtoMaker.expirationDate, LocalDateTime.now()))
+                .make()))
             .make()
         val userResponse = clientResponseMaker
             .but(
-                with(UserResponseMaker.USERNAME, postClientDto.loginInfo!!.username),
-                with(UserResponseMaker.FIRSTNAME, postClientDto.firstName),
-                with(UserResponseMaker.LASTNAME, postClientDto.lastName),
-                with(UserResponseMaker.EXPIRATION, postClientDto.loginInfo!!.expirationDate),
-                with(UserResponseMaker.TOKEN, postClientDto.loginInfo!!.token),
+                with(UserResponseMaker.username, postClientDto.loginInfo!!.username),
+                with(UserResponseMaker.firstName, postClientDto.firstName),
+                with(UserResponseMaker.lastName, postClientDto.lastName),
+                with(UserResponseMaker.expiration, postClientDto.loginInfo!!.expirationDate),
+                with(UserResponseMaker.token, postClientDto.loginInfo!!.token),
             )
             .make()
         every { clientRequestConverter.convert(userRequest) } returns preClientDto
@@ -182,24 +189,26 @@ class ClientImpTest {
 
         // given
         val clientRequest = clientRequestMaker
-            .but(with(UserRequestMaker.EMAIL, "test@test.com"))
-            .but(with(UserRequestMaker.PASSWORD, "12345"))
+            .but(with(UserRequestMaker.email, "test@test.com"))
+            .but(with(UserRequestMaker.password, "12345"))
             .make()
         val postClientDto = clientDtoMaker
             .but(with(ClientDtoMaker.loginInfo,
                 make(a(
-                    LoginInfoDtoMaker.LoginInfoDto,
+                    LoginInfoDto,
                     with(LoginInfoDtoMaker.username, "test@test.com"),
-                    with(LoginInfoDtoMaker.password, "12345")
+                    with(LoginInfoDtoMaker.password, "12345"),
+                    with(LoginInfoDtoMaker.expirationDate, LocalDateTime.now()),
+                    with(LoginInfoDtoMaker.token, UUID.randomUUID())
                 ))
             )).make()
         val userResponse = clientResponseMaker
             .but(
-                with(UserResponseMaker.USERNAME, "test@test.com"),
-                with(UserResponseMaker.FIRSTNAME, postClientDto.firstName),
-                with(UserResponseMaker.LASTNAME, postClientDto.lastName),
-                with(UserResponseMaker.EXPIRATION, postClientDto.loginInfo?.expirationDate),
-                with(UserResponseMaker.TOKEN, postClientDto.loginInfo?.token),
+                with(UserResponseMaker.username, "test@test.com"),
+                with(UserResponseMaker.firstName, postClientDto.firstName),
+                with(UserResponseMaker.lastName, postClientDto.lastName),
+                with(UserResponseMaker.expiration, postClientDto.loginInfo?.expirationDate),
+                with(UserResponseMaker.token, postClientDto.loginInfo?.token),
             )
             .make()
 
@@ -226,10 +235,10 @@ class ClientImpTest {
         // given
         val userRequestMakerCopy = when (missingParam) {
             "email" -> clientRequestMaker
-                .but(with(UserRequestMaker.EMAIL, null as String?))
+                .but(with(UserRequestMaker.email, null as String?))
                 .make()
             "password" -> clientRequestMaker
-                .but(with(UserRequestMaker.PASSWORD, null as String?))
+                .but(with(UserRequestMaker.password, null as String?))
                 .make()
             else -> clientRequestMaker.make()
         }

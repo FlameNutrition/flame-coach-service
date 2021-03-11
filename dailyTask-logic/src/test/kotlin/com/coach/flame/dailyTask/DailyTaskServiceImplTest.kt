@@ -189,7 +189,7 @@ class DailyTaskServiceImplTest {
             .but(with(UserMaker.client, coach))
             .make()
         val coachSession = userSessionMaker
-            .but(with(UserSessionMaker.token, dailyTaskDto.coachToken),
+            .but(with(UserSessionMaker.token, dailyTaskDto.coachIdentifier),
                 with(UserSessionMaker.user, userCoach))
             .make()
         every { userSessionRepository.findByToken(any()) } returns coachSession
@@ -215,14 +215,14 @@ class DailyTaskServiceImplTest {
             .but(with(UserMaker.client, coach))
             .make()
         val coachSession = userSessionMaker
-            .but(with(UserSessionMaker.token, dailyTaskDto.coachToken),
+            .but(with(UserSessionMaker.token, dailyTaskDto.coachIdentifier),
                 with(UserSessionMaker.user, userCoach))
             .make()
         val client = clientMaker.make()
         val postDailyTask = dailyTaskMaker
             .but(with(DailyTaskMaker.client, client))
             .make()
-        every { userSessionRepository.findByToken(dailyTaskDto.coachToken!!) } returns coachSession
+        every { userSessionRepository.findByToken(dailyTaskDto.coachIdentifier!!) } returns coachSession
         every { clientRepository.findByUuid(dailyTaskDto.clientIdentifier!!) } returns client
         every { dailyTaskRepository.saveAndFlush(capture(entity)) } returns postDailyTask
 
@@ -238,7 +238,7 @@ class DailyTaskServiceImplTest {
         then(entity.captured.ticked).isFalse
         then(entity.captured.createdBy).isEqualTo(coachSession.user?.client)
         then(entity.captured.client).isEqualTo(client)
-        then(dailyTask.coachToken).isEqualTo(postDailyTask.createdBy.user.userSession.token)
+        then(dailyTask.coachIdentifier).isEqualTo(postDailyTask.createdBy.user.userSession.token)
         then(dailyTask.clientIdentifier).isEqualTo(postDailyTask.client.uuid)
 
     }

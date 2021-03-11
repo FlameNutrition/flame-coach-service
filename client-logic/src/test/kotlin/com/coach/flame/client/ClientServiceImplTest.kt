@@ -122,12 +122,18 @@ class ClientServiceImplTest {
     fun `register a new client`() {
 
         // given
+        val expectedExpirationDate = LocalDateTime.now()
+        val expectedToken = UUID.randomUUID()
         val preClientDto = clientDtoMaker
-            .but(with(ClientDtoMaker.birthday, null as LocalDate?))
-            .but(with(ClientDtoMaker.phoneCode, null as String?))
-            .but(with(ClientDtoMaker.phoneNumber, null as String?))
-            .but(with(ClientDtoMaker.country, null as CountryDto?))
-            .but(with(ClientDtoMaker.gender, null as GenderDto?))
+            .but(with(ClientDtoMaker.birthday, null as LocalDate?),
+                with(ClientDtoMaker.phoneCode, null as String?),
+                with(ClientDtoMaker.phoneNumber, null as String?),
+                with(ClientDtoMaker.country, null as CountryDto?),
+                with(ClientDtoMaker.loginInfo, loginInfoMaker
+                    .but(with(LoginInfoDtoMaker.expirationDate, expectedExpirationDate),
+                        with(LoginInfoDtoMaker.token, expectedToken))
+                    .make()),
+                with(ClientDtoMaker.gender, null as GenderDto?))
             .make()
 
         val expirationDate = LocalDateTime.now()
@@ -164,8 +170,8 @@ class ClientServiceImplTest {
         then(postClientDto.lastName).isEqualTo(entityClient.lastName)
         then(postClientDto.loginInfo!!.username).isEqualTo(preClientDto.loginInfo!!.username)
         then(postClientDto.loginInfo!!.password).isEqualTo(preClientDto.loginInfo!!.password)
-        then(postClientDto.loginInfo!!.expirationDate).isNotNull
-        then(postClientDto.loginInfo!!.token).isNotNull
+        then(postClientDto.loginInfo!!.expirationDate).isEqualTo(expectedExpirationDate)
+        then(postClientDto.loginInfo!!.token).isEqualTo(expectedToken)
 
     }
 
@@ -174,7 +180,9 @@ class ClientServiceImplTest {
 
         // given
         val entityClient = clientMaker.make()
-        val clientDto = clientDtoMaker.make()
+        val clientDto = clientDtoMaker
+            .but(with(ClientDtoMaker.loginInfo, loginInfoMaker.make()))
+            .make()
         every { clientTypeRepository.getByType(any()) } returns entityClient.clientType
         every { clientRepository.saveAndFlush(any()) } throws DataIntegrityViolationException("SQL ERROR!")
 
@@ -194,7 +202,9 @@ class ClientServiceImplTest {
 
         // given
         val entityClient = clientMaker.make()
-        val clientDto = clientDtoMaker.make()
+        val clientDto = clientDtoMaker
+            .but(with(ClientDtoMaker.loginInfo, loginInfoMaker.make()))
+            .make()
         every { clientTypeRepository.getByType(any()) } returns entityClient.clientType
         every { clientRepository.saveAndFlush(any()) } throws RuntimeException("Something wrong happened!")
 
@@ -215,31 +225,6 @@ class ClientServiceImplTest {
 
         var expectedMessage = "$missingParam is a mandatory parameter"
         val clientDto = when (missingParam) {
-            "clientType" -> clientDtoMaker
-                .but(with(ClientDtoMaker.clientType, null as ClientTypeDto?))
-                .make()
-            "firstName" -> clientDtoMaker
-                .but(with(ClientDtoMaker.firstName, null as String?))
-                .make()
-            "lastName" -> clientDtoMaker
-                .but(with(ClientDtoMaker.lastName, null as String?))
-                .make()
-            "username" -> {
-                expectedMessage = "loginInfo->$missingParam is a mandatory parameter"
-                clientDtoMaker
-                    .but(with(ClientDtoMaker.loginInfo, loginInfoMaker
-                        .but(with(LoginInfoDtoMaker.username, null as String?))
-                        .make()))
-                    .make()
-            }
-            "password" -> {
-                expectedMessage = "loginInfo->$missingParam is a mandatory parameter"
-                clientDtoMaker
-                    .but(with(ClientDtoMaker.loginInfo, loginInfoMaker
-                        .but(with(LoginInfoDtoMaker.password, null as String?))
-                        .make()))
-                    .make()
-            }
             "loginInfo" -> {
                 expectedMessage = "loginInfo->username is a mandatory parameter"
                 clientDtoMaker
@@ -345,11 +330,6 @@ class ClientServiceImplTest {
         @JvmStatic
         fun userRegisterMandatoryParameters(): Stream<Arguments> {
             return Stream.of(
-                Arguments.of("clientType"),
-                Arguments.of("firstName"),
-                Arguments.of("lastName"),
-                Arguments.of("username"),
-                Arguments.of("password"),
                 Arguments.of("loginInfo"),
             )
         }

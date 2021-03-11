@@ -154,7 +154,7 @@ class DailyTaskImplTest {
         then(taskDto.captured.date).isEqualTo(stringToDate(task.date!!))
         then(taskDto.captured.ticked).isFalse
         then(taskDto.captured.clientIdentifier).isEqualTo(clientToken)
-        then(taskDto.captured.coachToken).isEqualTo(coachToken)
+        then(taskDto.captured.coachIdentifier).isEqualTo(coachToken)
         then(response.dailyTasks).isNotEmpty
 
         val dailyTask = response.dailyTasks.first()
