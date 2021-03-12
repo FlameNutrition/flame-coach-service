@@ -6,6 +6,7 @@ import com.coach.flame.api.coach.response.CoachResponse
 import com.coach.flame.aspect.LoggingRequest
 import com.coach.flame.aspect.LoggingResponse
 import com.coach.flame.customer.CustomerService
+import com.coach.flame.customer.coach.CoachService
 import com.coach.flame.domain.CustomerTypeDto
 import com.coach.flame.domain.CoachDto
 import org.slf4j.Logger
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/coach")
 class CoachApiImpl(
-    private val customerService: CustomerService,
+    private val coachService: CoachService,
 ) : CoachApi {
 
     companion object {
@@ -28,7 +29,7 @@ class CoachApiImpl(
     @ResponseBody
     override fun getClientsCoach(@RequestBody(required = true) coachRequest: CoachRequest): CoachResponse {
 
-        val coach = customerService.getCustomer(coachRequest.identifier, CustomerTypeDto.COACH) as CoachDto
+        val coach = coachService.getCoachWithClientsAvailable(coachRequest.identifier)
 
         return CoachResponse(
             identifier = coach.identifier,

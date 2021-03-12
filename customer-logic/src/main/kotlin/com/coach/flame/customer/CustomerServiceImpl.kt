@@ -29,6 +29,7 @@ class CustomerServiceImpl(
         private val LOGGER: Logger = LoggerFactory.getLogger(CustomerServiceImpl::class.java)
     }
 
+    @Transactional(readOnly = true)
     override fun getCustomer(uuid: UUID, customerType: CustomerTypeDto): Customer {
 
         LOGGER.info("opr='getCustomer', msg='Get Customer', uuid={}, type={}", uuid, customerType)

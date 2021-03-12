@@ -7,6 +7,7 @@ import com.coach.flame.api.coach.response.ClientCoachMaker
 import com.coach.flame.api.coach.response.CoachResponse
 import com.coach.flame.api.coach.response.CoachResponseMaker
 import com.coach.flame.customer.CustomerService
+import com.coach.flame.customer.coach.CoachService
 import com.coach.flame.domain.*
 import com.natpryce.makeiteasy.MakeItEasy.an
 import com.natpryce.makeiteasy.MakeItEasy.with
@@ -26,7 +27,7 @@ import java.util.*
 class CoachApiImplTest {
 
     @MockK
-    private lateinit var customerService: CustomerService
+    private lateinit var coachService: CoachService
 
     @InjectMockKs
     private lateinit var classToTest: CoachApiImpl
@@ -61,7 +62,7 @@ class CoachApiImplTest {
                 with(CoachDtoMaker.listOfClients, clients))
             .make()
 
-        every { customerService.getCustomer(uuid, CustomerTypeDto.COACH) } returns clientCoach
+        every { coachService.getCoachWithClientsAvailable(uuid) } returns clientCoach
 
         val response = classToTest.getClientsCoach(coachRequest)
 
@@ -79,7 +80,7 @@ class CoachApiImplTest {
         val coachRequest = coachRequestMaker
             .but(with(CoachRequestMaker.identifier, uuid))
             .make()
-        every { customerService.getCustomer(uuid, CustomerTypeDto.COACH) } throws RuntimeException("Something wrong happened")
+        every { coachService.getCoachWithClientsAvailable(uuid) } throws RuntimeException("Something wrong happened")
 
         // when
         val thrown = BDDAssertions.catchThrowable { classToTest.getClientsCoach(coachRequest) }

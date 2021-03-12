@@ -1,9 +1,9 @@
 package com.coach.flame.testing.component.coach
 
-import com.coach.flame.jpa.entity.ClientMaker
-import com.coach.flame.jpa.entity.CoachMaker
-import com.coach.flame.jpa.entity.UserMaker
-import com.coach.flame.jpa.entity.UserSessionMaker
+import com.coach.flame.domain.ClientDtoBuilder
+import com.coach.flame.domain.ClientDtoMaker
+import com.coach.flame.domain.ClientStatusDto
+import com.coach.flame.jpa.entity.*
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
@@ -42,8 +42,14 @@ class GetClientsCoachTest : BaseComponentTest() {
 
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
+        val client0 = ClientBuilder.maker()
+            .but(with(ClientMaker.clientStatus, ClientStatus.WITH_COACH))
+            .make()
+        val client1 = ClientBuilder.maker()
+            .but(with(ClientMaker.clientStatus, ClientStatus.WITH_COACH))
+            .make()
         val coach = coachMaker
-            .but(with(CoachMaker.clients, listOf(clientMaker.make(), clientMaker.make())),
+            .but(with(CoachMaker.clients, listOf(client0, client1)),
                 with(CoachMaker.uuid, uuid))
             .make()
 
