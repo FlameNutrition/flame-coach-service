@@ -135,10 +135,13 @@ class CustomerServiceImpl(
 
         user.userSession.expirationDate = expirationDate
 
-        userSessionRepository.saveAndFlush(user.client?.user?.userSession!!)
-
-        return clientToClientDtoConverter.convert(user.client!!)
-
+        return if (user.client !== null) {
+            userSessionRepository.saveAndFlush(user.client?.user?.userSession!!)
+            clientToClientDtoConverter.convert(user.client!!)
+        } else {
+            userSessionRepository.saveAndFlush(user.coach?.user?.userSession!!)
+            coachToCoachDtoConverter.convert(user.coach!!)
+        }
     }
 
 

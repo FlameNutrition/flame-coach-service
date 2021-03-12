@@ -19,4 +19,7 @@ class User(
 
     @OneToOne(mappedBy = "user")
     val client: Client? = null,
+
+    @OneToOne(mappedBy = "user")
+    val coach: Coach? = null,
 ) : AbstractPersistable<Long>()
