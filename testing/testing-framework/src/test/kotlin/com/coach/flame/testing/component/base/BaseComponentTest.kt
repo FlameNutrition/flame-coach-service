@@ -59,7 +59,11 @@ abstract class BaseComponentTest {
     @Autowired
     protected lateinit var dailyTaskRepositoryMock: DailyTaskRepository
 
+    @Autowired
+    protected lateinit var coachRepositoryMock: CoachRepository
+
     protected lateinit var clientMaker: Maker<Client>
+    protected lateinit var coachMaker: Maker<Coach>
     protected lateinit var clientTypeMaker: Maker<ClientType>
     protected lateinit var userMaker: Maker<User>
     protected lateinit var userSessionMaker: Maker<UserSession>
@@ -73,6 +77,7 @@ abstract class BaseComponentTest {
     @BeforeEach
     fun setup() {
         clientMaker = an(ClientMaker.Client)
+        coachMaker = an(CoachMaker.Coach)
         clientTypeMaker = an(ClientTypeMaker.ClientType)
         userMaker = an(UserMaker.User)
         userSessionMaker = an(UserSessionMaker.UserSession)

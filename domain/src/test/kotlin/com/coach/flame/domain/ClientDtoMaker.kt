@@ -2,8 +2,6 @@ package com.coach.flame.domain
 
 import com.github.javafaker.Faker
 import com.natpryce.makeiteasy.Instantiator
-import com.natpryce.makeiteasy.MakeItEasy.a
-import com.natpryce.makeiteasy.MakeItEasy.make
 import com.natpryce.makeiteasy.Property
 import com.natpryce.makeiteasy.Property.newProperty
 import java.time.LocalDate
@@ -22,8 +20,9 @@ class ClientDtoMaker {
         val phoneNumber: Property<ClientDto, String?> = newProperty()
         val country: Property<ClientDto, CountryDto?> = newProperty()
         val gender: Property<ClientDto, GenderDto?> = newProperty()
-        val clientType: Property<ClientDto, ClientTypeDto> = newProperty()
+        val customerType: Property<ClientDto, CustomerTypeDto> = newProperty()
         val loginInfo: Property<ClientDto, LoginInfoDto?> = newProperty()
+        val clientStatus: Property<ClientDto, ClientStatusDto> = newProperty()
 
         val ClientDto: Instantiator<ClientDto> = Instantiator {
             ClientDto(
@@ -32,11 +31,11 @@ class ClientDtoMaker {
                 lastName = it.valueOf(lastName, fake.name().lastName()),
                 birthday = it.valueOf(birthday, null as LocalDate?),
                 phoneCode = it.valueOf(phoneCode, null as String?),
-                phoneNumber = it.valueOf(phoneNumber, null as String?),
                 country = it.valueOf(country, null as CountryDto?),
                 gender = it.valueOf(gender, null as GenderDto?),
-                clientType = it.valueOf(clientType, ClientTypeDto.CLIENT),
+                customerType = it.valueOf(customerType, CustomerTypeDto.CLIENT),
                 loginInfo = it.valueOf(loginInfo, null as LoginInfoDto?),
+                clientStatus = it.valueOf(clientStatus, ClientStatusDto.PENDING)
             )
         }
     }

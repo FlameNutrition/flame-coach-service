@@ -28,6 +28,8 @@ class ClientMaker {
         val userSession: Property<Client, UserSession> = newProperty()
         val clientMeasureWeight: Property<Client, MutableList<ClientMeasureWeight>> = newProperty()
         val dailyClientTask: Property<Client, MutableList<DailyTask>> = newProperty()
+        val coach: Property<Client, Coach> = newProperty()
+        val clientStatus: Property<Client, ClientStatus> = newProperty()
 
         val Client: Instantiator<Client> = Instantiator {
 
@@ -49,6 +51,8 @@ class ClientMaker {
                 clientType = it.valueOf(clientType, make(a(ClientTypeMaker.ClientType))),
                 clientMeasureWeight = it.valueOf(clientMeasureWeight, mutableListOf()),
                 dailyClientTask = it.valueOf(dailyClientTask, mutableListOf()),
+                coach = it.valueOf(coach, null as Coach?),
+                clientStatus = it.valueOf(clientStatus, ClientStatus.PENDING),
             )
         }
     }

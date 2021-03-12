@@ -32,4 +32,8 @@ class ComponentTestConfig {
     @Bean(name = ["dailyTaskRepositoryMock"])
     fun dailyTaskRepository() = mockk<DailyTaskRepository>(relaxed = false)
 
+    @Primary
+    @Bean(name = ["coachRepositoryMock"])
+    fun coachRepository() = mockk<CoachRepository>(relaxed = false)
+
 }

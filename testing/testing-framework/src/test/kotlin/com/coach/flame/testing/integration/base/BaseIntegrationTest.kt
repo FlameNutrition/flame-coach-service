@@ -2,10 +2,7 @@ package com.coach.flame.testing.integration.base
 
 import com.coach.flame.FlameCoachServiceApplication
 import com.coach.flame.jpa.entity.*
-import com.coach.flame.jpa.repository.ClientRepository
-import com.coach.flame.jpa.repository.ClientTypeRepository
-import com.coach.flame.jpa.repository.UserRepository
-import com.coach.flame.jpa.repository.UserSessionRepository
+import com.coach.flame.jpa.repository.*
 import com.google.gson.JsonObject
 import com.natpryce.makeiteasy.MakeItEasy.an
 import com.natpryce.makeiteasy.Maker
@@ -55,9 +52,13 @@ abstract class BaseIntegrationTest {
     @Autowired
     protected lateinit var userSessionRepository: UserSessionRepository
 
+    @Autowired
+    protected lateinit var coachRepository: CoachRepository
+
     protected val userMaker: Maker<User> = an(UserMaker.User)
     protected val clientTypeMaker: Maker<ClientType> = an(ClientTypeMaker.ClientType)
     protected val clientMaker: Maker<Client> = an(ClientMaker.Client)
+    protected val coachMaker: Maker<Coach> = an(CoachMaker.Coach)
     protected val userSessionMaker: Maker<UserSession> = an(UserSessionMaker.UserSession)
 
     /**

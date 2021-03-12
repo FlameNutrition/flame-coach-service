@@ -38,7 +38,7 @@ class DailyTaskIntegrationTest : BaseIntegrationTest() {
     @Test
     @LoadRequest(
         pathOfRequest = "requests/integration/dailyTask/createNewDailyTask.json",
-        endpoint = "/api/dailyTask/create/task",
+        endpoint = "api/dailyTask/create/task",
         httpMethod = RequestMethod.POST,
         headers = [
             "clientToken:3c5845f1-4a90-4396-8610-7261761369ae",
@@ -70,7 +70,7 @@ class DailyTaskIntegrationTest : BaseIntegrationTest() {
             .make())
 
         // when
-        val response = restTemplate.restTemplate.exchange(request!!, String::class.java)
+        val response = restTemplate.exchange(request!!, String::class.java)
 
         // then
         then(response).isNotNull

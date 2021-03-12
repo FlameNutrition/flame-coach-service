@@ -5,9 +5,7 @@ import com.coach.flame.testing.framework.LoadRequest
 import com.google.gson.JsonObject
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.http.HttpHeaders
-import org.springframework.http.MediaType
-import org.springframework.http.RequestEntity
+import org.springframework.http.*
 import org.springframework.test.context.TestContext
 import org.springframework.test.context.TestExecutionListener
 import org.springframework.web.bind.annotation.RequestMethod
@@ -46,15 +44,17 @@ class LoadRequestExecutionListener : TestExecutionListener {
             headers.set(header, value)
         }
 
-        val request: RequestEntity<*> = when (loadRequestAnnotation.httpMethod) {
-            RequestMethod.POST -> {
-                RequestEntity.post(URL("http://localhost:${loadRequestAnnotation.port}/${loadRequestAnnotation.endpoint}").toURI())
-                    .headers(headers)
-                    .contentType(MediaType.valueOf(loadRequestAnnotation.contentType))
-                    .body(json.toString())
-            }
-            else -> RequestEntity.get(URL("http://localhost:${loadRequestAnnotation.port}").toURI()).build()
+        val httpMethod = when (loadRequestAnnotation.httpMethod) {
+            RequestMethod.POST -> HttpMethod.POST
+            RequestMethod.GET -> HttpMethod.GET
+            else -> HttpMethod.GET
         }
+
+        val request: RequestEntity<*> = RequestEntity.method(httpMethod,
+            URL("http://localhost:${loadRequestAnnotation.port}/${loadRequestAnnotation.endpoint}").toURI())
+            .headers(headers)
+            .contentType(MediaType.valueOf(loadRequestAnnotation.contentType))
+            .body(json.toString())
 
         BaseIntegrationTest::class.memberProperties.filter { it.name == "request" }
             .filterIsInstance<KMutableProperty<*>>()

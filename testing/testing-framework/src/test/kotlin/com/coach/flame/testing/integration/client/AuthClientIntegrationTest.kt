@@ -1,27 +1,17 @@
 package com.coach.flame.testing.integration.client
 
 import com.coach.flame.jpa.entity.*
-import com.coach.flame.jpa.repository.ClientRepository
-import com.coach.flame.jpa.repository.ClientTypeRepository
-import com.coach.flame.jpa.repository.UserRepository
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
 import com.coach.flame.testing.integration.base.BaseIntegrationTest
 import com.natpryce.makeiteasy.MakeItEasy.*
 import org.assertj.core.api.BDDAssertions.then
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.test.context.jdbc.Sql
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMethod
-import javax.persistence.EntityManager
-import javax.persistence.PersistenceContext
-import javax.sql.DataSource
 
 class AuthClientIntegrationTest : BaseIntegrationTest() {
 
@@ -30,15 +20,15 @@ class AuthClientIntegrationTest : BaseIntegrationTest() {
 
     @Test
     @LoadRequest(
-        pathOfRequest = "requests/integration/client/registerNewClient.json",
-        endpoint = "/api/client/create",
+        pathOfRequest = "requests/integration/customer/registerNewCustomerClient.json",
+        endpoint = "api/client/create",
         httpMethod = RequestMethod.POST
     )
     fun `register new client`() {
 
         // when
         clientTypeRepository.saveAndFlush(clientTypeMaker.make())
-        val response = restTemplate.restTemplate.exchange(request!!, String::class.java)
+        val response = restTemplate.exchange(request!!, String::class.java)
 
         // then
         then(response).isNotNull
@@ -53,11 +43,12 @@ class AuthClientIntegrationTest : BaseIntegrationTest() {
         then(body.getAsJsonPrimitive("token").asString).isNotEmpty
         then(body.getAsJsonPrimitive("expiration").asString).isNotEmpty
         then(body.getAsJsonPrimitive("type").asString).isEqualTo("CLIENT")
+        then(body.getAsJsonPrimitive("identifier").asString).isNotEmpty
     }
 
     @Test
     @LoadRequest(
-        pathOfRequest = "requests/integration/client/newClientSession.json",
+        pathOfRequest = "requests/integration/customer/newCustomerSession.json",
         endpoint = "/api/client/newSession",
         httpMethod = RequestMethod.POST
     )
@@ -82,9 +73,7 @@ class AuthClientIntegrationTest : BaseIntegrationTest() {
 
         clientRepository.saveAndFlush(client)
 
-        val response = restTemplate.restTemplate.exchange(request!!, String::class.java)
-
-        println(response)
+        val response = restTemplate.exchange(request!!, String::class.java)
 
         // then
         then(response).isNotNull
@@ -99,6 +88,7 @@ class AuthClientIntegrationTest : BaseIntegrationTest() {
         then(body.getAsJsonPrimitive("token").asString).isNotEmpty
         then(body.getAsJsonPrimitive("expiration").asString).isNotEmpty
         then(body.getAsJsonPrimitive("type").asString).isEqualTo("CLIENT")
+        then(body.getAsJsonPrimitive("identifier").asString).isEqualTo(client.uuid.toString())
 
     }
 

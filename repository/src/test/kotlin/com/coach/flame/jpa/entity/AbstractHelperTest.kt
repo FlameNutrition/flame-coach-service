@@ -1,9 +1,6 @@
 package com.coach.flame.jpa.entity
 
-import com.coach.flame.jpa.repository.ClientRepository
-import com.coach.flame.jpa.repository.ClientTypeRepository
-import com.coach.flame.jpa.repository.DailyTaskRepository
-import com.coach.flame.jpa.repository.UserSessionRepository
+import com.coach.flame.jpa.repository.*
 import com.natpryce.makeiteasy.MakeItEasy.an
 import com.natpryce.makeiteasy.Maker
 import org.springframework.beans.factory.annotation.Autowired
@@ -25,6 +22,7 @@ abstract class AbstractHelperTest {
     protected val userMaker: Maker<User> = an(UserMaker.User)
     protected val userSessionMaker: Maker<UserSession> = an(UserSessionMaker.UserSession)
     protected val dailyTaskMaker: Maker<DailyTask> = an(DailyTaskMaker.DailyTask)
+    protected val coachMaker: Maker<Coach> = an(CoachMaker.Coach)
 
     @Autowired
     private lateinit var clientTypeRepository: ClientTypeRepository
@@ -37,6 +35,9 @@ abstract class AbstractHelperTest {
 
     @Autowired
     private lateinit var dailyTaskRepository: DailyTaskRepository
+
+    @Autowired
+    private lateinit var coachRepository: CoachRepository
 
     fun getClientTypeRepository(): ClientTypeRepository {
         return clientTypeRepository
@@ -52,6 +53,10 @@ abstract class AbstractHelperTest {
 
     fun getDailyTaskRepository(): DailyTaskRepository {
         return dailyTaskRepository
+    }
+
+    fun getCoachRepository(): CoachRepository {
+        return coachRepository
     }
 
 }

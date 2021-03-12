@@ -1,7 +1,7 @@
 package com.coach.flame
 
 import com.coach.flame.aspect.LoggingServiceConfig
-import com.coach.flame.client.ClientModuleConfig
+import com.coach.flame.client.CustomerModuleConfig
 import com.coach.flame.dailyTask.DailyTaskModuleConfig
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Import
@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Import
 )
 @Import(
     value = [
-        ClientModuleConfig::class,
+        CustomerModuleConfig::class,
         DailyTaskModuleConfig::class,
         LoggingServiceConfig::class,
         FlameCoachWebConfig::class]

@@ -49,6 +49,14 @@ class Client(
     val clientMeasureWeight: MutableList<ClientMeasureWeight> = mutableListOf(),
 
     @OneToMany(mappedBy = "client", fetch = FetchType.EAGER)
-    val dailyClientTask: MutableList<DailyTask> = mutableListOf()
+    val dailyClientTask: MutableList<DailyTask> = mutableListOf(),
+
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "coachFk", referencedColumnName = "id")
+    val coach: Coach? = null,
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    val clientStatus: ClientStatus
 
 ) : AbstractPersistable<Long>()
