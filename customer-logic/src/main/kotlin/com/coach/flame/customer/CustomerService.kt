@@ -1,4 +1,4 @@
-package com.coach.flame.client
+package com.coach.flame.customer
 
 import com.coach.flame.domain.CustomerTypeDto
 import com.coach.flame.domain.Customer

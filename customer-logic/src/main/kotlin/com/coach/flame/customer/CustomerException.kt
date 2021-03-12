@@ -1,4 +1,4 @@
-package com.coach.flame.client
+package com.coach.flame.customer
 
 import com.coach.flame.failure.HttpStatus
 import com.coach.flame.failure.Status

@@ -1,5 +1,6 @@
-package com.coach.flame.client
+package com.coach.flame.customer
 
+import com.coach.flame.domain.CoachDto
 import com.coach.flame.domain.CustomerTypeDto
 import com.coach.flame.domain.Customer
 import com.coach.flame.domain.converters.ClientToClientDtoConverter
@@ -47,6 +48,7 @@ class CustomerServiceImpl(
                         ?: throw CustomerNotFoundException("Could not found any coach with uuid: $uuid")
 
                 return coachToCoachDtoConverter.convert(coach)
+
             }
             else -> throw CustomerDataException("$customerType is a invalid customer type")
         }
