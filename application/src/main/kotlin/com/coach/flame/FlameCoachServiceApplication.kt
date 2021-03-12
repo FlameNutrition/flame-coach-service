@@ -1,7 +1,7 @@
 package com.coach.flame
 
 import com.coach.flame.aspect.LoggingServiceConfig
-import com.coach.flame.client.CustomerModuleConfig
+import com.coach.flame.customer.CustomerModuleConfig
 import com.coach.flame.dailyTask.DailyTaskModuleConfig
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Import

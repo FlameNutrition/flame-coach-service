@@ -5,7 +5,7 @@ import com.coach.flame.api.coach.response.ClientCoach
 import com.coach.flame.api.coach.response.CoachResponse
 import com.coach.flame.aspect.LoggingRequest
 import com.coach.flame.aspect.LoggingResponse
-import com.coach.flame.client.CustomerService
+import com.coach.flame.customer.CustomerService
 import com.coach.flame.domain.CustomerTypeDto
 import com.coach.flame.domain.CoachDto
 import org.slf4j.Logger

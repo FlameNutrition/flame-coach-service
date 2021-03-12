@@ -1,6 +1,5 @@
 package com.coach.flame.customer
 
-import com.coach.flame.domain.CoachDto
 import com.coach.flame.domain.CustomerTypeDto
 import com.coach.flame.domain.Customer
 import com.coach.flame.domain.converters.ClientToClientDtoConverter

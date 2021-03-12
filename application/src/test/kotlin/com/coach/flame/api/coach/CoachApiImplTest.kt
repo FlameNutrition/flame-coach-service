@@ -6,7 +6,7 @@ import com.coach.flame.api.coach.response.ClientCoach
 import com.coach.flame.api.coach.response.ClientCoachMaker
 import com.coach.flame.api.coach.response.CoachResponse
 import com.coach.flame.api.coach.response.CoachResponseMaker
-import com.coach.flame.client.CustomerService
+import com.coach.flame.customer.CustomerService
 import com.coach.flame.domain.*
 import com.natpryce.makeiteasy.MakeItEasy.an
 import com.natpryce.makeiteasy.MakeItEasy.with

@@ -9,7 +9,7 @@ import com.coach.flame.api.customer.response.CustomerResponse
 import com.coach.flame.api.customer.response.CustomerResponseConverter
 import com.coach.flame.api.customer.response.CustomerResponseMaker
 import com.coach.flame.api.customer.response.CustomerResponseMaker.Companion.CustomerResponse
-import com.coach.flame.client.CustomerService
+import com.coach.flame.customer.CustomerService
 import com.coach.flame.domain.ClientDto
 import com.coach.flame.domain.ClientDtoMaker
 import com.coach.flame.domain.ClientDtoMaker.Companion.ClientDto

@@ -6,7 +6,7 @@ import com.coach.flame.api.customer.response.CustomerResponse
 import com.coach.flame.api.customer.response.CustomerResponseConverter
 import com.coach.flame.aspect.LoggingRequest
 import com.coach.flame.aspect.LoggingResponse
-import com.coach.flame.client.CustomerService
+import com.coach.flame.customer.CustomerService
 import com.coach.flame.exception.RestException
 import com.coach.flame.exception.RestInvalidRequestException
 import org.slf4j.Logger
