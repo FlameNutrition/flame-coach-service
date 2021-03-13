@@ -431,7 +431,7 @@
         <module>dailyTask-logic</module>
         <module>failureDetail-logic</module>
         <module>utilities</module>
-        <module>client-logic</module>
+        <module>customer-logic</module>
         <module>domain</module>
         <module>converters</module>
     </modules>

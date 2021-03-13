@@ -16,18 +16,18 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.web.bind.annotation.RequestMethod
 import java.util.*
 
-class GetClientsCoachTest : BaseComponentTest() {
+class GetClientsCoachPlusAvailableClientsTest : BaseComponentTest() {
 
     @Autowired
     private lateinit var mockMvc: MockMvc
 
     @Test
     @LoadRequest(
-        endpoint = "/api/coach/getClientsAccepted",
+        endpoint = "/api/coach/getClientsCoachPlusClientsAvailable",
         httpMethod = RequestMethod.GET,
         parameters = ["identifier:e59343bc-6563-4488-a77e-112e886c57ae"]
     )
-    fun `test get clients from coach`() {
+    fun `test get clients from coach plus the clients available for coaching`() {
 
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
@@ -35,13 +35,59 @@ class GetClientsCoachTest : BaseComponentTest() {
             .but(with(ClientMaker.clientStatus, ClientStatus.ACCEPTED))
             .make()
         val client1 = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.ACCEPTED))
+            .but(with(ClientMaker.clientStatus, ClientStatus.PENDING))
+            .make()
+        val client2 = ClientBuilder.maker()
+            .but(with(ClientMaker.clientStatus, ClientStatus.AVAILABLE))
+            .make()
+        val client3 = ClientBuilder.maker()
+            .but(with(ClientMaker.clientStatus, ClientStatus.AVAILABLE))
             .make()
         val coach = coachMaker
             .but(with(CoachMaker.clients, listOf(client0, client1)),
                 with(CoachMaker.uuid, uuid))
             .make()
 
+        every { clientRepositoryMock.findClientsWithoutCoach() } returns listOf(client2, client3)
+        every { coachRepositoryMock.findByUuid(uuid) } returns coach
+
+        // when
+        val mvnResponse = mockMvc.perform(request!!)
+            .andDo { MockMvcResultHandlers.print() }
+            .andDo { MockMvcResultHandlers.log() }
+            .andReturn()
+
+        // then
+        then(mvnResponse.response).isNotNull
+        then(mvnResponse.response.status).isEqualTo(HttpStatus.OK.value())
+        then(mvnResponse.response.contentType).isEqualTo(MediaType.APPLICATION_JSON_VALUE)
+        val jsonResponse = JsonBuilder.getJsonFromString(mvnResponse.response.contentAsString)
+
+        then(jsonResponse.getAsJsonPrimitive("identifier").asString).isEqualTo(uuid.toString())
+        then(jsonResponse.getAsJsonArray("clientsCoach")).hasSize(4)
+
+    }
+
+    @Test
+    @LoadRequest(
+        endpoint = "/api/coach/getClientsCoachPlusClientsAvailable",
+        httpMethod = RequestMethod.GET,
+        parameters = ["identifier:e59343bc-6563-4488-a77e-112e886c57ae"]
+    )
+    fun `test get clients from coach without clients`() {
+
+        // given
+        val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
+        val client0 = ClientBuilder.maker()
+            .but(with(ClientMaker.clientStatus, ClientStatus.AVAILABLE))
+            .make()
+        val client1 = ClientBuilder.maker()
+            .but(with(ClientMaker.clientStatus, ClientStatus.AVAILABLE))
+            .make()
+        val coach = coachMaker
+            .but(with(CoachMaker.uuid, uuid)).make()
+
+        every { clientRepositoryMock.findClientsWithoutCoach() } returns listOf(client0, client1)
         every { coachRepositoryMock.findByUuid(uuid) } returns coach
 
         // when
@@ -63,15 +109,16 @@ class GetClientsCoachTest : BaseComponentTest() {
 
     @Test
     @LoadRequest(
-        endpoint = "/api/coach/getClientsAccepted",
+        endpoint = "/api/coach/getClientsCoachPlusClientsAvailable",
         httpMethod = RequestMethod.GET,
         parameters = ["identifier:e59343bc-6563-4488-a77e-112e886c57ae"]
     )
-    fun `test get clients from coach but occurred an internal exception`() {
+    fun `test get clients from coach is not in the system`() {
 
+        // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
 
-        every { coachRepositoryMock.findByUuid(uuid) } throws Exception("Ops...something is wrong!")
+        every { coachRepositoryMock.findByUuid(uuid) } returns null
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -81,17 +128,18 @@ class GetClientsCoachTest : BaseComponentTest() {
 
         // then
         then(mvnResponse).isNotNull
-        then(mvnResponse.response.status).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value())
+        then(mvnResponse.response.status).isEqualTo(HttpStatus.NOT_FOUND.value())
         then(mvnResponse.response.contentType).isEqualTo(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
 
         val body = JsonBuilder.getJsonFromString(mvnResponse.response.contentAsString)
 
-        thenErrorMessageType(body).endsWith("InternalServerException.html")
-        thenErrorMessageTitle(body).isEqualTo("InternalServerException")
-        thenErrorMessageDetail(body).isEqualTo("This is an internal problem, please contact the admin system")
-        thenErrorMessageStatus(body).isEqualTo("500")
+        thenErrorMessageType(body).endsWith("CustomerNotFoundException.html")
+        thenErrorMessageTitle(body).isEqualTo("CustomerNotFoundException")
+        thenErrorMessageDetail(body).isEqualTo("Could not found any coach with uuid: e59343bc-6563-4488-a77e-112e886c57ae")
+        thenErrorMessageStatus(body).isEqualTo("404")
         thenErrorMessageInstance(body).isNotEmpty
         thenErrorMessageDebug(body).isEmpty()
     }
+
 
 }

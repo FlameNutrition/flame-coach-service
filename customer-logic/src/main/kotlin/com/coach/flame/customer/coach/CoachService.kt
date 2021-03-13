@@ -5,6 +5,8 @@ import java.util.*
 
 interface CoachService {
 
-    fun getCoachWithClientsAvailable(uuid: UUID): CoachDto
+    fun getCoachWithClientsAccepted(uuid: UUID): CoachDto
+
+    fun getCoachWithClientsAvailable(uuid:UUID) : CoachDto
 
 }

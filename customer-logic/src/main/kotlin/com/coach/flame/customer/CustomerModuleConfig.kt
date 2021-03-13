@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Import
 @ComponentScan(value = [
     "com.coach.flame.customer",
     "com.coach.flame.customer.coach",
+    "com.coach.flame.customer.client",
     "com.coach.flame.domain.converters"])
 @Import(value = [FlameCoachRepoConfig::class])
 class CustomerModuleConfig

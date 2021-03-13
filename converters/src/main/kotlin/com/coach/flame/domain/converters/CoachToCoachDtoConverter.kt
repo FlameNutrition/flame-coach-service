@@ -33,13 +33,13 @@ class CoachToCoachDtoConverter(
         if (coach.country !== null) {
             countryDto = countryConfigToCountryDtoConverter.convert(coach.country!!)
         } else {
-            LOGGER.warn("opr='convert', msg='Country is null', clientUUID={}", coach.uuid)
+            LOGGER.debug("opr='convert', msg='Country is null', clientUUID={}", coach.uuid)
         }
 
         if (coach.gender !== null) {
             genderDto = genderConfigToGenderDtoConverter.convert(coach.gender!!)
         } else {
-            LOGGER.warn("opr='convert', msg='Gender is null', clientUUID={}", coach.uuid)
+            LOGGER.debug("opr='convert', msg='Gender is null', clientUUID={}", coach.uuid)
         }
 
         return CoachDto(

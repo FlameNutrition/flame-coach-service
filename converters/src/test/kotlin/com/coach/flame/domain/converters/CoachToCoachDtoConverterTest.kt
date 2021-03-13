@@ -53,7 +53,7 @@ class CoachToCoachDtoConverterTest {
     }
 
     @Test
-    fun `client convert all values`() {
+    fun `coach convert all values`() {
 
         // given
         val clients = mutableListOf(clientMaker.make(), clientMaker.make(), clientMaker.make())
@@ -88,7 +88,7 @@ class CoachToCoachDtoConverterTest {
         then(clientDto.phoneNumber).isEqualTo(coach.phoneNumber)
         then(clientDto.country).isEqualTo(countryDto)
         then(clientDto.gender).isEqualTo(genderDto)
-        then(clientDto.customerType).isEqualTo(CustomerTypeDto.CLIENT)
+        then(clientDto.customerType).isEqualTo(CustomerTypeDto.COACH)
         then(clientDto.listOfClients).hasSize(3)
     }
 

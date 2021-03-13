@@ -43,7 +43,8 @@ class CoachMaker {
                 country = it.valueOf(country, null as CountryConfig?),
                 gender = it.valueOf(gender, null as GenderConfig?),
                 user = it.valueOf(user, userInit),
-                clientType = it.valueOf(clientType, make(a(ClientTypeMaker.ClientType))),
+                clientType = it.valueOf(clientType, make(a(ClientTypeMaker.ClientType,
+                    with(ClientTypeMaker.type, "COACH")))),
                 clients = it.valueOf(clients, listOf()),
             )
         }

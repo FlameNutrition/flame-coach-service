@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestMethod
 import java.net.URL
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.memberProperties
+import org.springframework.web.util.UriComponentsBuilder
+import java.net.URI
+
 
 class LoadRequestExecutionListener : TestExecutionListener {
 
@@ -27,14 +30,6 @@ class LoadRequestExecutionListener : TestExecutionListener {
 
         requireNotNull(loadRequestAnnotation) { "please apply a @LoadRequest annotation in your test" }
 
-        val json: JsonObject = if (loadRequestAnnotation.pathOfRequest.isEmpty()) {
-            LOGGER.info("opr='beforeTestMethod', 'Loading test using request'")
-            JsonBuilder.getJsonFromString(loadRequestAnnotation.request)
-        } else {
-            LOGGER.info("opr='beforeTestMethod', 'Loading test using request file'")
-            JsonBuilder.getJsonFromFile(loadRequestAnnotation.pathOfRequest)
-        }
-
         val headers = HttpHeaders()
         loadRequestAnnotation.headers.forEach {
             val pair = it.split(":")
@@ -44,17 +39,40 @@ class LoadRequestExecutionListener : TestExecutionListener {
             headers.set(header, value)
         }
 
-        val httpMethod = when (loadRequestAnnotation.httpMethod) {
-            RequestMethod.POST -> HttpMethod.POST
-            RequestMethod.GET -> HttpMethod.GET
-            else -> HttpMethod.GET
-        }
+        val request: RequestEntity<*> = when (loadRequestAnnotation.httpMethod) {
+            RequestMethod.POST -> {
 
-        val request: RequestEntity<*> = RequestEntity.method(httpMethod,
-            URL("http://localhost:${loadRequestAnnotation.port}/${loadRequestAnnotation.endpoint}").toURI())
-            .headers(headers)
-            .contentType(MediaType.valueOf(loadRequestAnnotation.contentType))
-            .body(json.toString())
+                val json: JsonObject = if (loadRequestAnnotation.pathOfRequest.isEmpty()) {
+                    LOGGER.info("opr='beforeTestMethod', 'Loading test using request'")
+                    JsonBuilder.getJsonFromString(loadRequestAnnotation.request)
+                } else {
+                    LOGGER.info("opr='beforeTestMethod', 'Loading test using request file'")
+                    JsonBuilder.getJsonFromFile(loadRequestAnnotation.pathOfRequest)
+                }
+
+                RequestEntity.post(URI.create("http://localhost:${loadRequestAnnotation.port}/${loadRequestAnnotation.endpoint}"))
+                    .headers(headers)
+                    .contentType(MediaType.valueOf(loadRequestAnnotation.contentType))
+                    .body(json.toString())
+            }
+            RequestMethod.GET -> {
+                val builder = UriComponentsBuilder
+                    .fromHttpUrl("http://localhost:${loadRequestAnnotation.port}/${loadRequestAnnotation.endpoint}")
+
+                loadRequestAnnotation.parameters.forEach {
+                    val pair = it.split(":")
+                    val param = pair[0]
+                    val value = pair[1]
+
+                    builder.queryParam(param, value)
+                }
+
+                RequestEntity.get(URI.create(builder.toUriString()))
+                    .headers(headers)
+                    .build()
+            }
+            else -> RequestEntity.get("http://localhost:${loadRequestAnnotation.port}").build()
+        }
 
         BaseIntegrationTest::class.memberProperties.filter { it.name == "request" }
             .filterIsInstance<KMutableProperty<*>>()

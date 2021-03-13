@@ -19,4 +19,10 @@ annotation class LoadRequest(
      * E.g: "<header>:<value>"
      */
     val headers: Array<String> = [],
+
+    /**
+     * Please use the character ":" to set the parameters
+     * E.g: "<parameter>:<value>"
+     */
+    val parameters: Array<String> = [],
 )

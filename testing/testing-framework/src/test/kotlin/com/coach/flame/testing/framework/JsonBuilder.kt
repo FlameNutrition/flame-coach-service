@@ -23,8 +23,6 @@ object JsonBuilder {
      */
     fun getJsonFromFile(fileName: String): JsonObject {
 
-        LOGGER.debug("input: {}", fileName)
-
         val data = requireNotNull(
             this::class.java.classLoader
                 .getResource(fileName)
@@ -36,7 +34,7 @@ object JsonBuilder {
 
         val jsonObj = gson.fromJson(data, JsonObject::class.java)
 
-        LOGGER.debug("output: {}", jsonObj)
+        LOGGER.debug("getJsonFromFile: {}", jsonObj)
 
         return jsonObj
 
@@ -50,11 +48,9 @@ object JsonBuilder {
      */
     fun getJsonFromString(string: String): JsonObject {
 
-        LOGGER.debug("input: {}", string)
-
         val jsonObj = gson.fromJson(string, JsonObject::class.java)
 
-        LOGGER.debug("output: {}", jsonObj)
+        LOGGER.debug("getJsonFromString: {}", jsonObj)
 
         return jsonObj
     }

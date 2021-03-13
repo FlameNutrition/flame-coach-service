@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 @Component
 class ClientToClientDtoConverter(
     private val countryConfigToCountryDtoConverter: CountryConfigToCountryDtoConverter,
-    private val genderConfigToGenderDtoConverter: GenderConfigToGenderDtoConverter
+    private val genderConfigToGenderDtoConverter: GenderConfigToGenderDtoConverter,
 ) : Converter<Client, ClientDto> {
 
     companion object {
@@ -32,13 +32,13 @@ class ClientToClientDtoConverter(
         if (client.country !== null) {
             countryDto = countryConfigToCountryDtoConverter.convert(client.country!!)
         } else {
-            LOGGER.warn("opr='convert', msg='Country is null', clientUUID={}", client.uuid)
+            LOGGER.debug("opr='convert', msg='Country is null', clientUUID={}", client.uuid)
         }
 
         if (client.gender !== null) {
             genderDto = genderConfigToGenderDtoConverter.convert(client.gender!!)
         } else {
-            LOGGER.warn("opr='convert', msg='Gender is null', clientUUID={}", client.uuid)
+            LOGGER.debug("opr='convert', msg='Gender is null', clientUUID={}", client.uuid)
         }
 
         return ClientDto(

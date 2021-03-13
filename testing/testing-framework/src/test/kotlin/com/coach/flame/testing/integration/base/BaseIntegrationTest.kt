@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.RequestEntity
+import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.TestExecutionListeners
 
@@ -65,6 +66,7 @@ abstract class BaseIntegrationTest {
      * Use this request for integration tests
      */
     var request: RequestEntity<String>? = null
+    var response: ResponseEntity<*>? = null
 
     @BeforeEach
     fun beforeEach() {

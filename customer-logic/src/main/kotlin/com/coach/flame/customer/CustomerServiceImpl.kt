@@ -91,7 +91,7 @@ class CustomerServiceImpl(
                         lastName = customer.lastName,
                         clientType = clientType,
                         user = user,
-                        clientStatus = ClientStatus.PENDING
+                        clientStatus = ClientStatus.AVAILABLE
                     )
                     val client = clientRepository.saveAndFlush(entity)
                     return clientToClientDtoConverter.convert(client)

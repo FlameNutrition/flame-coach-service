@@ -53,10 +53,10 @@ class Client(
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "coachFk", referencedColumnName = "id")
-    val coach: Coach? = null,
+    var coach: Coach? = null,
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    val clientStatus: ClientStatus
+    var clientStatus: ClientStatus
 
 ) : AbstractPersistable<Long>()

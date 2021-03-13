@@ -12,6 +12,7 @@ import org.springframework.test.context.TestContext
 import org.springframework.test.context.TestExecutionListener
 import org.springframework.test.web.servlet.RequestBuilder
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.bind.annotation.RequestMethod
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.memberProperties
@@ -39,26 +40,36 @@ class LoadRequestExecutionListener : TestExecutionListener {
             headers.set(header, value)
         }
 
-        val json: JsonObject = if (loadRequestAnnotation.pathOfRequest.isEmpty()) {
-            LOGGER.info("opr='beforeTestMethod', 'Loading test using request'")
-            JsonBuilder.getJsonFromString(loadRequestAnnotation.request)
-        } else {
-            LOGGER.info("opr='beforeTestMethod', 'Loading test using request file'")
-            JsonBuilder.getJsonFromFile(loadRequestAnnotation.pathOfRequest)
-        }
-
         val request: RequestBuilder = when (loadRequestAnnotation.httpMethod) {
             RequestMethod.POST -> {
+
+                val json: JsonObject = if (loadRequestAnnotation.pathOfRequest.isEmpty()) {
+                    LOGGER.info("opr='beforeTestMethod', 'Loading test using request'")
+                    JsonBuilder.getJsonFromString(loadRequestAnnotation.request)
+                } else {
+                    LOGGER.info("opr='beforeTestMethod', 'Loading test using request file'")
+                    JsonBuilder.getJsonFromFile(loadRequestAnnotation.pathOfRequest)
+                }
+
                 MockMvcRequestBuilders.post(loadRequestAnnotation.endpoint)
                     .headers(headers)
                     .contentType(MediaType.valueOf(loadRequestAnnotation.contentType))
                     .content(json.toString())
             }
             RequestMethod.GET -> {
+
+                val parameters = LinkedMultiValueMap<String, String>()
+                loadRequestAnnotation.parameters.forEach {
+                    val pair = it.split(":")
+                    val param = pair[0]
+                    val value = pair[1]
+
+                    parameters.set(param, value)
+                }
+
                 MockMvcRequestBuilders.get(loadRequestAnnotation.endpoint)
                     .headers(headers)
-                    .contentType(MediaType.valueOf(loadRequestAnnotation.contentType))
-                    .content(json.toString())
+                    .params(parameters)
             }
             else -> MockMvcRequestBuilders.get("/")
         }

@@ -35,7 +35,7 @@ class ClientDtoMaker {
                 gender = it.valueOf(gender, null as GenderDto?),
                 customerType = it.valueOf(customerType, CustomerTypeDto.CLIENT),
                 loginInfo = it.valueOf(loginInfo, null as LoginInfoDto?),
-                clientStatus = it.valueOf(clientStatus, ClientStatusDto.PENDING)
+                clientStatus = it.valueOf(clientStatus, ClientStatusDto.AVAILABLE)
             )
         }
     }

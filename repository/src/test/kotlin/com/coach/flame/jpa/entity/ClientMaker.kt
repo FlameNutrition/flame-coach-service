@@ -52,7 +52,7 @@ class ClientMaker {
                 clientMeasureWeight = it.valueOf(clientMeasureWeight, mutableListOf()),
                 dailyClientTask = it.valueOf(dailyClientTask, mutableListOf()),
                 coach = it.valueOf(coach, null as Coach?),
-                clientStatus = it.valueOf(clientStatus, ClientStatus.PENDING),
+                clientStatus = it.valueOf(clientStatus, ClientStatus.AVAILABLE),
             )
         }
     }

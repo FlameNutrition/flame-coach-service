@@ -73,9 +73,9 @@ class GetClientsCoachIntegrationTest : BaseIntegrationTest() {
 
     @Test
     @LoadRequest(
-        pathOfRequest = "requests/integration/coach/getClients.json",
-        endpoint = "api/coach/getClients",
-        httpMethod = RequestMethod.GET
+        endpoint = "/api/coach/getClientsAccepted",
+        httpMethod = RequestMethod.GET,
+        parameters = ["identifier:e59343bc-6563-4488-a77e-112e886c57ae"]
     )
     fun `test get clients from coach`() {
 
@@ -89,7 +89,7 @@ class GetClientsCoachIntegrationTest : BaseIntegrationTest() {
 
         val body = JsonBuilder.getJsonFromString(response.body!!)
 
-        then(body.getAsJsonPrimitive("identifier").asString).isEqualTo(coach.uuid)
+        then(body.getAsJsonPrimitive("identifier").asString).isEqualTo("e59343bc-6563-4488-a77e-112e886c57ae")
         then(body.getAsJsonArray("clientsCoach")).hasSize(3)
 
         val listOfClients = body.getAsJsonArray("clientsCoach")

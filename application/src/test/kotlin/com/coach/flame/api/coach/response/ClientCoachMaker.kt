@@ -14,12 +14,14 @@ class ClientCoachMaker {
         val firstName: Property<ClientCoach, String> = newProperty()
         val lastName: Property<ClientCoach, String> = newProperty()
         val identifier: Property<ClientCoach, UUID> = newProperty()
+        val status: Property<ClientCoach, String> = newProperty()
 
         val ClientCoach: Instantiator<ClientCoach> = Instantiator {
             ClientCoach(
                 firstname = it.valueOf(firstName, fake.name().firstName()),
                 lastname = it.valueOf(lastName, fake.name().lastName()),
-                identifier = it.valueOf(identifier, UUID.randomUUID())
+                identifier = it.valueOf(identifier, UUID.randomUUID()),
+                status = it.valueOf(status, null as String?)
             )
         }
     }
