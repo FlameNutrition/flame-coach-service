@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>client-logic</artifactId>
+    <artifactId>customer-logic</artifactId>
 
     <dependencies>
 
@@ -139,13 +139,14 @@
                 <configuration>
                     <excludes>
                         <!-- Configs -->
-                        <exclude>**/client/ClientModuleConfig.*</exclude>
+                        <exclude>**/customer/CustomerModuleConfig.*</exclude>
 
                         <!-- Exceptions -->
-                        <exclude>**/client/ClientNotFoundException.*</exclude>
-                        <exclude>**/client/ClientRegisterDuplicateException.*</exclude>
-                        <exclude>**/client/ClientRegisterException.*</exclude>
-                        <exclude>**/client/ClientUsernameOrPasswordException.*</exclude>
+                        <exclude>**/customer/CustomerNotFoundException.*</exclude>
+                        <exclude>**/customer/CustomerRegisterDuplicateException.*</exclude>
+                        <exclude>**/customer/CustomerRegisterException.*</exclude>
+                        <exclude>**/customer/CustomerUsernameOrPasswordException.*</exclude>
+                        <exclude>**/customer/CustomerRetrieveException.*</exclude>
                     </excludes>
                 </configuration>
             </plugin>

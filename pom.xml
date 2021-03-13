@@ -54,7 +54,7 @@
 
             <dependency>
                 <groupId>com.coach.flame</groupId>
-                <artifactId>client-logic</artifactId>
+                <artifactId>customer-logic</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
 

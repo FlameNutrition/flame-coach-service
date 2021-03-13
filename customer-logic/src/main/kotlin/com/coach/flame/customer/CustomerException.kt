@@ -23,7 +23,7 @@ class CustomerUsernameOrPasswordException : BusinessException {
 }
 
 @Status(httpStatus = HttpStatus.INTERNAL_SERVER_ERROR)
-class CustomerDataException : BusinessException {
+class CustomerRetrieveException : BusinessException {
     constructor(message: String, ex: Exception) : super(message, ex)
     constructor(message: String) : super(message)
 }

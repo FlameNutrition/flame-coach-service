@@ -29,7 +29,7 @@
 
         <dependency>
             <groupId>com.coach.flame</groupId>
-            <artifactId>client-logic</artifactId>
+            <artifactId>customer-logic</artifactId>
         </dependency>
 
         <dependency>

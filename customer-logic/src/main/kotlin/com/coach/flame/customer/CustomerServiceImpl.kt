@@ -50,7 +50,7 @@ class CustomerServiceImpl(
                 return coachToCoachDtoConverter.convert(coach)
 
             }
-            else -> throw CustomerDataException("$customerType is a invalid customer type")
+            else -> throw CustomerRetrieveException("$customerType is a invalid customer type")
         }
     }
 

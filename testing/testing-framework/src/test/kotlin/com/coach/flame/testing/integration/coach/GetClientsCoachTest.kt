@@ -24,7 +24,7 @@ import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
 import javax.sql.DataSource
 
-class GetClientsCoachIntegrationTest : BaseIntegrationTest() {
+class GetClientsCoachTest : BaseIntegrationTest() {
 
     @Autowired
     private lateinit var restTemplate: TestRestTemplate
@@ -36,39 +36,32 @@ class GetClientsCoachIntegrationTest : BaseIntegrationTest() {
 
     @BeforeEach
     fun setup() {
-        clientTypeRepository.saveAndFlush(clientTypeMaker
-            .but(with(ClientTypeMaker.type, "CLIENT"))
-            .make())
-        clientTypeRepository.saveAndFlush(clientTypeMaker
-            .but(with(ClientTypeMaker.type, "COACH"))
+        val clientType = clientTypeRepository
+            .saveAndFlush(clientTypeMaker.but(with(ClientTypeMaker.type, "CLIENT")).make())
+        val coachType = clientTypeRepository
+            .saveAndFlush(clientTypeMaker.but(with(ClientTypeMaker.type, "COACH")).make())
+
+        client1 = clientRepository.saveAndFlush(clientMaker.but(with(ClientMaker.uuid, UUID.randomUUID()),
+            with(ClientMaker.clientType, clientType))
             .make())
 
-        client1 = clientRepository.saveAndFlush(clientMaker
-            .but(with(ClientMaker.uuid, UUID.randomUUID()),
-                with(ClientMaker.clientType, clientTypeRepository.getByType("CLIENT")))
+        client2 = clientRepository.saveAndFlush(clientMaker.but(with(ClientMaker.uuid, UUID.randomUUID()),
+            with(ClientMaker.clientType, clientType))
             .make())
 
-        client2 = clientRepository.saveAndFlush(clientMaker
-            .but(with(ClientMaker.uuid, UUID.randomUUID()),
-                with(ClientMaker.clientType, clientTypeRepository.getByType("CLIENT")))
+        client3 = clientRepository.saveAndFlush(clientMaker.but(with(ClientMaker.uuid, UUID.randomUUID()),
+            with(ClientMaker.clientType, clientType))
             .make())
 
-        client3 = clientRepository.saveAndFlush(clientMaker
-            .but(with(ClientMaker.uuid, UUID.randomUUID()),
-                with(ClientMaker.clientType, clientTypeRepository.getByType("CLIENT")))
-            .make())
-
-        coach = coachRepository.saveAndFlush(coachMaker
-            .but(with(CoachMaker.uuid, UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")),
-                with(CoachMaker.clientType, clientTypeRepository.getByType("COACH")),
-                with(CoachMaker.clients, listOf(client1, client2, client3)),
-                with(CoachMaker.user, userMaker
-                    .but(with(UserMaker.userSession, userSessionMaker
-                        .but(with(UserSessionMaker.token, UUID.randomUUID()))
-                        .make()))
+        coach = coachRepository.saveAndFlush(coachMaker.but(with(CoachMaker.uuid,
+            UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")),
+            with(CoachMaker.clientType, coachType),
+            with(CoachMaker.user, userMaker
+                .but(with(UserMaker.userSession, userSessionMaker
+                    .but(with(UserSessionMaker.token, UUID.randomUUID()))
                     .make()))
+                .make()))
             .make())
-
     }
 
     @Test
@@ -78,6 +71,19 @@ class GetClientsCoachIntegrationTest : BaseIntegrationTest() {
         parameters = ["identifier:e59343bc-6563-4488-a77e-112e886c57ae"]
     )
     fun `test get clients from coach`() {
+
+        // given
+        client1.clientStatus = ClientStatus.ACCEPTED
+        client1.coach = coach
+
+        client2.clientStatus = ClientStatus.ACCEPTED
+        client2.coach = coach
+
+        client3.clientStatus = ClientStatus.PENDING
+        client3.coach = coach
+
+        clientRepository.saveAll(listOf(client1, client2, client3))
+        clientRepository.flush()
 
         // when
         val response = restTemplate.exchange(request!!, String::class.java)
@@ -90,7 +96,7 @@ class GetClientsCoachIntegrationTest : BaseIntegrationTest() {
         val body = JsonBuilder.getJsonFromString(response.body!!)
 
         then(body.getAsJsonPrimitive("identifier").asString).isEqualTo("e59343bc-6563-4488-a77e-112e886c57ae")
-        then(body.getAsJsonArray("clientsCoach")).hasSize(3)
+        then(body.getAsJsonArray("clientsCoach")).hasSize(2)
 
         val listOfClients = body.getAsJsonArray("clientsCoach")
             .map { it.asJsonObject.getAsJsonPrimitive("identifier").asString }
@@ -98,7 +104,7 @@ class GetClientsCoachIntegrationTest : BaseIntegrationTest() {
 
         then(listOfClients).contains(client1.uuid.toString())
         then(listOfClients).contains(client2.uuid.toString())
-        then(listOfClients).contains(client3.uuid.toString())
+        then(listOfClients).doesNotContain(client3.uuid.toString())
     }
 
 }

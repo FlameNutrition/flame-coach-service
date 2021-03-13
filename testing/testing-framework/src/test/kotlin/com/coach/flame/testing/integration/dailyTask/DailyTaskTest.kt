@@ -16,7 +16,7 @@ import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.RequestMethod
 import java.util.*
 
-class DailyTaskIntegrationTest : BaseIntegrationTest() {
+class DailyTaskTest : BaseIntegrationTest() {
 
     @Autowired
     private lateinit var restTemplate: TestRestTemplate
