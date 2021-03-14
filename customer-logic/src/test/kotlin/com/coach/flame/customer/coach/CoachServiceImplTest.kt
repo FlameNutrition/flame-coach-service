@@ -88,7 +88,7 @@ class CoachServiceImplTest {
     }
 
     @Test
-    fun `test get all available clients`() {
+    fun `test get all clients for coach`() {
 
         val uuid = UUID.randomUUID()
 
@@ -108,10 +108,8 @@ class CoachServiceImplTest {
         val clientAvailable3 = ClientDtoBuilder.default()
 
         every { customerService.getCustomer(uuid, CustomerTypeDto.COACH) } returns coach
-        every { clientsService.getAllClientsAvailableForCoaches() } returns setOf(clientAvailable0,
-            clientAvailable1,
-            clientAvailable2,
-            clientAvailable3)
+        every { clientsService.getAllClientsForCoach(uuid) } returns setOf(clientAvailable0, clientAvailable1, clientAvailable2,
+            clientAvailable3, client0, client1, client2, client3, client4)
 
         val result = classToTest.getCoachWithClientsAvailable(uuid)
 

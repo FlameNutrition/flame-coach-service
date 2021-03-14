@@ -48,7 +48,10 @@ class GetClientsCoachPlusAvailableClientsTest : BaseComponentTest() {
                 with(CoachMaker.uuid, uuid))
             .make()
 
-        every { clientRepositoryMock.findClientsWithoutCoach() } returns listOf(client2, client3)
+        every { clientRepositoryMock.findClientsForCoach(coach.uuid.toString()) } returns listOf(client0,
+            client1,
+            client2,
+            client3)
         every { coachRepositoryMock.findByUuid(uuid) } returns coach
 
         // when
@@ -97,7 +100,7 @@ class GetClientsCoachPlusAvailableClientsTest : BaseComponentTest() {
         val coach = coachMaker
             .but(with(CoachMaker.uuid, uuid)).make()
 
-        every { clientRepositoryMock.findClientsWithoutCoach() } returns listOf(client0, client1)
+        every { clientRepositoryMock.findClientsForCoach(coach.uuid.toString()) } returns listOf(client0, client1)
         every { coachRepositoryMock.findByUuid(uuid) } returns coach
 
         // when

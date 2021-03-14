@@ -18,6 +18,7 @@ import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import java.util.*
 
 @ExtendWith(MockKExtension::class)
 class ClientServiceImplTest {
@@ -94,7 +95,7 @@ class ClientServiceImplTest {
             .make()
         every { clientRepository.findClientsWithCoach(coach.identifier) } returns listOf(client0, client1, client2)
 
-        val result = classToTest.getAllClientsForCoach(coach.identifier)
+        val result = classToTest.getAllClientsFromCoach(coach.identifier)
 
         verify(exactly = 3) { clientToClientDtoConverter.convert(any()) }
         then(result).isNotEmpty
@@ -103,17 +104,18 @@ class ClientServiceImplTest {
     }
 
     @Test
-    fun `test get all clients available for coaching`() {
+    fun `test get all clients for a coach`() {
 
+        val uuidCoach = UUID.randomUUID()
         val client0 = ClientBuilder.maker()
             .but(with(ClientMaker.clientStatus, ClientStatus.AVAILABLE))
             .make()
         val client1 = ClientBuilder.maker()
             .but(with(ClientMaker.clientStatus, ClientStatus.AVAILABLE))
             .make()
-        every { clientRepository.findClientsWithoutCoach() } returns listOf(client0, client1)
+        every { clientRepository.findClientsForCoach(uuidCoach.toString()) } returns listOf(client0, client1)
 
-        val result = classToTest.getAllClientsAvailableForCoaches()
+        val result = classToTest.getAllClientsForCoach(uuidCoach)
 
         verify(exactly = 2) { clientToClientDtoConverter.convert(any()) }
         then(result).isNotEmpty

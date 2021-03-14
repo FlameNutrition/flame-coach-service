@@ -21,15 +21,15 @@ class ClientServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun getAllClientsForCoach(uuid: UUID): Set<ClientDto> {
+    override fun getAllClientsFromCoach(uuid: UUID): Set<ClientDto> {
         return clientRepository.findClientsWithCoach(uuid)
             .map { clientToClientDtoConverter.convert(it) }
             .toSet()
     }
 
     @Transactional(readOnly = true)
-    override fun getAllClientsAvailableForCoaches(): Set<ClientDto> {
-        return clientRepository.findClientsWithoutCoach()
+    override fun getAllClientsForCoach(uuid: UUID): Set<ClientDto> {
+        return clientRepository.findClientsForCoach(uuid.toString())
             .map { clientToClientDtoConverter.convert(it) }
             .toSet()
     }

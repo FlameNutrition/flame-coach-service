@@ -7,8 +7,8 @@ interface ClientService {
 
     fun getAllClients(): Set<ClientDto>
 
-    fun getAllClientsForCoach(uuid: UUID): Set<ClientDto>
+    fun getAllClientsFromCoach(uuid: UUID): Set<ClientDto>
 
-    fun getAllClientsAvailableForCoaches(): Set<ClientDto>
+    fun getAllClientsForCoach(uuid: UUID): Set<ClientDto>
 
 }

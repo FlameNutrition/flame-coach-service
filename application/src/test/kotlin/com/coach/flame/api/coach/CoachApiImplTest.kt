@@ -51,9 +51,12 @@ class CoachApiImplTest {
 
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
 
-        val clients = setOf(clientDtoMaker.make(), clientDtoMaker.make())
+        val client0 = ClientDtoBuilder.maker().but(with(ClientDtoMaker.loginInfo, LoginInfoDtoBuilder.default())).make()
+        val client1 = ClientDtoBuilder.maker().but(with(ClientDtoMaker.loginInfo, LoginInfoDtoBuilder.default())).make()
+        val clients = setOf(client0, client1)
         val clientCoach = coachDtoMaker
-            .but(with(CoachDtoMaker.customerType, CustomerTypeDto.COACH),
+            .but(with(CoachDtoMaker.loginInfo, LoginInfoDtoBuilder.default()),
+                with(CoachDtoMaker.customerType, CustomerTypeDto.COACH),
                 with(CoachDtoMaker.identifier, uuid),
                 with(CoachDtoMaker.listOfClients, clients))
             .make()
@@ -89,11 +92,14 @@ class CoachApiImplTest {
 
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
 
-        val client0 = ClientDtoBuilder.default()
-        val client1 = ClientDtoBuilder.default()
-        val client2 = ClientDtoBuilder.maker().but(with(ClientDtoMaker.clientStatus, ClientStatusDto.ACCEPTED)).make()
-        val client3 = ClientDtoBuilder.maker().but(with(ClientDtoMaker.clientStatus, ClientStatusDto.ACCEPTED)).make()
-        val client4 = ClientDtoBuilder.maker().but(with(ClientDtoMaker.clientStatus, ClientStatusDto.PENDING)).make()
+        val client0 = ClientDtoBuilder.maker().but(with(ClientDtoMaker.loginInfo, LoginInfoDtoBuilder.default())).make()
+        val client1 = ClientDtoBuilder.maker().but(with(ClientDtoMaker.loginInfo, LoginInfoDtoBuilder.default())).make()
+        val client2 = ClientDtoBuilder.maker().but(with(ClientDtoMaker.loginInfo, LoginInfoDtoBuilder.default()),
+            with(ClientDtoMaker.clientStatus, ClientStatusDto.ACCEPTED)).make()
+        val client3 = ClientDtoBuilder.maker().but(with(ClientDtoMaker.loginInfo, LoginInfoDtoBuilder.default()),
+            with(ClientDtoMaker.clientStatus, ClientStatusDto.ACCEPTED)).make()
+        val client4 = ClientDtoBuilder.maker().but(with(ClientDtoMaker.loginInfo, LoginInfoDtoBuilder.default()),
+            with(ClientDtoMaker.clientStatus, ClientStatusDto.PENDING)).make()
         val coach = CoachDtoBuilder.maker()
             .but(with(CoachDtoMaker.listOfClients, setOf(client0, client1, client2, client3, client4)),
                 with(CoachDtoMaker.identifier, uuid)).make()

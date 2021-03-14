@@ -6,6 +6,7 @@ import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.data.domain.PageRequest
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -104,7 +105,7 @@ class ClientRepositoryTest : AbstractHelperTest() {
     }
 
     @Test
-    fun `test get clients without coach`() {
+    fun `test get clients for coach`() {
 
         val coachType = getClientTypeRepository()
             .saveAndFlush(clientTypeMaker.but(with(ClientTypeMaker.type, "COACH")).make())
@@ -113,6 +114,8 @@ class ClientRepositoryTest : AbstractHelperTest() {
 
         val coach0 = getCoachRepository()
             .saveAndFlush(coachMaker.but(with(CoachMaker.clientType, coachType)).make())
+        val coach1 = getCoachRepository()
+            .saveAndFlush(coachMaker.but(with(CoachMaker.clientType, coachType)).make())
 
         val client0 = getClientRepository()
             .saveAndFlush(clientMaker.but(with(ClientMaker.clientType, clientType)).make())
@@ -120,28 +123,40 @@ class ClientRepositoryTest : AbstractHelperTest() {
             .saveAndFlush(clientMaker.but(with(ClientMaker.clientType, clientType)).make())
         val client2 = getClientRepository()
             .saveAndFlush(clientMaker.but(with(ClientMaker.clientType, clientType)).make())
+        val client3 = getClientRepository()
+            .saveAndFlush(clientMaker.but(with(ClientMaker.clientType, clientType)).make())
+        val client4 = getClientRepository()
+            .saveAndFlush(clientMaker.but(with(ClientMaker.clientType, clientType)).make())
 
         entityManager.flush()
         entityManager.clear()
 
-        then(getClientRepository().findAll()).hasSize(3)
-        then(getCoachRepository().findAll()).hasSize(1)
+        then(getClientRepository().findAll()).hasSize(5)
+        then(getCoachRepository().findAll()).hasSize(2)
 
         client0.coach = coach0
         client0.clientStatus = ClientStatus.PENDING
 
-        getClientRepository().saveAll(listOf(client0))
+        client1.coach = coach0
+        client1.clientStatus = ClientStatus.ACCEPTED
+
+        client4.coach = coach1
+        client4.clientStatus = ClientStatus.ACCEPTED
+
+        getClientRepository().saveAll(listOf(client0, client1, client4))
 
         entityManager.flush()
         entityManager.clear()
 
-        val listOfClientsWithoutCoach = getClientRepository().findClientsWithoutCoach()
+        val result = getClientRepository().findClientsForCoach(coach0.uuid.toString())
             .map { it.uuid }
 
-        then(listOfClientsWithoutCoach).contains(client1.uuid)
-        then(listOfClientsWithoutCoach).contains(client2.uuid)
-        then(listOfClientsWithoutCoach).doesNotContain(client0.uuid)
-        then(listOfClientsWithoutCoach).hasSize(2)
+        then(result).hasSize(4)
+        then(result).contains(client0.uuid)
+        then(result).contains(client1.uuid)
+        then(result).contains(client2.uuid)
+        then(result).contains(client3.uuid)
+        then(result).doesNotContain(client4.uuid)
 
     }
 
