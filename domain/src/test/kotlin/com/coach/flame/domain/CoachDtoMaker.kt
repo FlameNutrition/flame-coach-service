@@ -23,6 +23,7 @@ class CoachDtoMaker {
         val customerType: Property<CoachDto, CustomerTypeDto> = newProperty()
         val loginInfo: Property<CoachDto, LoginInfoDto?> = newProperty()
         val listOfClients: Property<CoachDto, Set<ClientDto>> = newProperty()
+        val registrationDate: Property<CoachDto, LocalDate> = newProperty()
 
         val CoachDto: Instantiator<CoachDto> = Instantiator {
             CoachDto(
@@ -36,7 +37,8 @@ class CoachDtoMaker {
                 gender = it.valueOf(gender, null as GenderDto?),
                 customerType = it.valueOf(customerType, CustomerTypeDto.CLIENT),
                 loginInfo = it.valueOf(loginInfo, null as LoginInfoDto?),
-                listOfClients = it.valueOf(listOfClients, setOf())
+                listOfClients = it.valueOf(listOfClients, setOf()),
+                registrationDate = it.valueOf(registrationDate, LocalDate.now())
             )
         }
     }

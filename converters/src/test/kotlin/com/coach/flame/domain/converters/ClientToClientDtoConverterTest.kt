@@ -75,6 +75,7 @@ class ClientToClientDtoConverterTest {
         then(clientDto.phoneNumber).isEqualTo(client.phoneNumber)
         then(clientDto.country).isEqualTo(countryDto)
         then(clientDto.gender).isEqualTo(genderDto)
+        then(clientDto.registrationDate).isNotNull
         then(clientDto.customerType).isEqualTo(CustomerTypeDto.CLIENT)
     }
 

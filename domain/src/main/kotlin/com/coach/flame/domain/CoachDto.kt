@@ -15,6 +15,7 @@ data class CoachDto(
     override val gender: GenderDto? = null,
     override val customerType: CustomerTypeDto,
     override val loginInfo: LoginInfoDto?,
+    override val registrationDate: LocalDate,
     val listOfClients: Set<ClientDto> = mutableSetOf(),
 ) : Customer {
     override fun equals(other: Any?): Boolean {

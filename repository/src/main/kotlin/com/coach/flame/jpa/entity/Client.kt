@@ -57,6 +57,8 @@ class Client(
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    var clientStatus: ClientStatus
+    var clientStatus: ClientStatus,
 
+    @Column(nullable = false, columnDefinition = "DATE")
+    val registrationDate: LocalDate,
 ) : AbstractPersistable<Long>()

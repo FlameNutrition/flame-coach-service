@@ -66,6 +66,16 @@ class GetClientsCoachPlusAvailableClientsTest : BaseComponentTest() {
         then(jsonResponse.getAsJsonPrimitive("identifier").asString).isEqualTo(uuid.toString())
         then(jsonResponse.getAsJsonArray("clientsCoach")).hasSize(4)
 
+        val client0Result = jsonResponse.getAsJsonArray("clientsCoach")
+            .find { it.asJsonObject.getAsJsonPrimitive("identifier").asString == client0.uuid.toString() }
+
+        then(client0Result).isNotNull
+        then(client0Result!!.asJsonObject.getAsJsonPrimitive("firstname").asString).isEqualTo(client0.firstName)
+        then(client0Result.asJsonObject.getAsJsonPrimitive("lastname").asString).isEqualTo(client0.lastName)
+        then(client0Result.asJsonObject.getAsJsonPrimitive("status").asString).isEqualTo(client0.clientStatus.name)
+        then(client0Result.asJsonObject.getAsJsonPrimitive("email").asString).isEqualTo(client0.user.email)
+        then(client0Result.asJsonObject.getAsJsonPrimitive("registrationDate").asString).isEqualTo(client0.registrationDate.toString())
+
     }
 
     @Test

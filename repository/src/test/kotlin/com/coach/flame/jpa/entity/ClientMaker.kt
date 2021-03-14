@@ -30,6 +30,7 @@ class ClientMaker {
         val dailyClientTask: Property<Client, MutableList<DailyTask>> = newProperty()
         val coach: Property<Client, Coach> = newProperty()
         val clientStatus: Property<Client, ClientStatus> = newProperty()
+        val registrationDate: Property<Client, LocalDate> = newProperty()
 
         val Client: Instantiator<Client> = Instantiator {
 
@@ -53,6 +54,7 @@ class ClientMaker {
                 dailyClientTask = it.valueOf(dailyClientTask, mutableListOf()),
                 coach = it.valueOf(coach, null as Coach?),
                 clientStatus = it.valueOf(clientStatus, ClientStatus.AVAILABLE),
+                registrationDate = it.valueOf(registrationDate, LocalDate.now())
             )
         }
     }

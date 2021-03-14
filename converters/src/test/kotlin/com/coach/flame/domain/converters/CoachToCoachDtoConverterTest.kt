@@ -88,6 +88,7 @@ class CoachToCoachDtoConverterTest {
         then(clientDto.phoneNumber).isEqualTo(coach.phoneNumber)
         then(clientDto.country).isEqualTo(countryDto)
         then(clientDto.gender).isEqualTo(genderDto)
+        then(clientDto.registrationDate).isNotNull
         then(clientDto.customerType).isEqualTo(CustomerTypeDto.COACH)
         then(clientDto.listOfClients).hasSize(3)
     }

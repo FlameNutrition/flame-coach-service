@@ -57,7 +57,8 @@ class ClientToClientDtoConverter(
                 expirationDate = client.user.userSession.expirationDate,
                 token = client.user.userSession.token
             ),
-            clientStatus = ClientStatusDto.valueOf(client.clientStatus.name)
+            clientStatus = ClientStatusDto.valueOf(client.clientStatus.name),
+            registrationDate = client.registrationDate
         )
     }
 }

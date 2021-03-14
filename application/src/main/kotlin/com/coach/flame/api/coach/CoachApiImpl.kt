@@ -30,7 +30,9 @@ class CoachApiImpl(
                             firstname = it.firstName,
                             lastname = it.lastName,
                             identifier = it.identifier,
-                            status = it.clientStatus?.name)
+                            status = it.clientStatus?.name,
+                            email = it.loginInfo!!.username,
+                            registrationDate = it.registrationDate)
                     }.toSet()
             )
         }

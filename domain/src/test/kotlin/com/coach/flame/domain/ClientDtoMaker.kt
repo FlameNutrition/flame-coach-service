@@ -23,6 +23,7 @@ class ClientDtoMaker {
         val customerType: Property<ClientDto, CustomerTypeDto> = newProperty()
         val loginInfo: Property<ClientDto, LoginInfoDto?> = newProperty()
         val clientStatus: Property<ClientDto, ClientStatusDto> = newProperty()
+        val registrationDate: Property<ClientDto, LocalDate> = newProperty()
 
         val ClientDto: Instantiator<ClientDto> = Instantiator {
             ClientDto(
@@ -35,7 +36,8 @@ class ClientDtoMaker {
                 gender = it.valueOf(gender, null as GenderDto?),
                 customerType = it.valueOf(customerType, CustomerTypeDto.CLIENT),
                 loginInfo = it.valueOf(loginInfo, null as LoginInfoDto?),
-                clientStatus = it.valueOf(clientStatus, ClientStatusDto.AVAILABLE)
+                clientStatus = it.valueOf(clientStatus, ClientStatusDto.AVAILABLE),
+                registrationDate = it.valueOf(registrationDate, LocalDate.now())
             )
         }
     }

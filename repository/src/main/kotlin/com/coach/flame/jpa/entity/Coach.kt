@@ -46,6 +46,8 @@ class Coach(
     val clientType: ClientType,
 
     @OneToMany(mappedBy = "coach")
-    val clients: List<Client> = mutableListOf()
+    val clients: List<Client> = mutableListOf(),
 
+    @Column(nullable = false, columnDefinition = "DATE")
+    val registrationDate: LocalDate,
 ) : AbstractPersistable<Long>()

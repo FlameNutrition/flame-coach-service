@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
@@ -91,7 +92,8 @@ class CustomerServiceImpl(
                         lastName = customer.lastName,
                         clientType = clientType,
                         user = user,
-                        clientStatus = ClientStatus.AVAILABLE
+                        clientStatus = ClientStatus.AVAILABLE,
+                        registrationDate = customer.registrationDate
                     )
                     val client = clientRepository.saveAndFlush(entity)
                     return clientToClientDtoConverter.convert(client)
@@ -102,7 +104,8 @@ class CustomerServiceImpl(
                         firstName = customer.firstName,
                         lastName = customer.lastName,
                         clientType = clientType,
-                        user = user
+                        user = user,
+                        registrationDate = customer.registrationDate
                     )
                     val client = coachRepository.saveAndFlush(entity)
                     return coachToCoachDtoConverter.convert(client)

@@ -15,6 +15,7 @@ data class ClientDto(
     override val gender: GenderDto? = null,
     override val customerType: CustomerTypeDto,
     override val loginInfo: LoginInfoDto?,
+    override val registrationDate: LocalDate,
     val clientStatus: ClientStatusDto?,
 ) : Customer {
     override fun equals(other: Any?): Boolean {

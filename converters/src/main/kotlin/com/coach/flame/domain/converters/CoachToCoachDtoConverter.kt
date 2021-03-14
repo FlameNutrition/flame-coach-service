@@ -60,7 +60,8 @@ class CoachToCoachDtoConverter(
             ),
             listOfClients = coach.clients
                 .map { clientToClientDtoConverter.convert(it) }
-                .toSet()
+                .toSet(),
+            registrationDate = coach.registrationDate
         )
     }
 }

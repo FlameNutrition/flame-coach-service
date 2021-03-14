@@ -5,6 +5,7 @@ import com.coach.flame.domain.CustomerTypeDto
 import com.coach.flame.domain.LoginInfoDto
 import org.springframework.core.convert.converter.Converter
 import org.springframework.stereotype.Component
+import java.time.LocalDate
 import java.util.*
 
 @Component
@@ -30,7 +31,8 @@ class CustomerRequestConverter : Converter<CustomerRequest, ClientDto> {
                 username = customerRequest.email!!,
                 password = customerRequest.password!!,
             ),
-            clientStatus = null
+            clientStatus = null,
+            registrationDate = LocalDate.now()
         )
     }
 

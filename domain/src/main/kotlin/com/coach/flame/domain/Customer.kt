@@ -14,4 +14,5 @@ interface Customer {
     val gender: GenderDto?
     val customerType: CustomerTypeDto
     val loginInfo: LoginInfoDto?
+    val registrationDate: LocalDate
 }
