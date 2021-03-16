@@ -3,15 +3,15 @@ package com.coach.flame.domain
 import com.natpryce.makeiteasy.MakeItEasy.an
 import com.natpryce.makeiteasy.Maker
 
-object CoachDtoBuilder {
+object CountryDtoBuilder {
 
-    private val MAKER: Maker<CoachDto> = an(CoachDtoMaker.CoachDto)
+    private val MAKER: Maker<CountryDto> = an(CountryDtoMaker.CountryDto)
 
-    fun maker(): Maker<CoachDto> {
+    fun maker(): Maker<CountryDto> {
         return MAKER
     }
 
-    fun default(): CoachDto {
+    fun default(): CountryDto {
         return maker().make()
     }
 

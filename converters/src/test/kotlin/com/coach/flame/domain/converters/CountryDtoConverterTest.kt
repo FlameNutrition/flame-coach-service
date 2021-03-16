@@ -5,9 +5,9 @@ import com.natpryce.makeiteasy.MakeItEasy.an
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 
-class CountryConfigToCountryDtoConverterTest {
+class CountryDtoConverterTest {
 
-    private val classToTest: CountryConfigToCountryDtoConverter = CountryConfigToCountryDtoConverter()
+    private val classToTest: CountryDtoConverter = CountryDtoConverter()
 
     private val countryMaker = an(CountryMaker.CountryConfig)
 

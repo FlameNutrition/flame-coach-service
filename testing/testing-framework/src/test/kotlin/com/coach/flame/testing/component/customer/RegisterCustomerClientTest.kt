@@ -27,7 +27,7 @@ class RegisterCustomerClientTest : BaseComponentTest() {
     @Test
     @LoadRequest(
         pathOfRequest = "requests/component/customer/registerNewCustomerClient.json",
-        endpoint = "/api/client/create",
+        endpoint = "/api/customer/create",
         httpMethod = RequestMethod.POST
     )
     fun `test register new client`() {
@@ -47,7 +47,7 @@ class RegisterCustomerClientTest : BaseComponentTest() {
                 with(ClientMaker.user, user))
             .make()
         every { clientTypeRepositoryMock.getByType("CLIENT") } returns clientTypeMaker.make()
-        every { clientRepositoryMock.saveAndFlush(any()) } returns client
+        every { clientRepositoryMock.save(any()) } returns client
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -77,7 +77,7 @@ class RegisterCustomerClientTest : BaseComponentTest() {
     @Test
     @LoadRequest(
         pathOfRequest = "requests/component/customer/registerNewCustomerMissingParam.json",
-        endpoint = "/api/client/create",
+        endpoint = "/api/customer/create",
         httpMethod = RequestMethod.POST
     )
     fun `test register new client with missing mandatory param`() {
@@ -106,13 +106,13 @@ class RegisterCustomerClientTest : BaseComponentTest() {
     @Test
     @LoadRequest(
         pathOfRequest = "requests/component/customer/registerNewCustomerClient.json",
-        endpoint = "/api/client/create",
+        endpoint = "/api/customer/create",
         httpMethod = RequestMethod.POST
     )
     fun `test register new client duplicated`() {
 
         every { clientTypeRepositoryMock.getByType("CLIENT") } returns clientTypeMaker.make()
-        every { clientRepositoryMock.saveAndFlush(any()) } throws DataIntegrityViolationException("SQL Error -> Duplicate client")
+        every { clientRepositoryMock.save(any()) } throws DataIntegrityViolationException("SQL Error -> Duplicate client")
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -138,7 +138,7 @@ class RegisterCustomerClientTest : BaseComponentTest() {
     @Test
     @LoadRequest(
         pathOfRequest = "requests/component/customer/registerNewCustomerClient.json",
-        endpoint = "/api/client/create",
+        endpoint = "/api/customer/create",
         httpMethod = RequestMethod.POST
     )
     fun `test register new client but occurred an internal exception`() {

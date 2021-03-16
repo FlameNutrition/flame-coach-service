@@ -2,8 +2,8 @@ package com.coach.flame.customer
 
 import com.coach.flame.domain.CustomerTypeDto
 import com.coach.flame.domain.Customer
-import com.coach.flame.domain.converters.ClientToClientDtoConverter
-import com.coach.flame.domain.converters.CoachToCoachDtoConverter
+import com.coach.flame.domain.converters.ClientDtoConverter
+import com.coach.flame.domain.converters.CoachDtoConverter
 import com.coach.flame.jpa.entity.*
 import com.coach.flame.jpa.repository.*
 import org.slf4j.Logger
@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
@@ -22,8 +21,8 @@ class CustomerServiceImpl(
     private val clientTypeRepository: ClientTypeRepository,
     private val userSessionRepository: UserSessionRepository,
     private val userRepository: UserRepository,
-    private val clientToClientDtoConverter: ClientToClientDtoConverter,
-    private val coachToCoachDtoConverter: CoachToCoachDtoConverter,
+    private val clientDtoConverter: ClientDtoConverter,
+    private val coachDtoConverter: CoachDtoConverter,
 ) : CustomerService {
 
     companion object {
@@ -41,14 +40,14 @@ class CustomerServiceImpl(
                     clientRepository.findByUuid(uuid)
                         ?: throw CustomerNotFoundException("Could not found any client with uuid: $uuid")
 
-                return clientToClientDtoConverter.convert(client)
+                return clientDtoConverter.convert(client)
             }
             CustomerTypeDto.COACH -> {
                 val coach =
                     coachRepository.findByUuid(uuid)
                         ?: throw CustomerNotFoundException("Could not found any coach with uuid: $uuid")
 
-                return coachToCoachDtoConverter.convert(coach)
+                return coachDtoConverter.convert(coach)
 
             }
             else -> throw CustomerRetrieveException("$customerType is a invalid customer type")
@@ -95,8 +94,8 @@ class CustomerServiceImpl(
                         clientStatus = ClientStatus.AVAILABLE,
                         registrationDate = customer.registrationDate
                     )
-                    val client = clientRepository.saveAndFlush(entity)
-                    return clientToClientDtoConverter.convert(client)
+                    val client = clientRepository.save(entity)
+                    return clientDtoConverter.convert(client)
                 }
                 CustomerTypeDto.COACH -> {
                     val entity = Coach(
@@ -107,8 +106,8 @@ class CustomerServiceImpl(
                         user = user,
                         registrationDate = customer.registrationDate
                     )
-                    val client = coachRepository.saveAndFlush(entity)
-                    return coachToCoachDtoConverter.convert(client)
+                    val client = coachRepository.save(entity)
+                    return coachDtoConverter.convert(client)
                 }
                 else -> throw CustomerRegisterException("${customer.customerType} is a invalid customer type")
             }
@@ -139,11 +138,11 @@ class CustomerServiceImpl(
         user.userSession.expirationDate = expirationDate
 
         return if (user.client !== null) {
-            userSessionRepository.saveAndFlush(user.client?.user?.userSession!!)
-            clientToClientDtoConverter.convert(user.client!!)
+            userSessionRepository.save(user.client?.user?.userSession!!)
+            clientDtoConverter.convert(user.client!!)
         } else {
-            userSessionRepository.saveAndFlush(user.coach?.user?.userSession!!)
-            coachToCoachDtoConverter.convert(user.coach!!)
+            userSessionRepository.save(user.coach?.user?.userSession!!)
+            coachDtoConverter.convert(user.coach!!)
         }
     }
 

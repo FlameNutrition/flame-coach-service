@@ -1,11 +1,13 @@
 package com.coach.flame.customer.client
 
+import com.coach.flame.domain.ClientStatusDto
 import com.coach.flame.domain.CoachDtoBuilder
-import com.coach.flame.domain.converters.ClientToClientDtoConverter
-import com.coach.flame.domain.converters.CountryConfigToCountryDtoConverter
-import com.coach.flame.domain.converters.GenderConfigToGenderDtoConverter
+import com.coach.flame.domain.converters.ClientDtoConverter
+import com.coach.flame.domain.converters.CountryDtoConverter
+import com.coach.flame.domain.converters.GenderDtoConverter
 import com.coach.flame.jpa.entity.*
 import com.coach.flame.jpa.repository.ClientRepository
+import com.coach.flame.jpa.repository.CoachRepository
 import com.natpryce.makeiteasy.MakeItEasy.with
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -13,6 +15,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.SpyK
 import io.mockk.junit5.MockKExtension
+import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.AfterEach
@@ -26,16 +29,19 @@ class ClientServiceImplTest {
     @MockK
     private lateinit var clientRepository: ClientRepository
 
-    @SpyK
-    private var genderConfigToGenderDtoConverter: GenderConfigToGenderDtoConverter = GenderConfigToGenderDtoConverter()
+    @MockK
+    private lateinit var coachRepository: CoachRepository
 
     @SpyK
-    private var countryConfigToCountryDtoConverter: CountryConfigToCountryDtoConverter =
-        CountryConfigToCountryDtoConverter()
+    private var genderDtoConverter: GenderDtoConverter = GenderDtoConverter()
 
     @SpyK
-    private var clientToClientDtoConverter: ClientToClientDtoConverter =
-        ClientToClientDtoConverter(countryConfigToCountryDtoConverter, genderConfigToGenderDtoConverter)
+    private var countryDtoConverter: CountryDtoConverter =
+        CountryDtoConverter()
+
+    @SpyK
+    private var clientDtoConverter: ClientDtoConverter =
+        ClientDtoConverter(countryDtoConverter, genderDtoConverter)
 
     @InjectMockKs
     private lateinit var classToTest: ClientServiceImpl
@@ -62,7 +68,7 @@ class ClientServiceImplTest {
 
         val result = classToTest.getAllClients()
 
-        verify(exactly = 4) { clientToClientDtoConverter.convert(any()) }
+        verify(exactly = 4) { clientDtoConverter.convert(any()) }
         then(result).isNotEmpty
         then(result).hasSize(4)
 
@@ -97,7 +103,7 @@ class ClientServiceImplTest {
 
         val result = classToTest.getAllClientsFromCoach(coach.identifier)
 
-        verify(exactly = 3) { clientToClientDtoConverter.convert(any()) }
+        verify(exactly = 3) { clientDtoConverter.convert(any()) }
         then(result).isNotEmpty
         then(result).hasSize(3)
 
@@ -117,9 +123,53 @@ class ClientServiceImplTest {
 
         val result = classToTest.getAllClientsForCoach(uuidCoach)
 
-        verify(exactly = 2) { clientToClientDtoConverter.convert(any()) }
+        verify(exactly = 2) { clientDtoConverter.convert(any()) }
         then(result).isNotEmpty
         then(result).hasSize(2)
+
+    }
+
+    @Test
+    fun `test update status client`() {
+
+        val uuid = UUID.randomUUID()
+        val clientSlot = slot<Client>()
+        val client = ClientBuilder.maker()
+            .but(with(ClientMaker.clientStatus, ClientStatus.AVAILABLE))
+            .make()
+
+        every { clientRepository.findByUuid(uuid) } returns client
+        every { clientRepository.save(capture(clientSlot)) } answers { clientSlot.captured }
+
+        val result = classToTest.updateClientStatus(uuid, ClientStatusDto.PENDING)
+
+        verify(exactly = 1) { clientDtoConverter.convert(any()) }
+        then(clientSlot.isCaptured).isTrue
+        then(clientSlot.captured.clientStatus).isEqualTo(ClientStatus.PENDING)
+        then(result.clientStatus).isEqualTo(ClientStatusDto.PENDING)
+
+    }
+
+    @Test
+    fun `test update coach linked to client`() {
+
+        val uuidClient = UUID.randomUUID()
+        val uuidCoach = UUID.randomUUID()
+        val clientSlot = slot<Client>()
+        val client = ClientBuilder.maker()
+            .but(with(ClientMaker.clientStatus, ClientStatus.AVAILABLE))
+            .make()
+        val coach = CoachBuilder.default()
+
+        every { clientRepository.findByUuid(uuidClient) } returns client
+        every { coachRepository.findByUuid(uuidCoach) } returns coach
+        every { clientRepository.save(capture(clientSlot)) } answers { clientSlot.captured }
+
+        classToTest.updateClientCoach(uuidClient, uuidCoach)
+
+        verify(exactly = 1) { clientDtoConverter.convert(any()) }
+        then(clientSlot.isCaptured).isTrue
+        then(clientSlot.captured.coach).isNotNull
 
     }
 

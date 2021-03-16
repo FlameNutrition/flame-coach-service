@@ -8,14 +8,13 @@ import org.springframework.core.convert.converter.Converter
 import org.springframework.stereotype.Component
 
 @Component
-class CoachToCoachDtoConverter(
-    private val countryConfigToCountryDtoConverter: CountryConfigToCountryDtoConverter,
-    private val genderConfigToGenderDtoConverter: GenderConfigToGenderDtoConverter,
-    private val clientToClientDtoConverter: ClientToClientDtoConverter,
+class CoachDtoConverter(
+    private val countryDtoConverter: CountryDtoConverter,
+    private val genderDtoConverter: GenderDtoConverter,
 ) : Converter<Coach, CoachDto> {
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(CoachToCoachDtoConverter::class.java)
+        private val LOGGER: Logger = LoggerFactory.getLogger(CoachDtoConverter::class.java)
     }
 
     override fun convert(coach: Coach): CoachDto {
@@ -31,13 +30,13 @@ class CoachToCoachDtoConverter(
         }
 
         if (coach.country !== null) {
-            countryDto = countryConfigToCountryDtoConverter.convert(coach.country!!)
+            countryDto = countryDtoConverter.convert(coach.country!!)
         } else {
             LOGGER.debug("opr='convert', msg='Country is null', clientUUID={}", coach.uuid)
         }
 
         if (coach.gender !== null) {
-            genderDto = genderConfigToGenderDtoConverter.convert(coach.gender!!)
+            genderDto = genderDtoConverter.convert(coach.gender!!)
         } else {
             LOGGER.debug("opr='convert', msg='Gender is null', clientUUID={}", coach.uuid)
         }
@@ -59,7 +58,25 @@ class CoachToCoachDtoConverter(
                 token = coach.user.userSession.token
             ),
             listOfClients = coach.clients
-                .map { clientToClientDtoConverter.convert(it) }
+                .map {
+                    ClientDto(
+                        identifier = it.uuid,
+                        firstName = it.firstName,
+                        lastName = it.lastName,
+                        birthday = it.birthday,
+                        phoneCode = it.phoneCode,
+                        phoneNumber = it.phoneNumber,
+                        country = it.country?.let { country -> countryDtoConverter.convert(country) },
+                        gender = it.gender?.let { gender -> genderDtoConverter.convert(gender) },
+                        customerType = CustomerTypeDto.CLIENT,
+                        loginInfo = LoginInfoDto(
+                            username = it.user.email,
+                            password = "******"
+                        ),
+                        clientStatus = ClientStatusDto.valueOf(it.clientStatus.name),
+                        registrationDate = it.registrationDate,
+                        coach = null)
+                }
                 .toSet(),
             registrationDate = coach.registrationDate
         )

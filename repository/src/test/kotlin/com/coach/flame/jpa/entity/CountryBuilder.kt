@@ -3,15 +3,15 @@ package com.coach.flame.jpa.entity
 import com.natpryce.makeiteasy.MakeItEasy.an
 import com.natpryce.makeiteasy.Maker
 
-object ClientBuilder {
+object CountryBuilder {
 
-    private val MAKER: Maker<Client> = an(ClientMaker.Client)
+    private val MAKER: Maker<CountryConfig> = an(CountryMaker.CountryConfig)
 
-    fun maker(): Maker<Client> {
+    fun maker(): Maker<CountryConfig> {
         return MAKER
     }
 
-    fun default(): Client {
+    fun default(): CountryConfig {
         return maker().make()
     }
 

@@ -194,7 +194,7 @@ class DailyTaskServiceImplTest {
             .make()
         every { userSessionRepository.findByToken(any()) } returns coachSession
         every { clientRepository.findByUuid(any()) } returns clientMaker.make()
-        every { dailyTaskRepository.saveAndFlush(any()) } throws SQLException("SQL error message")
+        every { dailyTaskRepository.save(any()) } throws SQLException("SQL error message")
 
         // when & then
         thenExceptionOfType(Exception::class.java)
@@ -224,7 +224,7 @@ class DailyTaskServiceImplTest {
             .make()
         every { userSessionRepository.findByToken(dailyTaskDto.coachIdentifier!!) } returns coachSession
         every { clientRepository.findByUuid(dailyTaskDto.clientIdentifier!!) } returns client
-        every { dailyTaskRepository.saveAndFlush(capture(entity)) } returns postDailyTask
+        every { dailyTaskRepository.save(capture(entity)) } returns postDailyTask
 
         // when
         val dailyTask = dailyTaskServiceImpl.createDailyTask(dailyTaskDto)

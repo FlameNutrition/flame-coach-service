@@ -25,7 +25,7 @@ class RegisterCustomerCoachTest : BaseComponentTest() {
     @Test
     @LoadRequest(
         pathOfRequest = "requests/component/customer/registerNewCustomerCoach.json",
-        endpoint = "/api/client/create",
+        endpoint = "/api/customer/create",
         httpMethod = RequestMethod.POST
     )
     fun `test register new coach`() {
@@ -49,7 +49,7 @@ class RegisterCustomerCoachTest : BaseComponentTest() {
                 with(CoachMaker.user, user))
             .make()
         every { clientTypeRepositoryMock.getByType("COACH") } returns clientType
-        every { coachRepositoryMock.saveAndFlush(any()) } returns coach
+        every { coachRepositoryMock.save(any()) } returns coach
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -79,7 +79,7 @@ class RegisterCustomerCoachTest : BaseComponentTest() {
     @Test
     @LoadRequest(
         pathOfRequest = "requests/component/customer/registerNewCustomerMissingParam.json",
-        endpoint = "/api/client/create",
+        endpoint = "/api/customer/create",
         httpMethod = RequestMethod.POST
     )
     fun `test register new client with missing mandatory param`() {
@@ -108,7 +108,7 @@ class RegisterCustomerCoachTest : BaseComponentTest() {
     @Test
     @LoadRequest(
         pathOfRequest = "requests/component/customer/registerNewCustomerCoach.json",
-        endpoint = "/api/client/create",
+        endpoint = "/api/customer/create",
         httpMethod = RequestMethod.POST
     )
     fun `test register new client duplicated`() {
@@ -116,7 +116,7 @@ class RegisterCustomerCoachTest : BaseComponentTest() {
         every { clientTypeRepositoryMock.getByType("COACH") } returns clientTypeMaker
             .but(with(ClientTypeMaker.type, "COACH"))
             .make()
-        every { coachRepositoryMock.saveAndFlush(any()) } throws DataIntegrityViolationException("SQL Error -> Duplicate client")
+        every { coachRepositoryMock.save(any()) } throws DataIntegrityViolationException("SQL Error -> Duplicate client")
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -142,7 +142,7 @@ class RegisterCustomerCoachTest : BaseComponentTest() {
     @Test
     @LoadRequest(
         pathOfRequest = "requests/component/customer/registerNewCustomerCoach.json",
-        endpoint = "/api/client/create",
+        endpoint = "/api/customer/create",
         httpMethod = RequestMethod.POST
     )
     fun `test register new client but occurred an internal exception`() {

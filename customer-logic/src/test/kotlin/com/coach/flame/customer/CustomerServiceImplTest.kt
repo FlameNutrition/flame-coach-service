@@ -1,10 +1,10 @@
 package com.coach.flame.customer
 
 import com.coach.flame.domain.*
-import com.coach.flame.domain.converters.ClientToClientDtoConverter
-import com.coach.flame.domain.converters.CoachToCoachDtoConverter
-import com.coach.flame.domain.converters.CountryConfigToCountryDtoConverter
-import com.coach.flame.domain.converters.GenderConfigToGenderDtoConverter
+import com.coach.flame.domain.converters.ClientDtoConverter
+import com.coach.flame.domain.converters.CoachDtoConverter
+import com.coach.flame.domain.converters.CountryDtoConverter
+import com.coach.flame.domain.converters.GenderDtoConverter
 import com.coach.flame.jpa.entity.*
 import com.coach.flame.jpa.repository.*
 import com.natpryce.makeiteasy.MakeItEasy.*
@@ -48,16 +48,16 @@ class CustomerServiceImplTest {
     private lateinit var userSessionRepository: UserSessionRepository
 
     @SpyK
-    private var genderConfigToGenderDtoConverter: GenderConfigToGenderDtoConverter = GenderConfigToGenderDtoConverter()
+    private var genderDtoConverter: GenderDtoConverter = GenderDtoConverter()
 
     @SpyK
-    private var countryConfigToCountryDtoConverter: CountryConfigToCountryDtoConverter = CountryConfigToCountryDtoConverter()
+    private var countryDtoConverter: CountryDtoConverter = CountryDtoConverter()
 
     @SpyK
-    private var clientToClientDtoConverter: ClientToClientDtoConverter = ClientToClientDtoConverter(countryConfigToCountryDtoConverter, genderConfigToGenderDtoConverter)
+    private var clientDtoConverter: ClientDtoConverter = ClientDtoConverter(countryDtoConverter, genderDtoConverter)
 
     @SpyK
-    private var coachToCoachDtoConverter: CoachToCoachDtoConverter = CoachToCoachDtoConverter(countryConfigToCountryDtoConverter, genderConfigToGenderDtoConverter, clientToClientDtoConverter)
+    private var coachDtoConverter: CoachDtoConverter = CoachDtoConverter(countryDtoConverter, genderDtoConverter)
 
     @InjectMockKs
     private lateinit var classToTest: CustomerServiceImpl
@@ -99,7 +99,7 @@ class CustomerServiceImplTest {
 
         // then
         then(clientDto).isNotNull
-        verify(exactly = 1) { clientToClientDtoConverter.convert(client) }
+        verify(exactly = 1) { clientDtoConverter.convert(client) }
         verify(exactly = 1) { clientRepository.findByUuid(uuid) }
 
     }
@@ -117,7 +117,7 @@ class CustomerServiceImplTest {
 
         // then
         then(clientDto).isNotNull
-        verify(exactly = 1) { coachToCoachDtoConverter.convert(coach) }
+        verify(exactly = 1) { coachDtoConverter.convert(coach) }
         verify(exactly = 1) { coachRepository.findByUuid(uuid) }
 
     }
@@ -136,7 +136,7 @@ class CustomerServiceImplTest {
         then(thrown)
             .isInstanceOf(CustomerNotFoundException::class.java)
             .hasMessageContaining("Could not found any client with uuid: $uuid")
-        verify(exactly = 0) { clientToClientDtoConverter.convert(any()) }
+        verify(exactly = 0) { clientDtoConverter.convert(any()) }
         verify(exactly = 1) { clientRepository.findByUuid(uuid) }
 
     }
@@ -155,7 +155,7 @@ class CustomerServiceImplTest {
         then(thrown)
             .isInstanceOf(CustomerNotFoundException::class.java)
             .hasMessageContaining("Could not found any coach with uuid: $uuid")
-        verify(exactly = 0) { coachToCoachDtoConverter.convert(any()) }
+        verify(exactly = 0) { coachDtoConverter.convert(any()) }
         verify(exactly = 1) { coachRepository.findByUuid(uuid) }
 
     }
@@ -175,15 +175,15 @@ class CustomerServiceImplTest {
 
         val clientCaptorSlot = slot<Client>()
         every { clientTypeRepository.getByType("CLIENT") } returns clientTypeMaker.make()
-        every { clientRepository.saveAndFlush(capture(clientCaptorSlot)) } answers { clientCaptorSlot.captured }
+        every { clientRepository.save(capture(clientCaptorSlot)) } answers { clientCaptorSlot.captured }
 
         // when
         val postClientDto = classToTest.registerCustomer(preClientDto) as ClientDto
 
         // then
-        verify(exactly = 1) { clientToClientDtoConverter.convert(any()) }
-        verify(exactly = 1) { clientRepository.saveAndFlush(any()) }
-        verify(exactly = 0) { coachRepository.saveAndFlush(any()) }
+        verify(exactly = 1) { clientDtoConverter.convert(any()) }
+        verify(exactly = 1) { clientRepository.save(any()) }
+        verify(exactly = 0) { coachRepository.save(any()) }
         then(clientCaptorSlot.isCaptured).isTrue
         then(postClientDto.loginInfo).isNotNull
         then(postClientDto.firstName).isEqualTo(clientCaptorSlot.captured.firstName)
@@ -213,15 +213,15 @@ class CustomerServiceImplTest {
         every { clientTypeRepository.getByType("COACH") } returns clientTypeMaker
             .but(with(ClientTypeMaker.type, "COACH"))
             .make()
-        every { coachRepository.saveAndFlush(capture(clientCaptorSlot)) } answers { clientCaptorSlot.captured }
+        every { coachRepository.save(capture(clientCaptorSlot)) } answers { clientCaptorSlot.captured }
 
         // when
         val postClientDto = classToTest.registerCustomer(preClientDto) as CoachDto
 
         // then
-        verify(exactly = 1) { coachToCoachDtoConverter.convert(any()) }
-        verify(exactly = 0) { clientRepository.saveAndFlush(any()) }
-        verify(exactly = 1) { coachRepository.saveAndFlush(any()) }
+        verify(exactly = 1) { coachDtoConverter.convert(any()) }
+        verify(exactly = 0) { clientRepository.save(any()) }
+        verify(exactly = 1) { coachRepository.save(any()) }
         then(clientCaptorSlot.isCaptured).isTrue
         then(postClientDto.loginInfo).isNotNull
         then(postClientDto.firstName).isEqualTo(clientCaptorSlot.captured.firstName)
@@ -243,13 +243,13 @@ class CustomerServiceImplTest {
             .but(with(ClientDtoMaker.loginInfo, loginInfoMaker.make()))
             .make()
         every { clientTypeRepository.getByType(any()) } returns entityClient.clientType
-        every { clientRepository.saveAndFlush(any()) } throws DataIntegrityViolationException("SQL ERROR!")
+        every { clientRepository.save(any()) } throws DataIntegrityViolationException("SQL ERROR!")
 
         // when
         val exception = catchThrowable { classToTest.registerCustomer(clientDto) }
 
         // then
-        verify(exactly = 0) { clientToClientDtoConverter.convert(any()) }
+        verify(exactly = 0) { clientDtoConverter.convert(any()) }
         then(exception)
             .isInstanceOf(CustomerRegisterDuplicateException::class.java)
             .hasMessageContaining("The following customer already exists")
@@ -265,13 +265,13 @@ class CustomerServiceImplTest {
             .but(with(ClientDtoMaker.loginInfo, loginInfoMaker.make()))
             .make()
         every { clientTypeRepository.getByType(any()) } returns entityClient.clientType
-        every { clientRepository.saveAndFlush(any()) } throws RuntimeException("Something wrong happened!")
+        every { clientRepository.save(any()) } throws RuntimeException("Something wrong happened!")
 
         // when
         val exception = catchThrowable { classToTest.registerCustomer(clientDto) }
 
         // then
-        verify(exactly = 0) { clientToClientDtoConverter.convert(any()) }
+        verify(exactly = 0) { clientDtoConverter.convert(any()) }
         then(exception)
             .isInstanceOf(RuntimeException::class.java)
             .hasMessageContaining("Something wrong happened!")
@@ -297,7 +297,7 @@ class CustomerServiceImplTest {
         val exception = catchThrowable { classToTest.registerCustomer(clientDto) }
 
         // then
-        verify(exactly = 0) { clientToClientDtoConverter.convert(any()) }
+        verify(exactly = 0) { clientDtoConverter.convert(any()) }
         then(exception)
             .isInstanceOf(IllegalStateException::class.java)
             .hasMessageContaining(expectedMessage)
@@ -329,15 +329,15 @@ class CustomerServiceImplTest {
             .make()
 
         every { userRepository.findUserByEmailAndPassword("test@gmail.com", "12345") } returns user
-        every { userSessionRepository.saveAndFlush(capture(userSession)) } returns mockk()
+        every { userSessionRepository.save(capture(userSession)) } returns mockk()
 
         // when
         val response = classToTest.getNewCustomerSession(username, password) as ClientDto
 
         // then
         verify(exactly = 1) { userRepository.findUserByEmailAndPassword("test@gmail.com", "12345") }
-        verify(exactly = 1) { userSessionRepository.saveAndFlush(any()) }
-        verify(exactly = 1) { clientToClientDtoConverter.convert(any()) }
+        verify(exactly = 1) { userSessionRepository.save(any()) }
+        verify(exactly = 1) { clientDtoConverter.convert(any()) }
         then(userSession.isCaptured).isTrue
         then(userSession.captured.token).isNotNull
         then(userSession.captured.expirationDate).isNotEqualTo(actualDate)
@@ -361,7 +361,7 @@ class CustomerServiceImplTest {
 
         // then
         verify(exactly = 1) { userRepository.findUserByEmailAndPassword("INVALID", "12345") }
-        verify(exactly = 0) { clientToClientDtoConverter.convert(any()) }
+        verify(exactly = 0) { clientDtoConverter.convert(any()) }
         verify(exactly = 0) { userSessionRepository.saveAndFlush(any()) }
         then(exception1)
             .isInstanceOf(CustomerUsernameOrPasswordException::class.java)
@@ -375,7 +375,7 @@ class CustomerServiceImplTest {
 
         // then
         verify(exactly = 1) { userRepository.findUserByEmailAndPassword("test@gmail.com", "INVALID") }
-        verify(exactly = 0) { clientToClientDtoConverter.convert(any()) }
+        verify(exactly = 0) { clientDtoConverter.convert(any()) }
         verify(exactly = 0) { userSessionRepository.saveAndFlush(any()) }
         then(exception2)
             .isInstanceOf(CustomerUsernameOrPasswordException::class.java)

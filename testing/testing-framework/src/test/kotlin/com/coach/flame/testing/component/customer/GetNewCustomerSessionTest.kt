@@ -28,7 +28,7 @@ class GetNewCustomerSessionTest : BaseComponentTest() {
     @Test
     @LoadRequest(
         pathOfRequest = "requests/component/customer/newCustomerSession.json",
-        endpoint = "/api/client/newSession",
+        endpoint = "/api/customer/newSession",
         httpMethod = RequestMethod.POST
     )
     fun `test get a new client session`() {
@@ -49,7 +49,7 @@ class GetNewCustomerSessionTest : BaseComponentTest() {
             .but(with(UserMaker.client, client))
             .make()
         every { userRepositoryMock.findUserByEmailAndPassword("test@gmail.com", "12345") } returns user
-        every { userSessionRepositoryMock.saveAndFlush(any()) } returns mockk()
+        every { userSessionRepositoryMock.save(any()) } returns mockk()
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -78,7 +78,7 @@ class GetNewCustomerSessionTest : BaseComponentTest() {
     @Test
     @LoadRequest(
         pathOfRequest = "requests/component/customer/newCustomerSessionInvalidUsername.json",
-        endpoint = "/api/client/newSession",
+        endpoint = "/api/customer/newSession",
         httpMethod = RequestMethod.POST
     )
     fun `test get a new client session but username is invalid`() {
@@ -111,7 +111,7 @@ class GetNewCustomerSessionTest : BaseComponentTest() {
     @Test
     @LoadRequest(
         pathOfRequest = "requests/component/customer/newCustomerSession.json",
-        endpoint = "/api/client/newSession",
+        endpoint = "/api/customer/newSession",
         httpMethod = RequestMethod.POST
     )
     fun `test get a new client session but throws unexpected exception`() {

@@ -8,11 +8,7 @@ import org.springframework.core.convert.converter.Converter
 import org.springframework.stereotype.Component
 
 @Component
-class CountryConfigToCountryDtoConverter : Converter<CountryConfig, CountryDto> {
-
-    companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(CountryConfigToCountryDtoConverter::class.java)
-    }
+class CountryDtoConverter : Converter<CountryConfig, CountryDto> {
 
     override fun convert(country: CountryConfig): CountryDto {
         return CountryDto(

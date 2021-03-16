@@ -8,11 +8,7 @@ import org.springframework.core.convert.converter.Converter
 import org.springframework.stereotype.Component
 
 @Component
-class GenderConfigToGenderDtoConverter : Converter<GenderConfig, GenderDto> {
-
-    companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(GenderConfigToGenderDtoConverter::class.java)
-    }
+class GenderDtoConverter : Converter<GenderConfig, GenderDto> {
 
     override fun convert(gender: GenderConfig): GenderDto {
         return GenderDto(

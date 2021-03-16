@@ -5,9 +5,9 @@ import com.natpryce.makeiteasy.MakeItEasy.an
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 
-class GenderTypeToGenderDtoConverterTest {
+class GenderDtoConverterTest {
 
-    private val classToTest: GenderConfigToGenderDtoConverter = GenderConfigToGenderDtoConverter()
+    private val classToTest: GenderDtoConverter = GenderDtoConverter()
 
     private val genderMaker = an(GenderMaker.GenderConfig)
 

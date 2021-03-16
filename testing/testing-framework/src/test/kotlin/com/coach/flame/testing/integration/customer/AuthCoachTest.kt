@@ -1,4 +1,4 @@
-package com.coach.flame.testing.integration.client
+package com.coach.flame.testing.integration.customer
 
 import com.coach.flame.jpa.entity.*
 import com.coach.flame.testing.framework.JsonBuilder
@@ -21,7 +21,7 @@ class AuthCoachTest : BaseIntegrationTest() {
     @Test
     @LoadRequest(
         pathOfRequest = "requests/integration/customer/registerNewCustomerCoach.json",
-        endpoint = "api/client/create",
+        endpoint = "api/customer/create",
         httpMethod = RequestMethod.POST
     )
     fun `register new coach`() {
@@ -51,7 +51,7 @@ class AuthCoachTest : BaseIntegrationTest() {
     @Test
     @LoadRequest(
         pathOfRequest = "requests/integration/customer/newCustomerSession.json",
-        endpoint = "/api/client/newSession",
+        endpoint = "/api/customer/newSession",
         httpMethod = RequestMethod.POST
     )
     fun `get new coach session`() {

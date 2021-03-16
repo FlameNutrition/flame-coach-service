@@ -54,7 +54,7 @@ class DailyTaskCreateTest : BaseComponentTest() {
 
         every { userSessionRepositoryMock.findByToken(coachToken) } returns coachSession
         every { clientRepositoryMock.findByUuid(clientToken) } returns client
-        every { dailyTaskRepositoryMock.saveAndFlush(capture(dailyTaskSlot)) } answers { dailyTaskSlot.captured }
+        every { dailyTaskRepositoryMock.save(capture(dailyTaskSlot)) } answers { dailyTaskSlot.captured }
 
         // when
         val mvnResponse = mockMvc.perform(request!!)

@@ -32,7 +32,8 @@ class CustomerRequestConverter : Converter<CustomerRequest, ClientDto> {
                 password = customerRequest.password!!,
             ),
             clientStatus = null,
-            registrationDate = LocalDate.now()
+            registrationDate = LocalDate.now(),
+            coach = null
         )
     }
 

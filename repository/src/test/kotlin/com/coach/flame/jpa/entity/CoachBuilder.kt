@@ -5,8 +5,10 @@ import com.natpryce.makeiteasy.Maker
 
 object CoachBuilder {
 
+    private val MAKER: Maker<Coach> = an(CoachMaker.Coach)
+
     fun maker(): Maker<Coach> {
-        return an(CoachMaker.Coach)
+        return MAKER
     }
 
     fun default(): Coach {

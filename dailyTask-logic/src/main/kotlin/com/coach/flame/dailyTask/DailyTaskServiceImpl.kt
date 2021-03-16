@@ -63,7 +63,8 @@ class DailyTaskServiceImpl(
 
         val coachSession = userSessionRepository.findByToken(dailyTask.coachIdentifier!!)
             ?: run {
-                LOGGER.warn("opr='createDailyTask', msg='Invalid coach token', coachToken={}", dailyTask.coachIdentifier)
+                LOGGER.warn("opr='createDailyTask', msg='Invalid coach token', coachToken={}",
+                    dailyTask.coachIdentifier)
                 throw ClientNotFoundException("Didn't find any coach session, please check the coachToken identifier.")
             }
 
@@ -84,7 +85,7 @@ class DailyTaskServiceImpl(
             client = client
         )
 
-        val entity = dailyTaskRepository.saveAndFlush(newDailyTask)
+        val entity = dailyTaskRepository.save(newDailyTask)
 
         return dailyTask.copy(
             coachIdentifier = entity.createdBy.user.userSession.token,

@@ -5,8 +5,10 @@ import com.natpryce.makeiteasy.Maker
 
 object LoginInfoDtoBuilder {
 
+    private val MAKER: Maker<LoginInfoDto> = an(LoginInfoDtoMaker.LoginInfoDto)
+
     fun maker(): Maker<LoginInfoDto> {
-        return an(LoginInfoDtoMaker.LoginInfoDto)
+        return MAKER
     }
 
     fun default(): LoginInfoDto {
