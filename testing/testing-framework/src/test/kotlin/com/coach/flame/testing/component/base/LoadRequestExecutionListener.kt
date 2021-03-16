@@ -7,7 +7,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
-import org.springframework.http.RequestEntity
 import org.springframework.test.context.TestContext
 import org.springframework.test.context.TestExecutionListener
 import org.springframework.test.web.servlet.RequestBuilder

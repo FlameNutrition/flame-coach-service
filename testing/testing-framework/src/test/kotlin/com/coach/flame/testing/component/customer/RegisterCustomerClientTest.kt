@@ -6,7 +6,7 @@ import com.coach.flame.jpa.entity.UserSessionMaker
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
-import com.natpryce.makeiteasy.MakeItEasy.*
+import com.natpryce.makeiteasy.MakeItEasy.with
 import io.mockk.every
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
@@ -144,7 +144,7 @@ class RegisterCustomerClientTest : BaseComponentTest() {
     fun `test register new client but occurred an internal exception`() {
 
         every { clientTypeRepositoryMock.getByType("CLIENT") } returns clientTypeMaker.make()
-        every { clientRepositoryMock.saveAndFlush(any()) } throws Exception("Ops...something is wrong!")
+        every { clientRepositoryMock.save(any()) } throws Exception("Ops...something is wrong!")
 
         // when
         val mvnResponse = mockMvc.perform(request!!)

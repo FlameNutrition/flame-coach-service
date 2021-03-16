@@ -1,10 +1,13 @@
 package com.coach.flame.testing.component.coach
 
-import com.coach.flame.jpa.entity.*
+import com.coach.flame.jpa.entity.ClientBuilder
+import com.coach.flame.jpa.entity.ClientMaker
+import com.coach.flame.jpa.entity.ClientStatus
+import com.coach.flame.jpa.entity.CoachMaker
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
-import com.natpryce.makeiteasy.MakeItEasy.*
+import com.natpryce.makeiteasy.MakeItEasy.with
 import io.mockk.every
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test

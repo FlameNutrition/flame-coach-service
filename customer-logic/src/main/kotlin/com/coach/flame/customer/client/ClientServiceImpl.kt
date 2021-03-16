@@ -1,8 +1,8 @@
 package com.coach.flame.customer.client
 
 import com.coach.flame.customer.CustomerNotFoundException
-import com.coach.flame.customer.CustomerRetrieveException
-import com.coach.flame.domain.*
+import com.coach.flame.domain.ClientDto
+import com.coach.flame.domain.ClientStatusDto
 import com.coach.flame.domain.converters.ClientDtoConverter
 import com.coach.flame.jpa.entity.Client
 import com.coach.flame.jpa.entity.ClientStatus
@@ -50,7 +50,7 @@ class ClientServiceImpl(
     @Transactional
     override fun updateClientStatus(uuid: UUID, status: ClientStatusDto): ClientDto {
 
-        val client = getCustomer(uuid, CustomerTypeDto.CLIENT) as Client
+        val client = getClient(uuid)
 
         LOGGER.info("opr='updateClientStatus', msg='Client found', uuid={}", client.uuid)
 
@@ -65,49 +65,64 @@ class ClientServiceImpl(
     }
 
     @Transactional
-    override fun updateClientCoach(uuidClient: UUID, uuidCoach: UUID): ClientDto {
+    override fun linkCoach(uuidClient: UUID, uuidCoach: UUID): ClientDto {
 
-        val client = getCustomer(uuidClient, CustomerTypeDto.CLIENT) as Client
-        LOGGER.info("opr='updateClientStatus', msg='Client found', uuid={}", client.uuid)
+        val client = getClient(uuidClient)
+        LOGGER.info("opr='linkCoach', msg='Client found', uuid={}", client.uuid)
 
-        val coach = getCustomer(uuidCoach, CustomerTypeDto.COACH) as Coach
-        LOGGER.info("opr='updateClientStatus', msg='Coach found', uuid={}", coach.uuid)
+        val coach = getCoach(uuidCoach)
+        LOGGER.info("opr='linkCoach', msg='Coach found', uuid={}", coach.uuid)
 
         client.coach = coach
 
         val clientUpdated = clientRepository.save(client)
 
-        LOGGER.info("opr='updateClientStatus', msg='Client new coach', coach={}", clientUpdated.coach?.uuid)
+        LOGGER.info("opr='linkCoach', msg='Client new coach', coach={}", clientUpdated.coach!!.uuid)
 
         return clientDtoConverter.convert(clientUpdated)
 
     }
 
+    @Transactional
+    override fun unlinkCoach(uuidClient: UUID): ClientDto {
+
+        val client = getClient(uuidClient)
+        LOGGER.info("opr='unlinkCoach', msg='Client found', uuid={}", client.uuid)
+
+        client.coach = null
+        client.clientStatus = ClientStatus.AVAILABLE
+
+        val clientUpdated = clientRepository.save(client)
+
+        LOGGER.info("opr='unlinkCoach', msg='Coach unlinked from a client', client={}", clientUpdated.uuid)
+
+        return clientDtoConverter.convert(clientUpdated)
+    }
+
     /**
-     * Auxiliary method to get the customer. When the param type is [CustomerTypeDto.CLIENT] method will return
-     * [Client], and when is [CustomerTypeDto.COACH] will return [Coach]. If the type is different then the two values
-     * the method throws a [CustomerRetrieveException]
+     * Auxiliary method to get the client entity. If the entity doesn't exist the method will raise a
+     * [CustomerNotFoundException] exception
      *
-     * @param uuid - Customer identifier
-     * @param type - Customer type
-     * @return a customer
-     * @throws CustomerNotFoundException when didn't find any customer
-     * @throws CustomerRetrieveException when received an invalid customer type
+     * @param uuid - Client uuid identifier
+     * @return a client entity
+     * @throws CustomerNotFoundException when didn't find any client
      */
-    private fun getCustomer(uuid: UUID, type: CustomerTypeDto): Any {
+    private fun getClient(uuid: UUID): Client {
+        return clientRepository.findByUuid(uuid)
+            ?: throw CustomerNotFoundException("Could not found any client with uuid: $uuid")
+    }
 
-        return when (type) {
-            CustomerTypeDto.CLIENT -> {
-                clientRepository.findByUuid(uuid)
-                    ?: throw CustomerNotFoundException("Could not found any client with uuid: $uuid")
-            }
-            CustomerTypeDto.COACH -> {
-                coachRepository.findByUuid(uuid)
-                    ?: throw CustomerNotFoundException("Could not found any coach with uuid: $uuid")
-            }
-            else -> throw CustomerRetrieveException("$type is a invalid customer type")
-        }
-
+    /**
+     * Auxiliary method to get the coach entity. If the entity doesn't exist the method will raise a
+     * [CustomerNotFoundException] exception
+     *
+     * @param uuid - Coach uuid identifier
+     * @return a coach entity
+     * @throws CustomerNotFoundException when didn't find any client
+     */
+    private fun getCoach(uuid: UUID): Coach {
+        return coachRepository.findByUuid(uuid)
+            ?: throw CustomerNotFoundException("Could not found any coach with uuid: $uuid")
     }
 
 }

@@ -1,10 +1,13 @@
 package com.coach.flame.testing.component.customer
 
-import com.coach.flame.jpa.entity.*
+import com.coach.flame.jpa.entity.ClientTypeMaker
+import com.coach.flame.jpa.entity.CoachMaker
+import com.coach.flame.jpa.entity.UserMaker
+import com.coach.flame.jpa.entity.UserSessionMaker
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
-import com.natpryce.makeiteasy.MakeItEasy.*
+import com.natpryce.makeiteasy.MakeItEasy.with
 import io.mockk.every
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
@@ -150,7 +153,7 @@ class RegisterCustomerCoachTest : BaseComponentTest() {
         every { clientTypeRepositoryMock.getByType("COACH") } returns clientTypeMaker
             .but(with(ClientTypeMaker.type, "COACH"))
             .make()
-        every { coachRepositoryMock.saveAndFlush(any()) } throws Exception("Ops...something is wrong!")
+        every { coachRepositoryMock.save(any()) } throws Exception("Ops...something is wrong!")
 
         // when
         val mvnResponse = mockMvc.perform(request!!)

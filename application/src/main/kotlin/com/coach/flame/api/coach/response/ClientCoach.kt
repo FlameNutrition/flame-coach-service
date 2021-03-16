@@ -9,7 +9,7 @@ data class ClientCoach(
     val identifier: UUID,
     val firstname: String,
     val lastname: String,
-    val status: String?,
+    val status: String,
     val email: String,
     val registrationDate: LocalDate
 )

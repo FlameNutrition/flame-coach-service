@@ -1,19 +1,11 @@
 package com.coach.flame.jpa.entity.repository
 
 import com.coach.flame.jpa.entity.*
-import com.coach.flame.jpa.repository.ClientRepository
-import com.coach.flame.jpa.repository.ClientTypeRepository
-import com.coach.flame.jpa.repository.UserSessionRepository
 import com.natpryce.makeiteasy.MakeItEasy.with
 import org.assertj.core.api.BDDAssertions.then
-import org.hibernate.Hibernate
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import org.springframework.context.ApplicationContext
-import javax.persistence.EntityManager
-import javax.persistence.PersistenceContext
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)

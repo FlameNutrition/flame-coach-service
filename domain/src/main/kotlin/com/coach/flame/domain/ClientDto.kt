@@ -16,8 +16,9 @@ data class ClientDto(
     override val customerType: CustomerTypeDto,
     override val loginInfo: LoginInfoDto?,
     override val registrationDate: LocalDate,
+    //FIXME: Can we remove the "?"...the client status in database is not nullable
     val clientStatus: ClientStatusDto?,
-    val coach: CoachDto?
+    val coach: CoachDto?,
 ) : Customer {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

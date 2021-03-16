@@ -5,7 +5,9 @@ import java.util.*
 
 interface ClientEnrollmentProcess {
 
-    fun init(client: UUID, coach: UUID) : ClientDto
+    fun init(client: UUID, coach: UUID): ClientDto
 
-    fun finish(client: UUID): ClientDto
+    fun finish(client: UUID, accept: Boolean): ClientDto
+
+    fun `break`(client: UUID): ClientDto
 }

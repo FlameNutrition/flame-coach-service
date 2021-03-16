@@ -6,7 +6,6 @@ import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import org.springframework.data.domain.PageRequest
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)

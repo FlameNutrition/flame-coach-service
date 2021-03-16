@@ -1,10 +1,12 @@
 package com.coach.flame.testing.integration.customer
 
-import com.coach.flame.jpa.entity.*
+import com.coach.flame.jpa.entity.ClientMaker
+import com.coach.flame.jpa.entity.ClientTypeMaker
+import com.coach.flame.jpa.entity.UserMaker
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
 import com.coach.flame.testing.integration.base.BaseIntegrationTest
-import com.natpryce.makeiteasy.MakeItEasy.*
+import com.natpryce.makeiteasy.MakeItEasy.with
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired

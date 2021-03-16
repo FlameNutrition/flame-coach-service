@@ -1,28 +1,19 @@
 package com.coach.flame.testing.integration.coach
 
 import com.coach.flame.jpa.entity.*
-import com.coach.flame.jpa.repository.ClientRepository
-import com.coach.flame.jpa.repository.ClientTypeRepository
-import com.coach.flame.jpa.repository.UserRepository
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
 import com.coach.flame.testing.integration.base.BaseIntegrationTest
-import com.natpryce.makeiteasy.MakeItEasy.*
+import com.natpryce.makeiteasy.MakeItEasy.with
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.test.context.jdbc.Sql
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMethod
 import java.util.*
-import javax.persistence.EntityManager
-import javax.persistence.PersistenceContext
-import javax.sql.DataSource
 
 class GetClientCoachPlusClientsAvailableTest : BaseIntegrationTest() {
 

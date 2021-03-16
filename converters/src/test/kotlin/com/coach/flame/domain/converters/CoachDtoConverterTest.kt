@@ -1,19 +1,19 @@
 package com.coach.flame.domain.converters
 
-import com.coach.flame.domain.*
+import com.coach.flame.domain.CountryDtoBuilder
+import com.coach.flame.domain.CustomerTypeDto
+import com.coach.flame.domain.GenderDtoBuilder
 import com.coach.flame.jpa.entity.*
 import com.natpryce.makeiteasy.MakeItEasy.*
-import com.natpryce.makeiteasy.Maker
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
-import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.SpyK
 import io.mockk.junit5.MockKExtension
+import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.time.LocalDate
@@ -26,9 +26,6 @@ class CoachDtoConverterTest {
 
     @SpyK
     private var countryDtoConverter: CountryDtoConverter = CountryDtoConverter()
-
-    @MockK
-    private lateinit var clientDtoConverter: ClientDtoConverter
 
     @InjectMockKs
     private lateinit var classToTest: CoachDtoConverter
@@ -112,7 +109,7 @@ class CoachDtoConverterTest {
     }
 
     @Test
-    fun `client convert without country`() {
+    fun `coach convert without country`() {
 
         // given
         val client = CoachBuilder.maker()
@@ -129,13 +126,12 @@ class CoachDtoConverterTest {
         //then
         verify(exactly = 1) { genderDtoConverter.convert(any()) }
         verify(exactly = 0) { countryDtoConverter.convert(any()) }
-        verify(exactly = 0) { clientDtoConverter.convert(any()) }
         then(clientDto).isNotNull
         then(clientDto.country).isNull()
     }
 
     @Test
-    fun `client convert without gender`() {
+    fun `coach convert without gender`() {
 
         // given
         val client = CoachBuilder.maker()
@@ -152,9 +148,32 @@ class CoachDtoConverterTest {
         //then
         verify(exactly = 0) { genderDtoConverter.convert(any()) }
         verify(exactly = 1) { countryDtoConverter.convert(any()) }
-        verify(exactly = 0) { clientDtoConverter.convert(any()) }
         then(clientDto).isNotNull
         then(clientDto.gender).isNull()
+    }
+
+    @Test
+    fun `coach convert with invalid customer type`() {
+
+        // given
+        val client = CoachBuilder.maker()
+            .but(with(CoachMaker.gender, GenderBuilder.default()),
+                with(CoachMaker.country, CountryBuilder.default()),
+                with(CoachMaker.clientType, ClientTypeBuilder.maker()
+                    .but(with(ClientTypeMaker.type, "OTHER_TYPE"))
+                    .make()))
+            .make()
+        every { countryDtoConverter.convert(any()) } returns mockk()
+        every { countryDtoConverter.convert(any()) } returns mockk()
+
+        // when
+        val clientDto = classToTest.convert(client)
+
+        //then
+        verify(exactly = 1) { genderDtoConverter.convert(any()) }
+        verify(exactly = 1) { countryDtoConverter.convert(any()) }
+        then(clientDto).isNotNull
+        then(clientDto.customerType).isEqualTo(CustomerTypeDto.UNKNOWN)
     }
 
 }

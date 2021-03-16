@@ -15,6 +15,7 @@ class UserMaker {
         val email: Property<User, String> = newProperty()
         val password: Property<User, String> = newProperty()
         val client: Property<User, Client?> = newProperty()
+        val coach: Property<User, Coach?> = newProperty()
         val userSession: Property<User, UserSession> = newProperty()
 
         val User: Instantiator<User> = Instantiator {
@@ -22,7 +23,8 @@ class UserMaker {
                 email = it.valueOf(email, fake.internet().emailAddress()),
                 password = it.valueOf(password, fake.internet().password()),
                 userSession = it.valueOf(userSession, make(a(UserSessionMaker.UserSession))),
-                client = it.valueOf(client, null as Client?)
+                client = it.valueOf(client, null as Client?),
+                coach = it.valueOf(coach, null as Coach?)
             )
         }
     }

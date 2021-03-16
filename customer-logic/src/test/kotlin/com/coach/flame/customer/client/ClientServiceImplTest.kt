@@ -1,5 +1,6 @@
 package com.coach.flame.customer.client
 
+import com.coach.flame.customer.CustomerNotFoundException
 import com.coach.flame.domain.ClientStatusDto
 import com.coach.flame.domain.CoachDtoBuilder
 import com.coach.flame.domain.converters.ClientDtoConverter
@@ -17,6 +18,7 @@ import io.mockk.impl.annotations.SpyK
 import io.mockk.junit5.MockKExtension
 import io.mockk.slot
 import io.mockk.verify
+import org.assertj.core.api.BDDAssertions.catchThrowable
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
@@ -36,12 +38,10 @@ class ClientServiceImplTest {
     private var genderDtoConverter: GenderDtoConverter = GenderDtoConverter()
 
     @SpyK
-    private var countryDtoConverter: CountryDtoConverter =
-        CountryDtoConverter()
+    private var countryDtoConverter: CountryDtoConverter = CountryDtoConverter()
 
     @SpyK
-    private var clientDtoConverter: ClientDtoConverter =
-        ClientDtoConverter(countryDtoConverter, genderDtoConverter)
+    private var clientDtoConverter: ClientDtoConverter = ClientDtoConverter(countryDtoConverter, genderDtoConverter)
 
     @InjectMockKs
     private lateinit var classToTest: ClientServiceImpl
@@ -151,7 +151,24 @@ class ClientServiceImplTest {
     }
 
     @Test
-    fun `test update coach linked to client`() {
+    fun `test update status client when client is invalid`() {
+
+        val uuid = UUID.randomUUID()
+
+        every { clientRepository.findByUuid(uuid) } returns null
+
+        val result = catchThrowable { classToTest.updateClientStatus(uuid, ClientStatusDto.PENDING) }
+
+        then(result)
+            .isInstanceOf(CustomerNotFoundException::class.java)
+            .hasMessageContaining("Could not found any client with uuid: $uuid")
+        verify(exactly = 1) { clientRepository.findByUuid(uuid) }
+        verify(exactly = 0) { clientRepository.save(any()) }
+
+    }
+
+    @Test
+    fun `test linked coach to client`() {
 
         val uuidClient = UUID.randomUUID()
         val uuidCoach = UUID.randomUUID()
@@ -165,11 +182,72 @@ class ClientServiceImplTest {
         every { coachRepository.findByUuid(uuidCoach) } returns coach
         every { clientRepository.save(capture(clientSlot)) } answers { clientSlot.captured }
 
-        classToTest.updateClientCoach(uuidClient, uuidCoach)
+        classToTest.linkCoach(uuidClient, uuidCoach)
 
         verify(exactly = 1) { clientDtoConverter.convert(any()) }
         then(clientSlot.isCaptured).isTrue
         then(clientSlot.captured.coach).isNotNull
+
+    }
+
+    @Test
+    fun `test linked coach to client when coach is invalid`() {
+
+        val uuidClient = UUID.randomUUID()
+        val uuidCoach = UUID.randomUUID()
+        val client = ClientBuilder.maker()
+            .but(with(ClientMaker.clientStatus, ClientStatus.AVAILABLE))
+            .make()
+
+        every { clientRepository.findByUuid(uuidClient) } returns client
+        every { coachRepository.findByUuid(uuidCoach) } returns null
+
+        val result = catchThrowable { classToTest.linkCoach(uuidClient, uuidCoach) }
+
+        then(result)
+            .isInstanceOf(CustomerNotFoundException::class.java)
+            .hasMessageContaining("Could not found any coach with uuid: $uuidCoach")
+        verify(exactly = 1) { clientRepository.findByUuid(uuidClient) }
+        verify(exactly = 1) { coachRepository.findByUuid(uuidCoach) }
+        verify(exactly = 0) { clientRepository.save(any()) }
+
+    }
+
+    @Test
+    fun `test unlink coach from a client`() {
+
+        val uuidClient = UUID.randomUUID()
+        val clientSlot = slot<Client>()
+        val client = ClientBuilder.maker()
+            .but(with(ClientMaker.clientStatus, ClientStatus.ACCEPTED))
+            .make()
+
+        every { clientRepository.findByUuid(uuidClient) } returns client
+        every { clientRepository.save(capture(clientSlot)) } answers { clientSlot.captured }
+
+        classToTest.unlinkCoach(uuidClient)
+
+        verify(exactly = 1) { clientDtoConverter.convert(any()) }
+        then(clientSlot.isCaptured).isTrue
+        then(clientSlot.captured.coach).isNull()
+        then(clientSlot.captured.clientStatus).isEqualTo(ClientStatus.AVAILABLE)
+
+    }
+
+    @Test
+    fun `test unlink coach from a client when client is invalid`() {
+
+        val uuidClient = UUID.randomUUID()
+
+        every { clientRepository.findByUuid(uuidClient) } returns null
+
+        val result = catchThrowable { classToTest.unlinkCoach(uuidClient) }
+
+        then(result)
+            .isInstanceOf(CustomerNotFoundException::class.java)
+            .hasMessageContaining("Could not found any client with uuid: $uuidClient")
+        verify(exactly = 1) { clientRepository.findByUuid(uuidClient) }
+        verify(exactly = 0) { clientRepository.save(any()) }
 
     }
 

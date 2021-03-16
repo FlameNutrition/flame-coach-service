@@ -5,15 +5,16 @@ import com.coach.flame.testing.framework.LoadRequest
 import com.google.gson.JsonObject
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.http.*
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
+import org.springframework.http.RequestEntity
 import org.springframework.test.context.TestContext
 import org.springframework.test.context.TestExecutionListener
 import org.springframework.web.bind.annotation.RequestMethod
-import java.net.URL
-import kotlin.reflect.KMutableProperty
-import kotlin.reflect.full.memberProperties
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
+import kotlin.reflect.KMutableProperty
+import kotlin.reflect.full.memberProperties
 
 
 class LoadRequestExecutionListener : TestExecutionListener {

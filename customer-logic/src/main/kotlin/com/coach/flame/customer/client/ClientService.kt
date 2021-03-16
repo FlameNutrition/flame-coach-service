@@ -14,5 +14,7 @@ interface ClientService {
 
     fun updateClientStatus(uuid: UUID, status: ClientStatusDto): ClientDto
 
-    fun updateClientCoach(uuidClient: UUID, uuidCoach: UUID): ClientDto
+    fun linkCoach(uuidClient: UUID, uuidCoach: UUID): ClientDto
+
+    fun unlinkCoach(uuidClient: UUID): ClientDto
 }

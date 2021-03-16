@@ -8,13 +8,13 @@ import com.natpryce.makeiteasy.MakeItEasy.an
 import com.natpryce.makeiteasy.Maker
 import org.assertj.core.api.AbstractStringAssert
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.TestInstance
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.RequestEntity
-import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.TestExecutionListeners
 
@@ -32,6 +32,7 @@ import org.springframework.test.context.TestExecutionListeners
     ],
     mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
 )
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 abstract class BaseIntegrationTest {
 
     companion object {
@@ -62,16 +63,19 @@ abstract class BaseIntegrationTest {
     protected val coachMaker: Maker<Coach> = an(CoachMaker.Coach)
     protected val userSessionMaker: Maker<UserSession> = an(UserSessionMaker.UserSession)
 
+    protected var enableDatabaseClean: Boolean = true
+
     /**
      * Use this request for integration tests
      */
     var request: RequestEntity<String>? = null
-    var response: ResponseEntity<*>? = null
 
-    @BeforeEach
-    fun beforeEach() {
-        LOGGER.info("opr='beforeEach', msg='Cleaning database...this process will truncate all tables'")
-        sqlClean.beforeEach()
+    @AfterEach
+    fun cleanUp() {
+        if (enableDatabaseClean) {
+            LOGGER.info("opr='cleanUp', msg='Cleaning database...this process will truncate all tables'")
+            sqlClean.beforeEach()
+        }
     }
 
     protected fun thenErrorMessageType(body: JsonObject): AbstractStringAssert<*> {

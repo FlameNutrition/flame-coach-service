@@ -1,8 +1,6 @@
 package com.coach.flame.testing.component.dailyTask
 
-import com.coach.flame.jpa.entity.DailyTask
-import com.coach.flame.jpa.entity.UserMaker
-import com.coach.flame.jpa.entity.UserSessionMaker
+import com.coach.flame.jpa.entity.*
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
@@ -101,14 +99,17 @@ class DailyTaskCreateTest : BaseComponentTest() {
         val clientToken = UUID.fromString("3c5845f1-4a90-4396-8610-7261761369ae")
         val coachToken = UUID.fromString("b2957c86-e493-4f9a-a277-2e24b77f0ffe")
         val coachSession = userSessionMaker
-            .but(with(UserSessionMaker.token, coachToken))
+            .but(with(UserSessionMaker.token, coachToken),
+                with(UserSessionMaker.user, UserBuilder.maker()
+                    .but(with(UserMaker.client, ClientBuilder.default()))
+                    .make()))
             .make()
         val client = clientMaker
             .make()
 
         every { userSessionRepositoryMock.findByToken(coachToken) } returns coachSession
         every { clientRepositoryMock.findByUuid(clientToken) } returns client
-        every { dailyTaskRepositoryMock.saveAndFlush(capture(dailyTaskSlot)) } throws SQLException("This is a sensible information")
+        every { dailyTaskRepositoryMock.save(capture(dailyTaskSlot)) } throws SQLException("This is a sensible information")
 
         // when
         val mvnResponse = mockMvc.perform(request!!)

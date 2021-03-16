@@ -1,23 +1,17 @@
 package com.coach.flame.api.coach
 
-import com.coach.flame.api.coach.request.CoachRequest
-import com.coach.flame.api.coach.request.CoachRequestMaker
-import com.coach.flame.api.coach.response.ClientCoach
-import com.coach.flame.api.coach.response.ClientCoachMaker
-import com.coach.flame.api.coach.response.CoachResponse
-import com.coach.flame.api.coach.response.CoachResponseMaker
 import com.coach.flame.customer.coach.CoachService
 import com.coach.flame.domain.*
-import com.natpryce.makeiteasy.MakeItEasy.an
+import com.coach.flame.exception.RestInvalidRequestException
 import com.natpryce.makeiteasy.MakeItEasy.with
-import com.natpryce.makeiteasy.Maker
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import org.assertj.core.api.BDDAssertions
+import org.assertj.core.api.BDDAssertions.catchThrowable
 import org.assertj.core.api.BDDAssertions.then
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.util.*
@@ -31,19 +25,9 @@ class CoachApiImplTest {
     @InjectMockKs
     private lateinit var classToTest: CoachApiImpl
 
-    private lateinit var coachRequestMaker: Maker<CoachRequest>
-    private lateinit var coachResponseMaker: Maker<CoachResponse>
-    private lateinit var clientCoachMaker: Maker<ClientCoach>
-    private lateinit var coachDtoMaker: Maker<CoachDto>
-    private lateinit var clientDtoMaker: Maker<ClientDto>
-
-    @BeforeEach
-    fun setUp() {
-        coachRequestMaker = an(CoachRequestMaker.CoachRequest)
-        coachResponseMaker = an(CoachResponseMaker.CoachResponse)
-        clientCoachMaker = an(ClientCoachMaker.ClientCoach)
-        coachDtoMaker = an(CoachDtoMaker.CoachDto)
-        clientDtoMaker = an(ClientDtoMaker.ClientDto)
+    @AfterEach
+    fun cleanUp() {
+        clearAllMocks()
     }
 
     @Test
@@ -54,7 +38,7 @@ class CoachApiImplTest {
         val client0 = ClientDtoBuilder.maker().but(with(ClientDtoMaker.loginInfo, LoginInfoDtoBuilder.default())).make()
         val client1 = ClientDtoBuilder.maker().but(with(ClientDtoMaker.loginInfo, LoginInfoDtoBuilder.default())).make()
         val clients = setOf(client0, client1)
-        val clientCoach = coachDtoMaker
+        val clientCoach = CoachDtoBuilder.maker()
             .but(with(CoachDtoMaker.loginInfo, LoginInfoDtoBuilder.default()),
                 with(CoachDtoMaker.customerType, CustomerTypeDto.COACH),
                 with(CoachDtoMaker.identifier, uuid),
@@ -79,7 +63,7 @@ class CoachApiImplTest {
         every { coachService.getCoachWithClientsAccepted(uuid) } throws RuntimeException("Something wrong happened")
 
         // when
-        val thrown = BDDAssertions.catchThrowable { classToTest.getClientsCoach(uuid.toString()) }
+        val thrown = catchThrowable { classToTest.getClientsCoach(uuid.toString()) }
 
         //then
         then(thrown)
@@ -116,4 +100,35 @@ class CoachApiImplTest {
         then(response.clientsCoach.filter { ClientStatusDto.AVAILABLE.name == it.status }).hasSize(2)
 
     }
+
+    @Test
+    fun `test get clients for a coach invalid uuid format`() {
+
+        // given
+        val uuid = "INVALID"
+
+        // when
+        val thrown = catchThrowable { classToTest.getClientsCoach(uuid) }
+
+        //then
+        then(thrown)
+            .isInstanceOf(RestInvalidRequestException::class.java)
+            .hasMessageContaining("Invalid UUID string: INVALID")
+    }
+
+    @Test
+    fun `test get clients coach plus clients available for a coach invalid uuid format`() {
+
+        // given
+        val uuid = "INVALID"
+
+        // when
+        val thrown = catchThrowable { classToTest.getClientsCoach(uuid) }
+
+        //then
+        then(thrown)
+            .isInstanceOf(RestInvalidRequestException::class.java)
+            .hasMessageContaining("Invalid UUID string: INVALID")
+    }
+
 }

@@ -30,7 +30,7 @@ class CoachApiImpl(
                             firstname = it.firstName,
                             lastname = it.lastName,
                             identifier = it.identifier,
-                            status = it.clientStatus?.name,
+                            status = it.clientStatus!!.name,
                             email = it.loginInfo!!.username,
                             registrationDate = it.registrationDate)
                     }.toSet()
@@ -43,12 +43,8 @@ class CoachApiImpl(
     @GetMapping("/getClientsAccepted")
     @ResponseBody
     override fun getClientsCoach(@RequestParam(required = true) identifier: String): CoachResponse {
-
         try {
-            requireNotNull(identifier) { "Missing required parameter request: identifier" }
-
             val coach = coachService.getCoachWithClientsAccepted(UUID.fromString(identifier))
-
             return converter(coach)
         } catch (ex: IllegalArgumentException) {
             LOGGER.warn("opr='getClientsCoach', msg='Invalid request'", ex)
@@ -63,15 +59,11 @@ class CoachApiImpl(
     override fun getClientsCoachPlusClientsAvailable(@RequestParam(required = true) identifier: String): CoachResponse {
 
         try {
-            requireNotNull(identifier) { "Missing required parameter request: identifier" }
-
             val coach = coachService.getCoachWithClientsAvailable(UUID.fromString(identifier))
-
             return converter(coach)
         } catch (ex: IllegalArgumentException) {
-            LOGGER.warn("opr='getClientsCoach', msg='Invalid request'", ex)
+            LOGGER.warn("opr='getClientsCoachPlusClientsAvailable', msg='Invalid request'", ex)
             throw RestInvalidRequestException(ex)
         }
-
     }
 }

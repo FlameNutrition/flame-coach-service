@@ -8,7 +8,6 @@ import com.coach.flame.domain.converters.GenderDtoConverter
 import com.coach.flame.jpa.entity.*
 import com.coach.flame.jpa.repository.*
 import com.natpryce.makeiteasy.MakeItEasy.*
-import com.natpryce.makeiteasy.Maker
 import io.mockk.*
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -17,14 +16,12 @@ import io.mockk.junit5.MockKExtension
 import org.assertj.core.api.BDDAssertions.catchThrowable
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.dao.DataIntegrityViolationException
-import java.lang.IllegalStateException
 import java.time.LocalDateTime
 import java.util.*
 import java.util.stream.Stream
@@ -62,25 +59,6 @@ class CustomerServiceImplTest {
     @InjectMockKs
     private lateinit var classToTest: CustomerServiceImpl
 
-    private lateinit var clientDtoMaker: Maker<ClientDto>
-    private lateinit var clientMaker: Maker<Client>
-    private lateinit var coachMaker: Maker<Coach>
-    private lateinit var userSessionMaker: Maker<UserSession>
-    private lateinit var userMaker: Maker<User>
-    private lateinit var loginInfoMaker: Maker<LoginInfoDto>
-    private lateinit var clientTypeMaker: Maker<ClientType>
-
-    @BeforeEach
-    fun setUp() {
-        clientDtoMaker = an(ClientDtoMaker.ClientDto)
-        clientMaker = an(ClientMaker.Client)
-        coachMaker = an(CoachMaker.Coach)
-        userSessionMaker = an(UserSessionMaker.UserSession)
-        userMaker = an(UserMaker.User)
-        loginInfoMaker = an(LoginInfoDtoMaker.LoginInfoDto)
-        clientTypeMaker = an(ClientTypeMaker.ClientType)
-    }
-
     @AfterEach
     fun cleanUp() {
         clearAllMocks()
@@ -91,7 +69,7 @@ class CustomerServiceImplTest {
 
         // given
         val uuid = UUID.randomUUID()
-        val client = clientMaker.make()
+        val client = ClientBuilder.default()
         every { clientRepository.findByUuid(uuid) } returns client
 
         // when
@@ -109,7 +87,7 @@ class CustomerServiceImplTest {
 
         // given
         val uuid = UUID.randomUUID()
-        val coach = coachMaker.make()
+        val coach = CoachBuilder.default()
         every { coachRepository.findByUuid(uuid) } returns coach
 
         // when
@@ -166,15 +144,15 @@ class CustomerServiceImplTest {
         // given
         val expectedExpirationDate = LocalDateTime.now()
         val expectedToken = UUID.randomUUID()
-        val preClientDto = clientDtoMaker
-            .but(with(ClientDtoMaker.loginInfo, loginInfoMaker
+        val preClientDto = ClientDtoBuilder.maker()
+            .but(with(ClientDtoMaker.loginInfo, LoginInfoDtoBuilder.maker()
                 .but(with(LoginInfoDtoMaker.expirationDate, expectedExpirationDate),
                     with(LoginInfoDtoMaker.token, expectedToken))
                 .make()))
             .make()
 
         val clientCaptorSlot = slot<Client>()
-        every { clientTypeRepository.getByType("CLIENT") } returns clientTypeMaker.make()
+        every { clientTypeRepository.getByType("CLIENT") } returns ClientTypeBuilder.default()
         every { clientRepository.save(capture(clientCaptorSlot)) } answers { clientCaptorSlot.captured }
 
         // when
@@ -201,16 +179,16 @@ class CustomerServiceImplTest {
         // given
         val expectedExpirationDate = LocalDateTime.now()
         val expectedToken = UUID.randomUUID()
-        val preClientDto = clientDtoMaker
+        val preClientDto = ClientDtoBuilder.maker()
             .but(with(ClientDtoMaker.customerType, CustomerTypeDto.COACH),
-                with(ClientDtoMaker.loginInfo, loginInfoMaker
+                with(ClientDtoMaker.loginInfo, LoginInfoDtoBuilder.maker()
                     .but(with(LoginInfoDtoMaker.expirationDate, expectedExpirationDate),
                         with(LoginInfoDtoMaker.token, expectedToken))
                     .make()))
             .make()
 
         val clientCaptorSlot = slot<Coach>()
-        every { clientTypeRepository.getByType("COACH") } returns clientTypeMaker
+        every { clientTypeRepository.getByType("COACH") } returns ClientTypeBuilder.maker()
             .but(with(ClientTypeMaker.type, "COACH"))
             .make()
         every { coachRepository.save(capture(clientCaptorSlot)) } answers { clientCaptorSlot.captured }
@@ -238,9 +216,9 @@ class CustomerServiceImplTest {
     fun `register a new client duplicated`() {
 
         // given
-        val entityClient = clientMaker.make()
-        val clientDto = clientDtoMaker
-            .but(with(ClientDtoMaker.loginInfo, loginInfoMaker.make()))
+        val entityClient = ClientBuilder.default()
+        val clientDto = ClientDtoBuilder.maker()
+            .but(with(ClientDtoMaker.loginInfo, LoginInfoDtoBuilder.default()))
             .make()
         every { clientTypeRepository.getByType(any()) } returns entityClient.clientType
         every { clientRepository.save(any()) } throws DataIntegrityViolationException("SQL ERROR!")
@@ -260,9 +238,9 @@ class CustomerServiceImplTest {
     fun `register a new client but raised a exception`() {
 
         // given
-        val entityClient = clientMaker.make()
-        val clientDto = clientDtoMaker
-            .but(with(ClientDtoMaker.loginInfo, loginInfoMaker.make()))
+        val entityClient = ClientBuilder.default()
+        val clientDto = ClientDtoBuilder.maker()
+            .but(with(ClientDtoMaker.loginInfo, LoginInfoDtoBuilder.default()))
             .make()
         every { clientTypeRepository.getByType(any()) } returns entityClient.clientType
         every { clientRepository.save(any()) } throws RuntimeException("Something wrong happened!")
@@ -285,12 +263,12 @@ class CustomerServiceImplTest {
         var expectedMessage = "$missingParam is a mandatory parameter"
         val clientDto = when (missingParam) {
             "loginInfo" -> {
-                expectedMessage = "loginInfo->username is a mandatory parameter"
-                clientDtoMaker
+                expectedMessage = "loginInfo is a mandatory parameter"
+                ClientDtoBuilder.maker()
                     .but(with(ClientDtoMaker.loginInfo, null as LoginInfoDto?))
                     .make()
             }
-            else -> clientDtoMaker.make()
+            else -> ClientDtoBuilder.default()
         }
 
         // when
@@ -312,20 +290,20 @@ class CustomerServiceImplTest {
         val password = "12345"
         val userSession = slot<UserSession>()
         val actualDate = LocalDateTime.now()
-        val entityUserSession = userSessionMaker
+        val entityUserSession = UserSessionBuilder.maker()
             .but(with(UserSessionMaker.expirationDate, actualDate))
             .make()
-        val entityClient = clientMaker
+        val entityClient = ClientBuilder.maker()
             .but(with(ClientMaker.user,
                 make(a(UserMaker.User,
                     with(UserMaker.email, "test@gmail.com"),
-                    with(UserMaker.password, "12345")))))
-            .but(with(ClientMaker.userSession, entityUserSession))
+                    with(UserMaker.password, "12345")))),
+                with(ClientMaker.userSession, entityUserSession))
             .make()
-        val user = userMaker
-            .but(with(UserMaker.email, "test@gmail.com"))
-            .but(with(UserMaker.password, "12345"))
-            .but(with(UserMaker.client, entityClient))
+        val user = UserBuilder.maker()
+            .but(with(UserMaker.email, "test@gmail.com"),
+                with(UserMaker.password, "12345"),
+                with(UserMaker.client, entityClient))
             .make()
 
         every { userRepository.findUserByEmailAndPassword("test@gmail.com", "12345") } returns user
@@ -383,13 +361,59 @@ class CustomerServiceImplTest {
 
     }
 
+    @Test
+    fun `get a new coach session`() {
+
+        // given
+        val username = "test@gmail.com"
+        val password = "12345"
+        val userSession = slot<UserSession>()
+        val actualDate = LocalDateTime.now()
+        val entityUserSession = UserSessionBuilder.maker()
+            .but(with(UserSessionMaker.expirationDate, actualDate))
+            .make()
+
+        val entityCoach = CoachBuilder.maker()
+            .but(with(CoachMaker.user, UserBuilder.maker()
+                .but(with(UserMaker.email, "test@gmail.com"), with(UserMaker.password, "12345"))
+                .make()),
+                with(CoachMaker.userSession, entityUserSession))
+            .make()
+        val user = UserBuilder.maker()
+            .but(with(UserMaker.email, "test@gmail.com"),
+                with(UserMaker.password, "12345"),
+                with(UserMaker.coach, entityCoach))
+            .make()
+
+        every { userRepository.findUserByEmailAndPassword("test@gmail.com", "12345") } returns user
+        every { userSessionRepository.save(capture(userSession)) } returns mockk()
+
+        // when
+        val response = classToTest.getNewCustomerSession(username, password) as CoachDto
+
+        // then
+        verify(exactly = 1) { userRepository.findUserByEmailAndPassword("test@gmail.com", "12345") }
+        verify(exactly = 1) { userSessionRepository.save(any()) }
+        verify(exactly = 1) { coachDtoConverter.convert(any()) }
+        then(userSession.isCaptured).isTrue
+        then(userSession.captured.token).isNotNull
+        then(userSession.captured.expirationDate).isNotEqualTo(actualDate)
+        then(response.firstName).isNotEmpty
+        then(response.lastName).isNotEmpty
+        then(response.loginInfo?.username).isEqualTo("test@gmail.com")
+        then(response.loginInfo?.password).isEqualTo("******")
+        then(response.loginInfo?.expirationDate).isEqualTo(userSession.captured.expirationDate)
+        then(response.loginInfo?.token).isEqualTo(userSession.captured.token)
+
+    }
+
     // region Parameters
 
     companion object {
         @JvmStatic
         fun userRegisterMandatoryParameters(): Stream<Arguments> {
             return Stream.of(
-                Arguments.of("loginInfo"),
+                Arguments.of("loginInfo")
             )
         }
     }

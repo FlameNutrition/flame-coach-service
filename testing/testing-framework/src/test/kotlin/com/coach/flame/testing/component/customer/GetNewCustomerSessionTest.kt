@@ -1,12 +1,10 @@
 package com.coach.flame.testing.component.customer
 
-import com.coach.flame.jpa.entity.ClientMaker
-import com.coach.flame.jpa.entity.UserMaker
-import com.coach.flame.jpa.entity.UserSessionMaker
+import com.coach.flame.jpa.entity.*
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
-import com.natpryce.makeiteasy.MakeItEasy.*
+import com.natpryce.makeiteasy.MakeItEasy.with
 import io.mockk.every
 import io.mockk.mockk
 import org.assertj.core.api.BDDAssertions.then
@@ -117,9 +115,11 @@ class GetNewCustomerSessionTest : BaseComponentTest() {
     fun `test get a new client session but throws unexpected exception`() {
 
         // given
-        val user = userMaker.make()
+        val user = UserBuilder.maker()
+            .but(with(UserMaker.client, ClientBuilder.default()))
+            .make()
         every { userRepositoryMock.findUserByEmailAndPassword("test@gmail.com", "12345") } returns user
-        every { userSessionRepositoryMock.saveAndFlush(any()) } throws SQLException("This is a sensible information")
+        every { userSessionRepositoryMock.save(any()) } throws SQLException("This is a sensible information")
 
         // when
         val mvnResponse = mockMvc.perform(request!!)

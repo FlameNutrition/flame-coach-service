@@ -1,7 +1,7 @@
 package com.coach.flame.customer
 
-import com.coach.flame.domain.CustomerTypeDto
 import com.coach.flame.domain.Customer
+import com.coach.flame.domain.CustomerTypeDto
 import com.coach.flame.domain.converters.ClientDtoConverter
 import com.coach.flame.domain.converters.CoachDtoConverter
 import com.coach.flame.jpa.entity.*
@@ -61,20 +61,16 @@ class CustomerServiceImpl(
 
         try {
 
-            checkNotNull(customer.customerType) { "clientType is a mandatory parameter" }
-            checkNotNull(customer.firstName) { "firstName is a mandatory parameter" }
-            checkNotNull(customer.lastName) { "lastName is a mandatory parameter" }
-            checkNotNull(customer.loginInfo?.username) { "loginInfo->username is a mandatory parameter" }
-            checkNotNull(customer.loginInfo?.password) { "loginInfo->password is a mandatory parameter" }
+            checkNotNull(customer.loginInfo) { "loginInfo is a mandatory parameter" }
 
             val clientType = clientTypeRepository.getByType(customer.customerType.name)
 
             val expirationDate = LocalDateTime.now().plusHours(2)
 
             val user = User(
-                email = customer.loginInfo?.username!!,
+                email = customer.loginInfo!!.username,
                 //TODO: Encrypt password
-                password = customer.loginInfo?.password!!,
+                password = customer.loginInfo!!.password,
                 userSession = UserSession(
                     expirationDate = expirationDate,
                     token = UUID.randomUUID()
@@ -128,21 +124,31 @@ class CustomerServiceImpl(
         val user = userRepository.findUserByEmailAndPassword(username, password)
             ?: throw CustomerUsernameOrPasswordException("Username or password invalid")
 
-        LOGGER.info("opr='getNewCustomerSession', msg='Update the session'")
+        if (user.client !== null || user.coach !== null) {
+            LOGGER.info("opr='getNewCustomerSession', msg='Update the session'")
 
-        // Set the expiration date with more 2 hours
-        val expirationDate = LocalDateTime.now().plusHours(2)
+            // Set the expiration date with more 2 hours
+            val expirationDate = LocalDateTime.now().plusHours(2)
 
-        LOGGER.info("opr='getNewCustomerSession', msg='Update expiration date', expirationDate={}", expirationDate)
+            LOGGER.info("opr='getNewCustomerSession', msg='Update expiration date', expirationDate={}", expirationDate)
 
-        user.userSession.expirationDate = expirationDate
+            user.userSession.expirationDate = expirationDate
+        }
 
-        return if (user.client !== null) {
-            userSessionRepository.save(user.client?.user?.userSession!!)
-            clientDtoConverter.convert(user.client!!)
-        } else {
-            userSessionRepository.save(user.coach?.user?.userSession!!)
-            coachDtoConverter.convert(user.coach!!)
+        return when {
+            user.client !== null -> {
+                userSessionRepository.save(user.client!!.user.userSession)
+                clientDtoConverter.convert(user.client!!)
+            }
+            user.coach !== null -> {
+                userSessionRepository.save(user.coach!!.user.userSession)
+                coachDtoConverter.convert(user.coach!!)
+            }
+            else -> {
+                LOGGER.error("opr='getNewCustomerSession', " +
+                        "msg='Please check coach or client for the following user.', username={}", username)
+                throw RuntimeException("Something is wrong with jpa")
+            }
         }
     }
 

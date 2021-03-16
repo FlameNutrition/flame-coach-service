@@ -22,6 +22,12 @@ class CustomerUsernameOrPasswordException : BusinessException {
     constructor(message: String) : super(message)
 }
 
+@Status(httpStatus = HttpStatus.BAD_REQUEST)
+class EnrollmentProcessException : BusinessException {
+    constructor(message: String, ex: Exception) : super(message, ex)
+    constructor(message: String) : super(message)
+}
+
 @Status(httpStatus = HttpStatus.INTERNAL_SERVER_ERROR)
 class CustomerRetrieveException : BusinessException {
     constructor(message: String, ex: Exception) : super(message, ex)
@@ -30,6 +36,12 @@ class CustomerRetrieveException : BusinessException {
 
 @Status(httpStatus = HttpStatus.INTERNAL_SERVER_ERROR)
 class CustomerRegisterException : BusinessException {
+    constructor(message: String, ex: Exception) : super(message, ex)
+    constructor(message: String) : super(message)
+}
+
+@Status(httpStatus = HttpStatus.INTERNAL_SERVER_ERROR)
+class CustomerNewSessionException : BusinessException {
     constructor(message: String, ex: Exception) : super(message, ex)
     constructor(message: String) : super(message)
 }

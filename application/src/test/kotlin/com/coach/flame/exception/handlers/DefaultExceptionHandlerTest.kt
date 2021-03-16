@@ -1,9 +1,11 @@
 package com.coach.flame.exception.handlers
 
 import com.coach.flame.failure.domain.ErrorDetail
+import io.mockk.clearAllMocks
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import org.assertj.core.api.BDDAssertions.then
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.http.HttpStatus
@@ -17,6 +19,11 @@ class DefaultExceptionHandlerTest {
     private lateinit var request: WebRequest
 
     private val defaultExceptionHandler = DefaultExceptionHandler(true)
+
+    @AfterEach
+    fun cleanUp() {
+        clearAllMocks()
+    }
 
     @Test
     fun `test handler for business exceptions`() {

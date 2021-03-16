@@ -25,7 +25,7 @@ class ClientDtoConverter(
         val clientTypeDto = try {
             CustomerTypeDto.valueOf(client.clientType.type.toUpperCase())
         } catch (ex: Exception) {
-            LOGGER.warn("opr='convert', msg='Can not convert the client type', clientType={}", client.clientType.type)
+            LOGGER.warn("opr='convert', msg='Can not convert the customer type', customerType={}", client.clientType.type)
             CustomerTypeDto.UNKNOWN
         }
 
