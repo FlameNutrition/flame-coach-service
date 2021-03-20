@@ -133,7 +133,10 @@
                         <exclude>**/dailyTask/*Config.*</exclude>
 
                         <!-- Exceptions -->
-                        <exclude>**/client/ClientNotFoundException.*</exclude>
+                        <exclude>**/dailyTask/ClientNotFoundException.*</exclude>
+                        <exclude>**/dailyTask/DailyTaskNotFoundException.*</exclude>
+                        <exclude>**/dailyTask/DailyTaskMissingSaveException.*</exclude>
+                        <exclude>**/dailyTask/DailyTaskMissingDeleteException.*</exclude>
                     </excludes>
                 </configuration>
             </plugin>

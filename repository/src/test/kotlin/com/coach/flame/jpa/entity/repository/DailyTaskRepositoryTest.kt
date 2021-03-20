@@ -22,7 +22,7 @@ class DailyTaskRepositoryTest : AbstractHelperTest() {
             .make())
 
         // CLIENT
-        val client = getClientRepository().saveAndFlush(clientMaker
+        val client = getClientRepository().saveAndFlush(ClientBuilder.maker()
             .but(with(ClientMaker.country, null as CountryConfig?),
                 with(ClientMaker.gender, null as GenderConfig?),
                 with(ClientMaker.clientType, getClientTypeRepository().getByType("CLIENT")),
@@ -30,20 +30,17 @@ class DailyTaskRepositoryTest : AbstractHelperTest() {
                 with(ClientMaker.userSession, userSessionMaker.make())
             ).make())
         // COACH
-        val coach = getClientRepository().saveAndFlush(clientMaker
-            .but(with(ClientMaker.country, null as CountryConfig?),
-                with(ClientMaker.gender, null as GenderConfig?),
-                with(ClientMaker.clientType, getClientTypeRepository().getByType("COACH")),
-                with(ClientMaker.user, userMaker.make()),
-                with(ClientMaker.userSession, userSessionMaker.make())
+        val coach = getCoachRepository().saveAndFlush(CoachBuilder.maker()
+            .but(with(CoachMaker.clientType, getClientTypeRepository().getByType("COACH")),
+                with(CoachMaker.user, userMaker.make()),
+                with(CoachMaker.userSession, userSessionMaker.make())
             ).make())
 
         entityManager.flush()
         entityManager.clear()
 
         val dailyTask = getDailyTaskRepository().saveAndFlush(dailyTaskMaker
-            .but(with(DailyTaskMaker.client, getClientRepository().findByUuid(client.uuid)),
-                with(DailyTaskMaker.createdBy, getClientRepository().findByUuid(coach.uuid)))
+            .but(with(DailyTaskMaker.client, client), with(DailyTaskMaker.createdBy, coach))
             .make())
 
         entityManager.flush()

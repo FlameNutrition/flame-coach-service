@@ -64,7 +64,7 @@ class RegisterCustomerCoachTest : BaseComponentTest() {
         then(mvnResponse.response).isNotNull
         then(mvnResponse.response.status).isEqualTo(HttpStatus.OK.value())
         then(mvnResponse.response.contentType).isEqualTo(MediaType.APPLICATION_JSON_VALUE)
-        val jsonResponse = JsonBuilder.getJsonFromString(mvnResponse.response.contentAsString)
+        val jsonResponse = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
         then(jsonResponse.getAsJsonPrimitive("username").asString).isEqualTo("test@gmail.com")
         then(jsonResponse.getAsJsonPrimitive("firstname").asString).isEqualTo("Nuno")
@@ -98,7 +98,7 @@ class RegisterCustomerCoachTest : BaseComponentTest() {
         then(mvnResponse.response.status).isEqualTo(HttpStatus.BAD_REQUEST.value())
         then(mvnResponse.response.contentType).isEqualTo(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
 
-        val body = JsonBuilder.getJsonFromString(mvnResponse.response.contentAsString)
+        val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
         thenErrorMessageType(body).endsWith("RestInvalidRequestException.html")
         thenErrorMessageTitle(body).isEqualTo("RestInvalidRequestException")
@@ -132,7 +132,7 @@ class RegisterCustomerCoachTest : BaseComponentTest() {
         then(mvnResponse.response.status).isEqualTo(HttpStatus.BAD_REQUEST.value())
         then(mvnResponse.response.contentType).isEqualTo(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
 
-        val body = JsonBuilder.getJsonFromString(mvnResponse.response.contentAsString)
+        val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
         thenErrorMessageType(body).endsWith("CustomerRegisterDuplicateException.html")
         thenErrorMessageTitle(body).isEqualTo("CustomerRegisterDuplicateException")
@@ -166,7 +166,7 @@ class RegisterCustomerCoachTest : BaseComponentTest() {
         then(mvnResponse.response.status).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value())
         then(mvnResponse.response.contentType).isEqualTo(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
 
-        val body = JsonBuilder.getJsonFromString(mvnResponse.response.contentAsString)
+        val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
         thenErrorMessageType(body).endsWith("InternalServerException.html")
         thenErrorMessageTitle(body).isEqualTo("InternalServerException")

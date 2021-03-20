@@ -19,7 +19,7 @@ class DailyTaskMaker {
         val description: Property<DailyTask, String> = newProperty()
         val date: Property<DailyTask, LocalDate> = newProperty()
         val ticked: Property<DailyTask, Boolean> = newProperty()
-        val createdBy: Property<DailyTask, Client> = newProperty()
+        val createdBy: Property<DailyTask, Coach> = newProperty()
         val client: Property<DailyTask, Client> = newProperty()
 
         val DailyTask: Instantiator<DailyTask> = Instantiator {
@@ -29,8 +29,8 @@ class DailyTaskMaker {
                 description = it.valueOf(description, fake.friends().quote()),
                 date = it.valueOf(date, LocalDate.now()),
                 ticked = it.valueOf(ticked, false),
-                createdBy = it.valueOf(createdBy, make(a(ClientMaker.Client))),
-                client = it.valueOf(client, make(a(ClientMaker.Client))),
+                createdBy = it.valueOf(createdBy, CoachBuilder.default()),
+                client = it.valueOf(client, ClientBuilder.default())
             )
         }
     }

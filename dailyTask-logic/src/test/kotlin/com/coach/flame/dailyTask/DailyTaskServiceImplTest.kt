@@ -1,14 +1,14 @@
 package com.coach.flame.dailyTask
 
-import com.coach.flame.domain.DailyTaskDto
+import com.coach.flame.dailyTask.filter.BetweenDatesFilter
+import com.coach.flame.dailyTask.filter.IdentifierFilter
+import com.coach.flame.domain.DailyTaskDtoBuilder
 import com.coach.flame.domain.DailyTaskDtoMaker
 import com.coach.flame.jpa.entity.*
 import com.coach.flame.jpa.repository.ClientRepository
+import com.coach.flame.jpa.repository.CoachRepository
 import com.coach.flame.jpa.repository.DailyTaskRepository
-import com.coach.flame.jpa.repository.UserSessionRepository
-import com.natpryce.makeiteasy.MakeItEasy.an
 import com.natpryce.makeiteasy.MakeItEasy.with
-import com.natpryce.makeiteasy.Maker
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -18,10 +18,11 @@ import io.mockk.mockk
 import io.mockk.slot
 import org.assertj.core.api.BDDAssertions.*
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.data.jpa.domain.Specification
 import java.sql.SQLException
+import java.time.LocalDate
 import java.util.*
 
 @ExtendWith(MockKExtension::class)
@@ -31,28 +32,13 @@ class DailyTaskServiceImplTest {
     private lateinit var dailyTaskRepository: DailyTaskRepository
 
     @MockK
-    private lateinit var userSessionRepository: UserSessionRepository
+    private lateinit var clientRepository: ClientRepository
 
     @MockK
-    private lateinit var clientRepository: ClientRepository
+    private lateinit var coachRepository: CoachRepository
 
     @InjectMockKs
     private lateinit var dailyTaskServiceImpl: DailyTaskServiceImpl
-
-    private lateinit var clientMaker: Maker<Client>
-    private lateinit var dailyTaskMaker: Maker<DailyTask>
-    private lateinit var dailyTaskDtoMaker: Maker<DailyTaskDto>
-    private lateinit var userSessionMaker: Maker<UserSession>
-    private lateinit var userMaker: Maker<User>
-
-    @BeforeEach
-    fun setUp() {
-        clientMaker = an(ClientMaker.Client)
-        dailyTaskMaker = an(DailyTaskMaker.DailyTask)
-        dailyTaskDtoMaker = an(DailyTaskDtoMaker.DailyTaskDto)
-        userSessionMaker = an(UserSessionMaker.UserSession)
-        userMaker = an(UserMaker.User)
-    }
 
     @AfterEach
     fun cleanUp() {
@@ -78,7 +64,7 @@ class DailyTaskServiceImplTest {
         every { dailyTaskRepository.deleteByUuid(uuid = uuid) } returns 0
 
         // when & then
-        thenExceptionOfType(DailyTaskMissingDelete::class.java)
+        thenExceptionOfType(DailyTaskMissingDeleteException::class.java)
             .isThrownBy { dailyTaskServiceImpl.deleteDailyTask(uuid) }
 
     }
@@ -88,7 +74,7 @@ class DailyTaskServiceImplTest {
 
         // given
         val taskId = 100L
-        val dailyTask: DailyTask = dailyTaskMaker.make()
+        val dailyTask: DailyTask = DailyTaskBuilder.default()
 
         every { dailyTaskRepository.findById(taskId) } returns Optional.of(dailyTask)
 
@@ -113,7 +99,7 @@ class DailyTaskServiceImplTest {
         every { dailyTaskRepository.findById(taskId) } returns Optional.empty()
 
         //when and then
-        thenExceptionOfType(DailyTaskNotFound::class.java)
+        thenExceptionOfType(DailyTaskNotFoundException::class.java)
             .isThrownBy { dailyTaskServiceImpl.getDailyTaskById(taskId) }
 
     }
@@ -122,14 +108,35 @@ class DailyTaskServiceImplTest {
     fun `get daily tasks by client`() {
 
         // given
-        val clientId = 20L
-        val task1 = dailyTaskMaker.make()
-        val task2 = dailyTaskMaker.make()
+        val clientUUID = UUID.randomUUID()
+        val task1 = DailyTaskBuilder.default()
+        val task2 = DailyTaskBuilder.default()
         val listOfTasks = setOf(task1, task2)
-        every { dailyTaskRepository.findAllByClient(clientId) } returns Optional.of(listOfTasks)
+        every { dailyTaskRepository.findAllByClient(clientUUID) } returns Optional.of(listOfTasks)
 
         // when
-        val listOfDailyTasks = dailyTaskServiceImpl.getDailyTasksByClient(clientId)
+        val listOfDailyTasks = dailyTaskServiceImpl.getDailyTasksByClient(clientUUID)
+
+        // then
+        then(listOfDailyTasks).hasSize(2)
+
+    }
+
+    @Test
+    fun `get daily tasks using filters`() {
+
+        // given
+        val dateNow = LocalDate.now()
+        val uuid = UUID.randomUUID()
+        val filter1 = IdentifierFilter(uuid)
+        val filter2 = BetweenDatesFilter(dateNow.minusDays(1), dateNow.plusDays(1))
+        val criteria = slot<Specification<DailyTask>>()
+        val listOfDailyTask = listOf(DailyTaskBuilder.default(), DailyTaskBuilder.default())
+
+        every { dailyTaskRepository.findAll(capture(criteria)) } answers { listOfDailyTask }
+
+        // when
+        val listOfDailyTasks = dailyTaskServiceImpl.getDailyTasksUsingFilters(setOf(filter1, filter2))
 
         // then
         then(listOfDailyTasks).hasSize(2)
@@ -140,11 +147,11 @@ class DailyTaskServiceImplTest {
     fun `get empty daily tasks by client`() {
 
         // given
-        val clientId = 20L
-        every { dailyTaskRepository.findAllByClient(clientId) } returns Optional.empty()
+        val clientUUID = UUID.randomUUID()
+        every { dailyTaskRepository.findAllByClient(clientUUID) } returns Optional.empty()
 
         // when
-        val listOfDailyTasks = dailyTaskServiceImpl.getDailyTasksByClient(clientId)
+        val listOfDailyTasks = dailyTaskServiceImpl.getDailyTasksByClient(clientUUID)
 
         // then
         then(listOfDailyTasks).hasSize(0)
@@ -152,16 +159,16 @@ class DailyTaskServiceImplTest {
     }
 
     @Test
-    fun `create daily task when not found the coach session`() {
+    fun `create daily task when not found the coach identifier`() {
 
         // given
-        every { userSessionRepository.findByToken(any()) } returns null
+        every { coachRepository.findByUuid(any()) } returns null
         every { clientRepository.findByUuid(any()) } returns mockk()
 
         // when & then
         thenExceptionOfType(ClientNotFoundException::class.java)
-            .isThrownBy { dailyTaskServiceImpl.createDailyTask(dailyTaskDtoMaker.make()) }
-            .withMessage("Didn't find any coach session, please check the coachToken identifier.")
+            .isThrownBy { dailyTaskServiceImpl.createDailyTask(DailyTaskDtoBuilder.default()) }
+            .withMessage("Didn't find any coach with this identifier, please check the coach identifier.")
 
     }
 
@@ -169,12 +176,12 @@ class DailyTaskServiceImplTest {
     fun `create daily task when not found the client identifier`() {
 
         // given
-        every { userSessionRepository.findByToken(any()) } returns mockk()
+        every { coachRepository.findByUuid(any()) } returns mockk()
         every { clientRepository.findByUuid(any()) } returns null
 
         // when & then
         thenExceptionOfType(ClientNotFoundException::class.java)
-            .isThrownBy { dailyTaskServiceImpl.createDailyTask(dailyTaskDtoMaker.make()) }
+            .isThrownBy { dailyTaskServiceImpl.createDailyTask(DailyTaskDtoBuilder.default()) }
             .withMessage("Didn't find any client with this identifier, please check the client identifier.")
 
     }
@@ -183,23 +190,63 @@ class DailyTaskServiceImplTest {
     fun `create daily task when something wrong happened`() {
 
         // given
-        val dailyTaskDto = dailyTaskDtoMaker.make()
-        val coach = clientMaker.make()
-        val userCoach = userMaker
-            .but(with(UserMaker.client, coach))
-            .make()
-        val coachSession = userSessionMaker
-            .but(with(UserSessionMaker.token, dailyTaskDto.coachIdentifier),
-                with(UserSessionMaker.user, userCoach))
-            .make()
-        every { userSessionRepository.findByToken(any()) } returns coachSession
-        every { clientRepository.findByUuid(any()) } returns clientMaker.make()
+        every { clientRepository.findByUuid(any()) } returns ClientBuilder.default()
+        every { coachRepository.findByUuid(any()) } returns CoachBuilder.default()
         every { dailyTaskRepository.save(any()) } throws SQLException("SQL error message")
 
         // when & then
         thenExceptionOfType(Exception::class.java)
-            .isThrownBy { dailyTaskServiceImpl.createDailyTask(dailyTaskDtoMaker.make()) }
+            .isThrownBy { dailyTaskServiceImpl.createDailyTask(DailyTaskDtoBuilder.default()) }
             .withMessage("SQL error message")
+
+    }
+
+    @Test
+    fun `update daily task when not found the daily task`() {
+
+        // given
+        val dailyTaskDto = DailyTaskDtoBuilder.default()
+        every { dailyTaskRepository.findByUuid(dailyTaskDto.identifier) } returns null
+
+        // when & then
+        thenExceptionOfType(DailyTaskNotFoundException::class.java)
+            .isThrownBy { dailyTaskServiceImpl.updateDailyTask(dailyTaskDto) }
+            .withMessage("Daily task not found, please check the identifier.")
+
+    }
+
+    @Test
+    fun `update daily task`() {
+
+        val entity = slot<DailyTask>()
+
+        // given
+        val dailyTaskDto = DailyTaskDtoBuilder.maker()
+            .but(with(DailyTaskDtoMaker.name, "Test Update"),
+                with(DailyTaskDtoMaker.description, "Valid description"),
+                with(DailyTaskDtoMaker.date, LocalDate.now()),
+                with(DailyTaskDtoMaker.ticked, true))
+            .make()
+
+        val dailyTaskEntity = DailyTaskBuilder.maker()
+            .but(with(DailyTaskMaker.client, ClientBuilder.default()),
+                with(DailyTaskMaker.createdBy, CoachBuilder.default()))
+            .make()
+        every { dailyTaskRepository.findByUuid(dailyTaskDto.identifier) } returns dailyTaskEntity
+        every { dailyTaskRepository.save(capture(entity)) } answers { entity.captured }
+
+        // when
+        val dailyTask = dailyTaskServiceImpl.updateDailyTask(dailyTaskDto)
+
+        // then
+        then(entity.isCaptured).isTrue
+        then(dailyTask.identifier).isEqualTo(entity.captured.uuid)
+        then(dailyTask.name).isEqualTo(dailyTaskDto.name)
+        then(dailyTask.description).isEqualTo(dailyTaskDto.description)
+        then(dailyTask.date).isEqualTo(dailyTaskDto.date)
+        then(dailyTask.ticked).isEqualTo(dailyTaskDto.ticked)
+        then(dailyTask.coachIdentifier).isEqualTo(entity.captured.createdBy.uuid)
+        then(dailyTask.clientIdentifier).isEqualTo(entity.captured.client.uuid)
 
     }
 
@@ -209,21 +256,14 @@ class DailyTaskServiceImplTest {
         val entity = slot<DailyTask>()
 
         // given
-        val dailyTaskDto = dailyTaskDtoMaker.make()
-        val coach = clientMaker.make()
-        val userCoach = userMaker
-            .but(with(UserMaker.client, coach))
-            .make()
-        val coachSession = userSessionMaker
-            .but(with(UserSessionMaker.token, dailyTaskDto.coachIdentifier),
-                with(UserSessionMaker.user, userCoach))
-            .make()
-        val client = clientMaker.make()
-        val postDailyTask = dailyTaskMaker
+        val dailyTaskDto = DailyTaskDtoBuilder.default()
+        val coach = CoachBuilder.default()
+        val client = ClientBuilder.default()
+        val postDailyTask = DailyTaskBuilder.maker()
             .but(with(DailyTaskMaker.client, client))
             .make()
-        every { userSessionRepository.findByToken(dailyTaskDto.coachIdentifier!!) } returns coachSession
         every { clientRepository.findByUuid(dailyTaskDto.clientIdentifier!!) } returns client
+        every { coachRepository.findByUuid(dailyTaskDto.coachIdentifier!!) } returns coach
         every { dailyTaskRepository.save(capture(entity)) } returns postDailyTask
 
         // when
@@ -236,9 +276,9 @@ class DailyTaskServiceImplTest {
         then(entity.captured.description).isEqualTo(dailyTaskDto.description)
         then(entity.captured.date).isEqualTo(dailyTaskDto.date)
         then(entity.captured.ticked).isFalse
-        then(entity.captured.createdBy).isEqualTo(coachSession.user?.client)
+        then(entity.captured.createdBy).isEqualTo(coach)
         then(entity.captured.client).isEqualTo(client)
-        then(dailyTask.coachIdentifier).isEqualTo(postDailyTask.createdBy.user.userSession.token)
+        then(dailyTask.coachIdentifier).isEqualTo(postDailyTask.createdBy.uuid)
         then(dailyTask.clientIdentifier).isEqualTo(postDailyTask.client.uuid)
 
     }

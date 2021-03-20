@@ -1,13 +1,14 @@
 package com.coach.flame.api.dailyTask
 
-import com.coach.flame.api.dailyTask.request.DailyTaskRequest
-import com.coach.flame.api.dailyTask.request.DailyTaskRequestMaker
+import com.coach.flame.api.dailyTask.request.*
 import com.coach.flame.dailyTask.DailyTaskService
 import com.coach.flame.date.stringToDate
 import com.coach.flame.domain.DailyTaskDto
+import com.coach.flame.domain.DailyTaskDtoBuilder
 import com.coach.flame.domain.DailyTaskDtoMaker
 import com.coach.flame.exception.RestException
 import com.coach.flame.exception.RestInvalidRequestException
+import com.natpryce.makeiteasy.MakeItEasy
 import com.natpryce.makeiteasy.MakeItEasy.an
 import com.natpryce.makeiteasy.MakeItEasy.with
 import com.natpryce.makeiteasy.Maker
@@ -27,6 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import java.time.LocalDate
 import java.util.*
 import java.util.stream.Stream
 
@@ -72,7 +74,7 @@ class DailyTaskImplTest {
 
     @ParameterizedTest
     @MethodSource("dailyTaskCheckMandatoryParams")
-    fun `create create Daily Task with mandatory params`(
+    fun `test create Daily Task with mandatory params`(
         taskName: String?,
         taskDescription: String?,
         date: String?,
@@ -175,27 +177,11 @@ class DailyTaskImplTest {
     fun `get Daily Task by client but something happened`() {
 
         // given
-        val clientId = 100L
-        every { dailyTaskService.getDailyTasksByClient(clientId) } throws RuntimeException("OHH NOOOO!")
+        val clientUUID = UUID.randomUUID()
+        every { dailyTaskService.getDailyTasksByClient(clientUUID) } throws RuntimeException("OHH NOOOO!")
 
         // when
-        val thrown = catchThrowable { dailyTaskImpl.getDailyTasksByClient(clientId) }
-
-        //then
-        then(thrown)
-            .isInstanceOf(RuntimeException::class.java)
-            .hasMessageContaining("OHH NOOOO!")
-    }
-
-    @Test
-    fun `get Daily Task by taskId but something happened`() {
-
-        // given
-        val taskId = 100L
-        every { dailyTaskService.getDailyTaskById(taskId) } throws RuntimeException("OHH NOOOO!")
-
-        // when
-        val thrown = catchThrowable { dailyTaskImpl.getDailyTaskById(taskId) }
+        val thrown = catchThrowable { dailyTaskImpl.getDailyTasksByClient(clientUUID) }
 
         //then
         then(thrown)
@@ -207,13 +193,13 @@ class DailyTaskImplTest {
     fun `get Daily Task by client`() {
 
         // given
-        val clientId = 100L
+        val clientUUID = UUID.randomUUID()
         val task1 = dailyTaskDtoMaker.make()
         val task2 = dailyTaskDtoMaker.make()
-        every { dailyTaskService.getDailyTasksByClient(clientId) } returns setOf(task1, task2)
+        every { dailyTaskService.getDailyTasksByClient(clientUUID) } returns setOf(task1, task2)
 
         // when
-        val response = dailyTaskImpl.getDailyTasksByClient(clientId)
+        val response = dailyTaskImpl.getDailyTasksByClient(clientUUID)
 
         //then
         then(response.dailyTasks).isNotEmpty
@@ -228,26 +214,75 @@ class DailyTaskImplTest {
     }
 
     @Test
-    fun `get Daily Task by taskId`() {
+    fun `get Daily Task using empty filters empty`() {
 
         // given
-        val taskId = 100L
-        val task = dailyTaskDtoMaker.make()
-        every { dailyTaskService.getDailyTaskById(taskId) } returns task
+        val request = DailyTaskFiltersRequestBuilder.default()
 
         // when
-        val response = dailyTaskImpl.getDailyTaskById(taskId)
+        val thrown = catchThrowable { dailyTaskImpl.getDailyTasksUsingFilters(request) }
+
+        //then
+        then(thrown)
+            .isInstanceOf(RestInvalidRequestException::class.java)
+            .hasMessageContaining("filters can not be empty")
+    }
+
+    @Test
+    fun `get Daily Task using invalid filters`() {
+
+        // given
+        val filter0 = DailyTaskFilterBuilder.maker()
+            .but(with(DailyTaskFilterMaker.type, "IDENTIFIER"),
+                with(DailyTaskFilterMaker.values, listOf(UUID.randomUUID().toString())))
+            .make()
+        val filter1 = DailyTaskFilterBuilder.default()
+        val request = DailyTaskFiltersRequestBuilder.maker()
+            .but(with(DailyTaskFiltersRequestMaker.filters, setOf(filter0, filter1)))
+            .make()
+
+        // when
+        val thrown = catchThrowable { dailyTaskImpl.getDailyTasksUsingFilters(request) }
+
+        //then
+        then(thrown)
+            .isInstanceOf(RestInvalidRequestException::class.java)
+            .hasMessageContaining("INVALID is an invalid filter")
+    }
+
+    @Test
+    fun `get Daily Task using multiple filters`() {
+
+        // given
+        val filter0 = DailyTaskFilterBuilder.maker()
+            .but(with(DailyTaskFilterMaker.type, "IDENTIFIER"),
+                with(DailyTaskFilterMaker.values, listOf(UUID.randomUUID().toString())))
+            .make()
+        val filter1 = DailyTaskFilterBuilder.maker()
+            .but(with(DailyTaskFilterMaker.type, "BETWEEN_DATES"),
+                with(DailyTaskFilterMaker.values, listOf(LocalDate.now().toString(), LocalDate.now().toString())))
+            .make()
+        val request = DailyTaskFiltersRequestBuilder.maker()
+            .but(with(DailyTaskFiltersRequestMaker.filters, setOf(filter0, filter1)))
+            .make()
+
+        val dailyTask0 = DailyTaskDtoBuilder.default()
+        val dailyTask1 = DailyTaskDtoBuilder.default()
+
+        every { dailyTaskService.getDailyTasksUsingFilters(any()) } returns setOf(dailyTask0, dailyTask1)
+
+        // when
+        val response = dailyTaskImpl.getDailyTasksUsingFilters(request)
 
         //then
         then(response.dailyTasks).isNotEmpty
-        then(response.dailyTasks.size).isEqualTo(1)
+        then(response.dailyTasks.size).isEqualTo(2)
 
-        val taskResponse = response.dailyTasks.first()
-        then(taskResponse.identifier).isEqualTo(task.identifier.toString())
-        then(taskResponse.taskName).isEqualTo(task.name)
-        then(taskResponse.taskDescription).isEqualTo(task.description)
-        then(taskResponse.date).isEqualTo(task.date.toString())
-        then(taskResponse.ticked).isEqualTo(task.ticked)
+        val task0 = response.dailyTasks.find { it.identifier == dailyTask0.identifier.toString() }
+        then(task0?.taskName).isEqualTo(dailyTask0.name)
+        then(task0?.taskDescription).isEqualTo(dailyTask0.description)
+        then(task0?.date).isEqualTo(dailyTask0.date.toString())
+        then(task0?.ticked).isEqualTo(dailyTask0.ticked)
 
     }
 
@@ -262,7 +297,7 @@ class DailyTaskImplTest {
         val taskUuid = "INVALID"
 
         // when
-        val thrown = catchThrowable { dailyTaskImpl.deleteDailyTaskById(taskUuid) }
+        val thrown = catchThrowable { dailyTaskImpl.deleteDailyTask(taskUuid) }
 
         //then
         then(thrown)
@@ -279,7 +314,7 @@ class DailyTaskImplTest {
         every { dailyTaskService.deleteDailyTask(any()) } throws RuntimeException("OHH NOOOO!")
 
         // when
-        val thrown = catchThrowable { dailyTaskImpl.deleteDailyTaskById(taskUuid) }
+        val thrown = catchThrowable { dailyTaskImpl.deleteDailyTask(taskUuid) }
 
         //then
         then(thrown)
@@ -296,7 +331,7 @@ class DailyTaskImplTest {
         every { dailyTaskService.deleteDailyTask(taskUuid) } returns mockk()
 
         // when
-        val response = dailyTaskImpl.deleteDailyTaskById(taskUuid.toString())
+        val response = dailyTaskImpl.deleteDailyTask(taskUuid.toString())
 
         //then
         then(response.dailyTasks).isNotEmpty

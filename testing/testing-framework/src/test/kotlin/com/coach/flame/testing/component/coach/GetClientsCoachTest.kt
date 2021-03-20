@@ -57,7 +57,7 @@ class GetClientsCoachTest : BaseComponentTest() {
         then(mvnResponse.response).isNotNull
         then(mvnResponse.response.status).isEqualTo(HttpStatus.OK.value())
         then(mvnResponse.response.contentType).isEqualTo(MediaType.APPLICATION_JSON_VALUE)
-        val jsonResponse = JsonBuilder.getJsonFromString(mvnResponse.response.contentAsString)
+        val jsonResponse = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
         then(jsonResponse.getAsJsonPrimitive("identifier").asString).isEqualTo(uuid.toString())
         then(jsonResponse.getAsJsonArray("clientsCoach")).hasSize(2)
@@ -97,7 +97,7 @@ class GetClientsCoachTest : BaseComponentTest() {
         then(mvnResponse.response.status).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value())
         then(mvnResponse.response.contentType).isEqualTo(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
 
-        val body = JsonBuilder.getJsonFromString(mvnResponse.response.contentAsString)
+        val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
         thenErrorMessageType(body).endsWith("InternalServerException.html")
         thenErrorMessageTitle(body).isEqualTo("InternalServerException")

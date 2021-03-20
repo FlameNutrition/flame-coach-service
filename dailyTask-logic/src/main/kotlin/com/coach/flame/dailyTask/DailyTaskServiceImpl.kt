@@ -1,12 +1,14 @@
 package com.coach.flame.dailyTask
 
+import com.coach.flame.dailyTask.filter.Filter
 import com.coach.flame.domain.DailyTaskDto
 import com.coach.flame.jpa.entity.DailyTask
 import com.coach.flame.jpa.repository.ClientRepository
+import com.coach.flame.jpa.repository.CoachRepository
 import com.coach.flame.jpa.repository.DailyTaskRepository
-import com.coach.flame.jpa.repository.UserSessionRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -15,13 +17,26 @@ import java.util.*
 class DailyTaskServiceImpl(
     private val dailyTaskRepository: DailyTaskRepository,
     private val clientRepository: ClientRepository,
-    private val userSessionRepository: UserSessionRepository,
+    private val coachRepository: CoachRepository,
 ) : DailyTaskService {
 
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(DailyTaskServiceImpl::class.java)
+
+        private val converter = { entity: DailyTask ->
+            DailyTaskDto(
+                identifier = entity.uuid,
+                name = entity.name,
+                description = entity.description,
+                date = entity.date,
+                ticked = entity.ticked,
+                coachIdentifier = entity.createdBy.uuid,
+                clientIdentifier = entity.client.uuid
+            )
+        }
     }
 
+    @Transactional(readOnly = true)
     override fun getDailyTaskById(taskId: Long): DailyTaskDto {
 
         LOGGER.info("opr='getDailyTaskById', msg='Get task by ID', taskId=$taskId")
@@ -29,18 +44,19 @@ class DailyTaskServiceImpl(
         val dailyTask = dailyTaskRepository.findById(taskId)
 
         if (dailyTask.isEmpty) {
-            throw DailyTaskNotFound("Could not found any daily task with id: $taskId")
+            throw DailyTaskNotFoundException("Could not found any daily task with id: $taskId")
         }
 
-        return entityToDailyTaskDto(dailyTask.get())
+        return converter(dailyTask.get())
 
     }
 
-    override fun getDailyTasksByClient(clientId: Long): Set<DailyTaskDto> {
+    @Transactional(readOnly = true)
+    override fun getDailyTasksByClient(uuid: UUID): Set<DailyTaskDto> {
 
-        LOGGER.info("opr='getDailyTasksByClient', msg='Get all tasks for a client', clientId=$clientId")
+        LOGGER.info("opr='getDailyTasksByClient', msg='Get all tasks for a client', uuid=$uuid")
 
-        val dailyTasks = dailyTaskRepository.findAllByClient(clientId)
+        val dailyTasks = dailyTaskRepository.findAllByClient(uuid)
 
         if (dailyTasks.isEmpty) {
             return setOf()
@@ -48,7 +64,26 @@ class DailyTaskServiceImpl(
 
         return dailyTasks
             .get()
-            .map { entityToDailyTaskDto(it) }
+            .map { converter(it) }
+            .toSet()
+
+    }
+
+    @Transactional(readOnly = true)
+    override fun getDailyTasksUsingFilters(filters: Set<Filter>): Set<DailyTaskDto> {
+
+        LOGGER.info("opr='getDailyTasksUsingFilters', msg='Get daily task using filters', numOfFilters={}",
+            filters.size)
+
+        var criterias: Specification<DailyTask>? = null
+
+        filters.forEach {
+            LOGGER.info("opr='getDailyTasksUsingFilters', msg='Applying filter', filterName={}", it.javaClass.name)
+            criterias = criterias?.and(it.getFilter()) ?: it.getFilter()
+        }
+
+        return dailyTaskRepository.findAll(criterias)
+            .map(converter)
             .toSet()
 
     }
@@ -56,16 +91,16 @@ class DailyTaskServiceImpl(
     @Transactional
     override fun createDailyTask(dailyTask: DailyTaskDto): DailyTaskDto {
 
-        LOGGER.info("opr='createDailyTask', msg='Creating the following task', dailyTask=$dailyTask")
+        LOGGER.info("opr='createDailyTask', msg='Creating the following task', dailyTask={}", dailyTask.identifier)
 
-        checkNotNull(dailyTask.coachIdentifier) { "coachToken is a mandatory parameter" }
+        checkNotNull(dailyTask.coachIdentifier) { "coachIdentifier is a mandatory parameter" }
         checkNotNull(dailyTask.clientIdentifier) { "clientIdentifier is a mandatory parameter" }
 
-        val coachSession = userSessionRepository.findByToken(dailyTask.coachIdentifier!!)
+        val coach = coachRepository.findByUuid(dailyTask.coachIdentifier!!)
             ?: run {
                 LOGGER.warn("opr='createDailyTask', msg='Invalid coach token', coachToken={}",
                     dailyTask.coachIdentifier)
-                throw ClientNotFoundException("Didn't find any coach session, please check the coachToken identifier.")
+                throw ClientNotFoundException("Didn't find any coach with this identifier, please check the coach identifier.")
             }
 
         val client = clientRepository.findByUuid(dailyTask.clientIdentifier!!)
@@ -81,15 +116,37 @@ class DailyTaskServiceImpl(
             description = dailyTask.description,
             date = dailyTask.date,
             ticked = false,
-            createdBy = coachSession.user?.client!!,
+            createdBy = coach,
             client = client
         )
 
         val entity = dailyTaskRepository.save(newDailyTask)
 
-        return dailyTask.copy(
-            coachIdentifier = entity.createdBy.user.userSession.token,
-            clientIdentifier = entity.client.uuid)
+        return converter(entity)
+
+    }
+
+    @Transactional
+    override fun updateDailyTask(dailyTask: DailyTaskDto): DailyTaskDto {
+
+        LOGGER.info("opr='updateDailyTask', msg='Updating the following task', dailyTask={}", dailyTask.identifier)
+
+        val task = dailyTaskRepository.findByUuid(dailyTask.identifier)
+            ?: run {
+                LOGGER.warn("opr='updateDailyTask', msg='Daily Task doesn't exist', dailyTask={}",
+                    dailyTask.identifier)
+                throw DailyTaskNotFoundException("Daily task not found, please check the identifier.")
+            }
+
+        //Update values
+        task.name = dailyTask.name
+        task.description = dailyTask.description
+        task.date = dailyTask.date
+        task.ticked = dailyTask.ticked
+
+        val entity = dailyTaskRepository.save(task)
+
+        return converter(entity)
 
     }
 
@@ -99,20 +156,8 @@ class DailyTaskServiceImpl(
         LOGGER.info("opr='deleteDailyTask', msg='Deleting the following task', uuid=$uuid")
 
         if (dailyTaskRepository.deleteByUuid(uuid) == 0) {
-            throw DailyTaskMissingDelete("Didn't find the following uuid task: $uuid")
+            throw DailyTaskMissingDeleteException("Didn't find the following uuid task: $uuid")
         }
-    }
-
-    private val entityToDailyTaskDto = { entity: DailyTask ->
-        DailyTaskDto(
-            identifier = entity.uuid,
-            name = entity.name,
-            description = entity.description,
-            date = entity.date,
-            ticked = entity.ticked,
-            coachIdentifier = null,
-            clientIdentifier = null
-        )
     }
 
 }

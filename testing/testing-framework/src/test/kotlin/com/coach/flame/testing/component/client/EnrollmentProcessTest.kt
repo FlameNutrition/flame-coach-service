@@ -56,7 +56,7 @@ class EnrollmentProcessTest : BaseComponentTest() {
         then(mvnResponse.response).isNotNull
         then(mvnResponse.response.status).isEqualTo(HttpStatus.OK.value())
         then(mvnResponse.response.contentType).isEqualTo(MediaType.APPLICATION_JSON_VALUE)
-        val jsonResponse = JsonBuilder.getJsonFromString(mvnResponse.response.contentAsString)
+        val jsonResponse = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
         then(jsonResponse.getAsJsonPrimitive("coach").asString).isEqualTo(client.captured.coach?.uuid.toString())
         then(jsonResponse.getAsJsonPrimitive("client").asString).isEqualTo(client.captured.uuid.toString())
@@ -96,7 +96,7 @@ class EnrollmentProcessTest : BaseComponentTest() {
         then(mvnResponse.response).isNotNull
         then(mvnResponse.response.status).isEqualTo(HttpStatus.OK.value())
         then(mvnResponse.response.contentType).isEqualTo(MediaType.APPLICATION_JSON_VALUE)
-        val jsonResponse = JsonBuilder.getJsonFromString(mvnResponse.response.contentAsString)
+        val jsonResponse = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
         then(jsonResponse.getAsJsonPrimitive("coach").asString).isEqualTo(client.captured.coach?.uuid.toString())
         then(jsonResponse.getAsJsonPrimitive("client").asString).isEqualTo(client.captured.uuid.toString())
@@ -136,7 +136,7 @@ class EnrollmentProcessTest : BaseComponentTest() {
         then(mvnResponse.response).isNotNull
         then(mvnResponse.response.status).isEqualTo(HttpStatus.OK.value())
         then(mvnResponse.response.contentType).isEqualTo(MediaType.APPLICATION_JSON_VALUE)
-        val jsonResponse = JsonBuilder.getJsonFromString(mvnResponse.response.contentAsString)
+        val jsonResponse = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
         then(jsonResponse.get("coach").isJsonNull).isTrue
         then(jsonResponse.getAsJsonPrimitive("client").asString).isEqualTo(client.captured.uuid.toString())
@@ -176,7 +176,7 @@ class EnrollmentProcessTest : BaseComponentTest() {
         then(mvnResponse.response).isNotNull
         then(mvnResponse.response.status).isEqualTo(HttpStatus.OK.value())
         then(mvnResponse.response.contentType).isEqualTo(MediaType.APPLICATION_JSON_VALUE)
-        val jsonResponse = JsonBuilder.getJsonFromString(mvnResponse.response.contentAsString)
+        val jsonResponse = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
         then(jsonResponse.get("coach").isJsonNull).isTrue
         then(jsonResponse.getAsJsonPrimitive("client").asString).isEqualTo(client.captured.uuid.toString())

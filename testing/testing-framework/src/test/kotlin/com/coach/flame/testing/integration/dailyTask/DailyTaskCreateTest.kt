@@ -15,14 +15,13 @@ import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.RequestMethod
 import java.util.*
 
-class DailyTaskTest : BaseIntegrationTest() {
+class DailyTaskCreateTest : BaseIntegrationTest() {
 
     @Autowired
     private lateinit var restTemplate: TestRestTemplate
 
     private val clientUUID = UUID.fromString("3c5845f1-4a90-4396-8610-7261761369ae")
-    private val coachUUID = UUID.randomUUID()
-    private val coachUUIDSession = UUID.fromString("b2957c86-e493-4f9a-a277-2e24b77f0ffe")
+    private val coachUUID = UUID.fromString("b2957c86-e493-4f9a-a277-2e24b77f0ffe")
 
     @BeforeEach
     fun setup() {
@@ -40,32 +39,23 @@ class DailyTaskTest : BaseIntegrationTest() {
         endpoint = "api/dailyTask/create/task",
         httpMethod = RequestMethod.POST,
         headers = [
-            "clientToken:3c5845f1-4a90-4396-8610-7261761369ae",
-            "coachToken:b2957c86-e493-4f9a-a277-2e24b77f0ffe"
+            "clientIdentifier:3c5845f1-4a90-4396-8610-7261761369ae",
+            "coachIdentifier:b2957c86-e493-4f9a-a277-2e24b77f0ffe"
         ]
     )
     fun `test create new daily task`() {
 
         // given
         // Client
-        clientRepository.saveAndFlush(clientMaker
+        clientRepository.saveAndFlush(ClientBuilder.maker()
             .but(with(ClientMaker.uuid, clientUUID),
-                with(ClientMaker.clientType, clientTypeRepository.getByType("CLIENT")),
-                with(ClientMaker.country, null as CountryConfig?),
-                with(ClientMaker.gender, null as GenderConfig?))
+                with(ClientMaker.clientType, clientTypeRepository.getByType("CLIENT")))
             .make())
 
         // Coach
-        clientRepository.saveAndFlush(clientMaker
-            .but(with(ClientMaker.uuid, coachUUID),
-                with(ClientMaker.clientType, clientTypeRepository.getByType("COACH")),
-                with(ClientMaker.country, null as CountryConfig?),
-                with(ClientMaker.gender, null as GenderConfig?),
-                with(ClientMaker.user, userMaker
-                    .but(with(UserMaker.userSession, userSessionMaker
-                        .but(with(UserSessionMaker.token, coachUUIDSession))
-                        .make()))
-                    .make()))
+        coachRepository.saveAndFlush(CoachBuilder.maker()
+            .but(with(CoachMaker.uuid, coachUUID),
+                with(CoachMaker.clientType, clientTypeRepository.getByType("COACH")))
             .make())
 
         // when

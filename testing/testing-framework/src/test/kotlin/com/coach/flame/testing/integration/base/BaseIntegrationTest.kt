@@ -55,6 +55,9 @@ abstract class BaseIntegrationTest {
     protected lateinit var userSessionRepository: UserSessionRepository
 
     @Autowired
+    protected lateinit var dailyTaskRepository: DailyTaskRepository
+
+    @Autowired
     protected lateinit var coachRepository: CoachRepository
 
     protected val userMaker: Maker<User> = an(UserMaker.User)

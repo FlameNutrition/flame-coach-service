@@ -26,7 +26,7 @@ class DailyTaskExceptionTest {
     fun `check status DailyTaskNotFound exception`() {
 
         // given
-        val dailyTaskNotFound = DailyTaskNotFound("ex1", RuntimeException("EXCEPTION"))
+        val dailyTaskNotFound = DailyTaskNotFoundException("ex1", RuntimeException("EXCEPTION"))
 
         // when
         val annotationStatus = dailyTaskNotFound::class.java.getAnnotation(Status::class.java)
@@ -41,7 +41,7 @@ class DailyTaskExceptionTest {
     fun `check status DailyTaskMissingSave exception`() {
 
         // given
-        val dailyTaskMissingSave = DailyTaskMissingSave("ex1", RuntimeException("EXCEPTION"))
+        val dailyTaskMissingSave = DailyTaskMissingSaveException("ex1", RuntimeException("EXCEPTION"))
 
         // when
         val annotationStatus = dailyTaskMissingSave::class.java.getAnnotation(Status::class.java)
@@ -56,7 +56,7 @@ class DailyTaskExceptionTest {
     fun `check status DailyTaskMissingDelete exception`() {
 
         // given
-        val dailyTaskMissingDelete = DailyTaskMissingDelete("ex1")
+        val dailyTaskMissingDelete = DailyTaskMissingDeleteException("ex1")
 
         // when
         val annotationStatus = dailyTaskMissingDelete::class.java.getAnnotation(Status::class.java)

@@ -1,5 +1,6 @@
 package com.coach.flame.dailyTask
 
+import com.coach.flame.dailyTask.filter.Filter
 import com.coach.flame.domain.DailyTaskDto
 import java.util.*
 
@@ -8,9 +9,13 @@ interface DailyTaskService {
 
     fun getDailyTaskById(taskId: Long): DailyTaskDto
 
-    fun getDailyTasksByClient(clientId: Long): Set<DailyTaskDto>
+    fun getDailyTasksUsingFilters(filters: Set<Filter>): Set<DailyTaskDto>
+
+    fun getDailyTasksByClient(uuid: UUID): Set<DailyTaskDto>
 
     fun createDailyTask(dailyTask: DailyTaskDto): DailyTaskDto
+
+    fun updateDailyTask(dailyTask: DailyTaskDto): DailyTaskDto
 
     fun deleteDailyTask(uuid: UUID)
 

@@ -39,6 +39,15 @@ class LoadRequestExecutionListener : TestExecutionListener {
             headers.set(header, value)
         }
 
+        val parameters = LinkedMultiValueMap<String, String>()
+        loadRequestAnnotation.parameters.forEach {
+            val pair = it.split(":")
+            val param = pair[0]
+            val value = pair[1]
+
+            parameters.set(param, value)
+        }
+
         val request: RequestBuilder = when (loadRequestAnnotation.httpMethod) {
             RequestMethod.POST -> {
 
@@ -56,17 +65,12 @@ class LoadRequestExecutionListener : TestExecutionListener {
                     .content(json.toString())
             }
             RequestMethod.GET -> {
-
-                val parameters = LinkedMultiValueMap<String, String>()
-                loadRequestAnnotation.parameters.forEach {
-                    val pair = it.split(":")
-                    val param = pair[0]
-                    val value = pair[1]
-
-                    parameters.set(param, value)
-                }
-
                 MockMvcRequestBuilders.get(loadRequestAnnotation.endpoint)
+                    .headers(headers)
+                    .params(parameters)
+            }
+            RequestMethod.DELETE -> {
+                MockMvcRequestBuilders.delete(loadRequestAnnotation.endpoint)
                     .headers(headers)
                     .params(parameters)
             }
@@ -79,7 +83,8 @@ class LoadRequestExecutionListener : TestExecutionListener {
             .setter
             .call(testContext.testInstance, request)
 
-        LOGGER.info("opr='beforeTestMethod', 'Loaded request with: {}'", request)
+        //FIXME: Change this logging
+        LOGGER.info("opr='beforeTestMethod', 'Loaded request with: {}'", request.toString())
 
     }
 }

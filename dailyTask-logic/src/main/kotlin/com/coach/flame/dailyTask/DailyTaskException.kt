@@ -11,17 +11,17 @@ class ClientNotFoundException : BusinessException {
 }
 
 @Status(httpStatus = HttpStatus.NOT_FOUND)
-class DailyTaskNotFound : BusinessException {
+class DailyTaskNotFoundException : BusinessException {
     constructor(message: String, ex: Exception) : super(message, ex)
     constructor(message: String) : super(message)
 }
 
 @Status(httpStatus = HttpStatus.BAD_REQUEST)
-class DailyTaskMissingSave : BusinessException {
+class DailyTaskMissingSaveException : BusinessException {
     constructor(message: String, ex: Exception) : super(message, ex)
 }
 
 @Status(httpStatus = HttpStatus.BAD_REQUEST)
-class DailyTaskMissingDelete : BusinessException {
+class DailyTaskMissingDeleteException : BusinessException {
     constructor(message: String) : super(message)
 }

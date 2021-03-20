@@ -40,6 +40,17 @@ class LoadRequestExecutionListener : TestExecutionListener {
             headers.set(header, value)
         }
 
+        val builder = UriComponentsBuilder
+            .fromHttpUrl("http://localhost:${loadRequestAnnotation.port}/${loadRequestAnnotation.endpoint}")
+
+        loadRequestAnnotation.parameters.forEach {
+            val pair = it.split(":")
+            val param = pair[0]
+            val value = pair[1]
+
+            builder.queryParam(param, value)
+        }
+
         val request: RequestEntity<*> = when (loadRequestAnnotation.httpMethod) {
             RequestMethod.POST -> {
 
@@ -57,18 +68,12 @@ class LoadRequestExecutionListener : TestExecutionListener {
                     .body(json.toString())
             }
             RequestMethod.GET -> {
-                val builder = UriComponentsBuilder
-                    .fromHttpUrl("http://localhost:${loadRequestAnnotation.port}/${loadRequestAnnotation.endpoint}")
-
-                loadRequestAnnotation.parameters.forEach {
-                    val pair = it.split(":")
-                    val param = pair[0]
-                    val value = pair[1]
-
-                    builder.queryParam(param, value)
-                }
-
                 RequestEntity.get(URI.create(builder.toUriString()))
+                    .headers(headers)
+                    .build()
+            }
+            RequestMethod.DELETE -> {
+                RequestEntity.delete(URI.create(builder.toUriString()))
                     .headers(headers)
                     .build()
             }

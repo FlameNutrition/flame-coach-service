@@ -15,20 +15,20 @@ class DailyTask(
     val uuid: UUID,
 
     @Column(nullable = false)
-    val name: String,
+    var name: String,
 
     @Column(nullable = false)
-    val description: String,
+    var description: String,
 
     @Column(nullable = false)
-    val date: LocalDate,
+    var date: LocalDate,
 
     @Column(nullable = false)
-    val ticked: Boolean,
+    var ticked: Boolean,
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "createdByFk", referencedColumnName = "id")
-    val createdBy: Client,
+    val createdBy: Coach,
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "clientFk", referencedColumnName = "id")

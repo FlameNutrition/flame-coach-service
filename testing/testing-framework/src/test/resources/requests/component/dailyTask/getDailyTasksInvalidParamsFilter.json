@@ -1,0 +1,17 @@
+{
+  "filters": [
+    {
+      "type": "IDENTIFIER",
+      "values": [
+        "798cf556-7c23-4637-a862dc62cba8"
+      ]
+    },
+    {
+      "type": "BETWEEN_DATES",
+      "values": [
+        "2020-12-05",
+        "2020-12-06"
+      ]
+    }
+  ]
+}
