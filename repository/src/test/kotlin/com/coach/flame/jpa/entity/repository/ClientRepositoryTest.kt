@@ -17,11 +17,8 @@ class ClientRepositoryTest : AbstractHelperTest() {
         getClientTypeRepository().saveAndFlush(clientTypeMaker.make())
 
         val clientToTest = clientMaker
-            .but(with(ClientMaker.country, null as CountryConfig?),
-                with(ClientMaker.gender, null as GenderConfig?),
-                with(ClientMaker.clientType, getClientTypeRepository().getByType("CLIENT")),
-                with(ClientMaker.user, userMaker.make()),
-                with(ClientMaker.userSession, userSessionMaker.make())
+            .but(with(ClientMaker.clientType, getClientTypeRepository().getByType("CLIENT")),
+                with(ClientMaker.user, userMaker.make())
             ).make()
 
         getClientRepository().saveAndFlush(clientToTest)
@@ -156,6 +153,53 @@ class ClientRepositoryTest : AbstractHelperTest() {
         then(result).contains(client2.uuid)
         then(result).contains(client3.uuid)
         then(result).doesNotContain(client4.uuid)
+
+    }
+
+    @Test
+    fun `test create client with default values`() {
+
+        val clientType = getClientTypeRepository().saveAndFlush(ClientTypeBuilder.default())
+
+        val clientToTest = ClientBuilder.maker()
+            .but(with(ClientMaker.clientType, clientType)).make()
+
+        getClientRepository().saveAndFlush(clientToTest)
+
+        entityManager.flush()
+        entityManager.clear()
+
+        val client = getClientRepository().findAll().first()
+
+        then(client.id).isNotNull
+        then(client.weight).isEqualTo(0.0f)
+        then(client.height).isEqualTo(0.0f)
+        then(client.measureConfig).isEqualTo(MeasureConfig.KG_CM)
+
+    }
+
+    @Test
+    fun `test create client with default values set up`() {
+
+        val clientType = getClientTypeRepository().saveAndFlush(ClientTypeBuilder.default())
+
+        val clientToTest = ClientBuilder.maker()
+            .but(with(ClientMaker.clientType, clientType),
+                with(ClientMaker.height, 70.0787f),
+                with(ClientMaker.weight, 173.1f),
+                with(ClientMaker.measureConfig, MeasureConfig.LBS_IN)).make()
+
+        getClientRepository().saveAndFlush(clientToTest)
+
+        entityManager.flush()
+        entityManager.clear()
+
+        val client = getClientRepository().findAll().first()
+
+        then(client.id).isNotNull
+        then(client.height).isEqualTo(70.0787f)
+        then(client.weight).isEqualTo(173.1f)
+        then(client.measureConfig).isEqualTo(MeasureConfig.LBS_IN)
 
     }
 

@@ -16,6 +16,9 @@ data class ClientDto(
     override val customerType: CustomerTypeDto,
     override val loginInfo: LoginInfoDto?,
     override val registrationDate: LocalDate,
+    val weight: Float = 0.0f,
+    val height: Float = 0.0f,
+    val measureType: MeasureTypeDto = MeasureTypeDto.KG_CM,
     //FIXME: Can we remove the "?"...the client status in database is not nullable
     val clientStatus: ClientStatusDto?,
     val coach: CoachDto?,

@@ -75,7 +75,10 @@ class CoachDtoConverter(
                         ),
                         clientStatus = ClientStatusDto.valueOf(it.clientStatus.name),
                         registrationDate = it.registrationDate,
-                        coach = null)
+                        coach = null,
+                        weight = it.weight,
+                        height = it.height,
+                        measureType = MeasureTypeDto.valueOf(it.measureConfig.name))
                 }
                 .toSet(),
             registrationDate = coach.registrationDate

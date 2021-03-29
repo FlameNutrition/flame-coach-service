@@ -72,6 +72,12 @@
 
             <dependency>
                 <groupId>com.coach.flame</groupId>
+                <artifactId>configs-logic</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.coach.flame</groupId>
                 <artifactId>domain</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
@@ -434,6 +440,7 @@
         <module>customer-logic</module>
         <module>domain</module>
         <module>converters</module>
+        <module>configs-logic</module>
     </modules>
 
 </project>

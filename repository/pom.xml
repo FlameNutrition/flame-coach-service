@@ -191,7 +191,18 @@
                     <excludes>
                         <exclude>**/flame/jpa/FlameCoachRepoConfig.*</exclude>
                         <exclude>**/flame/jpa/entity/**.*</exclude>
-                        <exclude>**/flame/jpa/repository/**.*</exclude>
+
+                        <!-- Converters -->
+                        <exclude>**/flame/jpa/converter/MeasureConfigConverter.*</exclude>
+
+                        <!-- Repositories -->
+                        <exclude>**/flame/jpa/repository/cache/CacheLoaderRepository.*</exclude>
+                        <exclude>**/flame/jpa/repository/ClientRepository.*</exclude>
+                        <exclude>**/flame/jpa/repository/ClientTypeRepository.*</exclude>
+                        <exclude>**/flame/jpa/repository/CoachRepository.*</exclude>
+                        <exclude>**/flame/jpa/repository/DailyTaskRepository.*</exclude>
+                        <exclude>**/flame/jpa/repository/UserRepository.*</exclude>
+                        <exclude>**/flame/jpa/repository/UserSessionRepository.*</exclude>
                     </excludes>
                 </configuration>
             </plugin>

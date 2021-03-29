@@ -13,6 +13,10 @@ class GenderConfig(
     val genderCode: String,
 
     @Column(nullable = false)
-    val externalValue: String
-    
-) : AbstractPersistable<Long>()
+    val externalValue: String,
+
+    ) : AbstractPersistable<Long>(), ConfigKey {
+    override fun configKey(): String {
+        return genderCode
+    }
+}

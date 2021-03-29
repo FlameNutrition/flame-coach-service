@@ -13,6 +13,11 @@ class CountryConfig(
     val countryCode: String,
 
     @Column(nullable = false)
-    val externalValue: String
+    val externalValue: String,
 
-) : AbstractPersistable<Long>()
+    ) : AbstractPersistable<Long>(), ConfigKey {
+
+    override fun configKey(): String {
+        return countryCode
+    }
+}

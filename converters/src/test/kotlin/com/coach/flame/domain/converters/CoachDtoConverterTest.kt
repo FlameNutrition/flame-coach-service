@@ -3,6 +3,7 @@ package com.coach.flame.domain.converters
 import com.coach.flame.domain.CountryDtoBuilder
 import com.coach.flame.domain.CustomerTypeDto
 import com.coach.flame.domain.GenderDtoBuilder
+import com.coach.flame.domain.MeasureTypeDto
 import com.coach.flame.jpa.entity.*
 import com.natpryce.makeiteasy.MakeItEasy.*
 import io.mockk.clearAllMocks
@@ -71,26 +72,26 @@ class CoachDtoConverterTest {
         every { countryDtoConverter.convert(any()) } returns countryDto
 
         // when
-        val clientDto = classToTest.convert(coach)
+        val coachDto = classToTest.convert(coach)
 
         //then
         verify(exactly = 3) { genderDtoConverter.convert(any()) }
         verify(exactly = 3) { countryDtoConverter.convert(any()) }
-        then(clientDto.identifier).isEqualTo(coach.uuid)
-        then(clientDto.firstName).isEqualTo(coach.firstName)
-        then(clientDto.lastName).isEqualTo(coach.lastName)
-        then(clientDto.birthday).isEqualTo(coach.birthday)
-        then(clientDto.phoneCode).isEqualTo(coach.phoneCode)
-        then(clientDto.phoneNumber).isEqualTo(coach.phoneNumber)
-        then(clientDto.country).isEqualTo(countryDto)
-        then(clientDto.gender).isEqualTo(genderDto)
-        then(clientDto.registrationDate).isNotNull
-        then(clientDto.customerType).isEqualTo(CustomerTypeDto.COACH)
+        then(coachDto.identifier).isEqualTo(coach.uuid)
+        then(coachDto.firstName).isEqualTo(coach.firstName)
+        then(coachDto.lastName).isEqualTo(coach.lastName)
+        then(coachDto.birthday).isEqualTo(coach.birthday)
+        then(coachDto.phoneCode).isEqualTo(coach.phoneCode)
+        then(coachDto.phoneNumber).isEqualTo(coach.phoneNumber)
+        then(coachDto.country).isEqualTo(countryDto)
+        then(coachDto.gender).isEqualTo(genderDto)
+        then(coachDto.registrationDate).isNotNull
+        then(coachDto.customerType).isEqualTo(CustomerTypeDto.COACH)
 
         // Clients
-        then(clientDto.listOfClients).hasSize(2)
+        then(coachDto.listOfClients).hasSize(2)
 
-        val filterClient0 = clientDto.listOfClients.find { it.identifier == client0.uuid }
+        val filterClient0 = coachDto.listOfClients.find { it.identifier == client0.uuid }
         then(filterClient0).isNotNull
         then(filterClient0?.firstName).isEqualTo(client0.firstName)
         then(filterClient0?.lastName).isEqualTo(client0.lastName)
@@ -105,6 +106,9 @@ class CoachDtoConverterTest {
         then(filterClient0?.loginInfo?.username).isEqualTo(client0.user.email)
         then(filterClient0?.loginInfo?.password).isEqualTo("******")
         then(filterClient0?.coach).isNull()
+        then(filterClient0?.height).isEqualTo(0.0f)
+        then(filterClient0?.weight).isEqualTo(0.0f)
+        then(filterClient0?.measureType).isEqualTo(MeasureTypeDto.KG_CM)
 
     }
 
@@ -121,13 +125,13 @@ class CoachDtoConverterTest {
         check(client.country === null)
 
         // when
-        val clientDto = classToTest.convert(client)
+        val coachDto = classToTest.convert(client)
 
         //then
         verify(exactly = 1) { genderDtoConverter.convert(any()) }
         verify(exactly = 0) { countryDtoConverter.convert(any()) }
-        then(clientDto).isNotNull
-        then(clientDto.country).isNull()
+        then(coachDto).isNotNull
+        then(coachDto.country).isNull()
     }
 
     @Test
@@ -143,13 +147,13 @@ class CoachDtoConverterTest {
         check(client.gender === null)
 
         // when
-        val clientDto = classToTest.convert(client)
+        val coachDto = classToTest.convert(client)
 
         //then
         verify(exactly = 0) { genderDtoConverter.convert(any()) }
         verify(exactly = 1) { countryDtoConverter.convert(any()) }
-        then(clientDto).isNotNull
-        then(clientDto.gender).isNull()
+        then(coachDto).isNotNull
+        then(coachDto.gender).isNull()
     }
 
     @Test
@@ -167,13 +171,13 @@ class CoachDtoConverterTest {
         every { countryDtoConverter.convert(any()) } returns mockk()
 
         // when
-        val clientDto = classToTest.convert(client)
+        val coachDto = classToTest.convert(client)
 
         //then
         verify(exactly = 1) { genderDtoConverter.convert(any()) }
         verify(exactly = 1) { countryDtoConverter.convert(any()) }
-        then(clientDto).isNotNull
-        then(clientDto.customerType).isEqualTo(CustomerTypeDto.UNKNOWN)
+        then(coachDto).isNotNull
+        then(coachDto.customerType).isEqualTo(CustomerTypeDto.UNKNOWN)
     }
 
 }

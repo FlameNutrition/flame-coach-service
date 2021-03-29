@@ -1,5 +1,7 @@
 package com.coach.flame.customer
 
+import com.coach.flame.domain.ClientDto
+import com.coach.flame.domain.CoachDto
 import com.coach.flame.domain.Customer
 import com.coach.flame.domain.CustomerTypeDto
 import com.coach.flame.domain.converters.ClientDtoConverter
@@ -50,7 +52,55 @@ class CustomerServiceImpl(
                 return coachDtoConverter.convert(coach)
 
             }
-            else -> throw CustomerRetrieveException("$customerType is a invalid customer type")
+            else -> throw CustomerRetrieveException("$customerType is an invalid customer type")
+        }
+    }
+
+    @Transactional
+    override fun updateCustomer(uuid: UUID, customer: Customer): Customer {
+
+        LOGGER.info("opr='updateCustomer', msg='Update Customer', uuid={}, type={}", uuid, customer.customerType)
+
+        when (customer.customerType) {
+            CustomerTypeDto.CLIENT -> {
+                val clientDto = customer as ClientDto
+                val client = clientRepository.findByUuid(uuid)
+                    ?: throw CustomerNotFoundException("Could not found any client with uuid: $uuid")
+
+                client.firstName = clientDto.firstName
+                client.lastName = clientDto.lastName
+                client.birthday = clientDto.birthday
+                client.phoneCode = clientDto.phoneCode
+                client.phoneNumber = clientDto.phoneNumber
+                client.country = clientDto.country?.let { CountryConfig(it.countryCode, it.externalValue) }
+                client.gender = clientDto.gender?.let { GenderConfig(it.genderCode, it.externalValue) }
+                client.measureConfig = MeasureConfig.valueOf(clientDto.measureType.code)
+                client.weight = clientDto.weight
+                client.height = clientDto.height
+
+                val newClient = clientRepository.save(client)
+
+                return clientDtoConverter.convert(newClient)
+            }
+            CustomerTypeDto.COACH -> {
+                val coachDto = customer as CoachDto
+                val coach = coachRepository.findByUuid(uuid)
+                    ?: throw CustomerNotFoundException("Could not found any coach with uuid: $uuid")
+
+                coach.firstName = coachDto.firstName
+                coach.lastName = coachDto.lastName
+                coach.birthday = coachDto.birthday
+                coach.phoneCode = coachDto.phoneCode
+                coach.phoneNumber = coachDto.phoneNumber
+                coach.country = coachDto.country?.let { CountryConfig(it.countryCode, it.externalValue) }
+                coach.gender = coachDto.gender?.let { GenderConfig(it.genderCode, it.externalValue) }
+
+                val newCoach = coachRepository.save(coach)
+
+                return coachDtoConverter.convert(newCoach)
+
+            }
+            else -> throw CustomerRetrieveException("${customer.customerType} is an invalid customer type")
         }
     }
 

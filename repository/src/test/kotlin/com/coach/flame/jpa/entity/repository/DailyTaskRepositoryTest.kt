@@ -26,8 +26,7 @@ class DailyTaskRepositoryTest : AbstractHelperTest() {
             .but(with(ClientMaker.country, null as CountryConfig?),
                 with(ClientMaker.gender, null as GenderConfig?),
                 with(ClientMaker.clientType, getClientTypeRepository().getByType("CLIENT")),
-                with(ClientMaker.user, userMaker.make()),
-                with(ClientMaker.userSession, userSessionMaker.make())
+                with(ClientMaker.user, userMaker.make())
             ).make())
         // COACH
         val coach = getCoachRepository().saveAndFlush(CoachBuilder.maker()

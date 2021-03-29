@@ -25,12 +25,16 @@ class ClientDtoMaker {
         val clientStatus: Property<ClientDto, ClientStatusDto> = newProperty()
         val registrationDate: Property<ClientDto, LocalDate> = newProperty()
         val coach: Property<ClientDto, CoachDto?> = newProperty()
+        val weight: Property<ClientDto, Float> = newProperty()
+        val height: Property<ClientDto, Float> = newProperty()
+        val measureType: Property<ClientDto, MeasureTypeDto> = newProperty()
 
         val ClientDto: Instantiator<ClientDto> = Instantiator {
             ClientDto(
                 identifier = it.valueOf(identifier, UUID.randomUUID()),
                 firstName = it.valueOf(firstName, fake.name().firstName()),
                 lastName = it.valueOf(lastName, fake.name().lastName()),
+                phoneNumber = it.valueOf(phoneNumber, null as String?),
                 birthday = it.valueOf(birthday, null as LocalDate?),
                 phoneCode = it.valueOf(phoneCode, null as String?),
                 country = it.valueOf(country, null as CountryDto?),
@@ -39,7 +43,10 @@ class ClientDtoMaker {
                 loginInfo = it.valueOf(loginInfo, null as LoginInfoDto?),
                 clientStatus = it.valueOf(clientStatus, ClientStatusDto.AVAILABLE),
                 registrationDate = it.valueOf(registrationDate, LocalDate.now()),
-                coach = it.valueOf(coach, null as CoachDto?)
+                coach = it.valueOf(coach, null as CoachDto?),
+                weight = it.valueOf(weight, 0.0f),
+                height = it.valueOf(height, 0.0f),
+                measureType = it.valueOf(measureType, MeasureTypeDto.KG_CM)
             )
         }
     }

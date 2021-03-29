@@ -74,7 +74,10 @@ class ClientDtoConverter(
                     listOfClients = setOf(),
                     registrationDate = client.coach!!.registrationDate
                 )
-            }
+            },
+            height = client.height,
+            weight = client.weight,
+            measureType = MeasureTypeDto.valueOf(client.measureConfig.name)
         )
     }
 }

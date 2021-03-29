@@ -84,8 +84,8 @@ class DailyTaskDeleteTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("DailyTaskMissingDelete.html")
-        thenErrorMessageTitle(body).isEqualTo("DailyTaskMissingDelete")
+        thenErrorMessageType(body).endsWith("DailyTaskMissingDeleteException.html")
+        thenErrorMessageTitle(body).isEqualTo("DailyTaskMissingDeleteException")
         thenErrorMessageDetail(body).contains("Didn't find the following uuid task: 3c5845f1-4a90-4396-8610-7261761369ae")
         thenErrorMessageStatus(body).isEqualTo("400")
         thenErrorMessageInstance(body).isNotEmpty

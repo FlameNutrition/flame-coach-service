@@ -35,7 +35,7 @@ class CoachDtoMaker {
                 phoneNumber = it.valueOf(phoneNumber, null as String?),
                 country = it.valueOf(country, null as CountryDto?),
                 gender = it.valueOf(gender, null as GenderDto?),
-                customerType = it.valueOf(customerType, CustomerTypeDto.CLIENT),
+                customerType = it.valueOf(customerType, CustomerTypeDto.COACH),
                 loginInfo = it.valueOf(loginInfo, null as LoginInfoDto?),
                 listOfClients = it.valueOf(listOfClients, setOf()),
                 registrationDate = it.valueOf(registrationDate, LocalDate.now())

@@ -70,8 +70,6 @@ class AuthCoachTest : BaseIntegrationTest() {
                 with(ClientMaker.user, userMaker
                     .but(with(UserMaker.email, "test@gmail.com"))
                     .but(with(UserMaker.password, "12345"))
-                    .make()),
-                with(ClientMaker.userSession, userSessionMaker
                     .make()))
             .make()
 

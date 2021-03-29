@@ -34,9 +34,6 @@ class GetNewCustomerSessionTest : BaseComponentTest() {
         // given
         val oldDate = LocalDateTime.now()
         val client = clientMaker
-            .but(with(ClientMaker.userSession, userSessionMaker
-                .but(with(UserSessionMaker.expirationDate, oldDate))
-                .make()))
             .but(with(ClientMaker.user, userMaker
                 .but(with(UserMaker.email, "test@gmail.com"))
                 .make()))

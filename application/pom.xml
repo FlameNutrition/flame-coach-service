@@ -29,6 +29,11 @@
 
         <dependency>
             <groupId>com.coach.flame</groupId>
+            <artifactId>configs-logic</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.coach.flame</groupId>
             <artifactId>customer-logic</artifactId>
         </dependency>
 

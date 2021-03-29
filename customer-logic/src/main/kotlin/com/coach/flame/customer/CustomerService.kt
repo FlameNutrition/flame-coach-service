@@ -9,6 +9,8 @@ interface CustomerService {
 
     fun getCustomer(uuid: UUID, customerType: CustomerTypeDto): Customer
 
+    fun updateCustomer(uuid: UUID, customer: Customer): Customer
+
     fun registerCustomer(customer: Customer): Customer
 
     fun getNewCustomerSession(username: String, password: String): Customer

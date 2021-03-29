@@ -23,19 +23,22 @@ class ClientMaker {
         val gender: Property<Client, GenderConfig?> = newProperty()
         val user: Property<Client, User> = newProperty()
         val clientType: Property<Client, ClientType> = newProperty()
-        val userSession: Property<Client, UserSession> = newProperty()
         val clientMeasureWeight: Property<Client, MutableList<ClientMeasureWeight>> = newProperty()
         val dailyClientTask: Property<Client, MutableList<DailyTask>> = newProperty()
         val coach: Property<Client, Coach> = newProperty()
         val clientStatus: Property<Client, ClientStatus> = newProperty()
         val registrationDate: Property<Client, LocalDate> = newProperty()
+        val measureConfig: Property<Client, MeasureConfig> = newProperty()
+        val weight: Property<Client, Float> = newProperty()
+        val height: Property<Client, Float> = newProperty()
 
         val Client: Instantiator<Client> = Instantiator {
 
-            val userSession = make(a(UserSessionMaker.UserSession))
+            val userSession = UserSessionBuilder.default()
 
-            val userInit = make(a(UserMaker.User,
-                with(UserMaker.userSession, userSession)))
+            val userInit = UserBuilder.maker()
+                .but(with(UserMaker.userSession, userSession))
+                .make()
 
             Client(
                 uuid = it.valueOf(uuid, UUID.randomUUID()),
@@ -51,7 +54,10 @@ class ClientMaker {
                 clientMeasureWeight = it.valueOf(clientMeasureWeight, mutableListOf()),
                 dailyClientTask = it.valueOf(dailyClientTask, mutableListOf()),
                 coach = it.valueOf(coach, null as Coach?),
+                height = it.valueOf(height, 0.0f),
+                weight = it.valueOf(weight, 0.0f),
                 clientStatus = it.valueOf(clientStatus, ClientStatus.AVAILABLE),
+                measureConfig = it.valueOf(measureConfig, MeasureConfig.KG_CM),
                 registrationDate = it.valueOf(registrationDate, LocalDate.now())
             )
         }

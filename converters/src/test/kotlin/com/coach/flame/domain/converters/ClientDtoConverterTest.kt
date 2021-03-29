@@ -3,6 +3,7 @@ package com.coach.flame.domain.converters
 import com.coach.flame.domain.CountryDtoBuilder
 import com.coach.flame.domain.CustomerTypeDto
 import com.coach.flame.domain.GenderDtoBuilder
+import com.coach.flame.domain.MeasureTypeDto
 import com.coach.flame.jpa.entity.*
 import com.natpryce.makeiteasy.MakeItEasy.*
 import io.mockk.clearAllMocks
@@ -81,6 +82,9 @@ class ClientDtoConverterTest {
         then(clientDto.gender).isEqualTo(genderDto)
         then(clientDto.registrationDate).isNotNull
         then(clientDto.customerType).isEqualTo(CustomerTypeDto.CLIENT)
+        then(clientDto.weight).isEqualTo(0.0f)
+        then(clientDto.height).isEqualTo(0.0f)
+        then(clientDto.measureType).isEqualTo(MeasureTypeDto.KG_CM)
 
         //Coach
         verify(exactly = 1) { genderDtoConverter.convert(client.coach?.gender!!) }

@@ -70,8 +70,6 @@ class AuthClientTest : BaseIntegrationTest() {
                 .make()))
             .but(with(ClientMaker.country, null as CountryConfig?))
             .but(with(ClientMaker.gender, null as GenderConfig?))
-            .but(with(ClientMaker.userSession, userSessionMaker
-                .make()))
             .make()
 
         clientRepository.saveAndFlush(client)

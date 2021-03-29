@@ -1,8 +1,8 @@
 package com.coach.flame.jpa.entity.repository.criteria
 
 import com.coach.flame.jpa.entity.*
-import com.coach.flame.jpa.repository.criteria.DailyTaskCriteria.Companion.dailyTaskBetweenDate
-import com.coach.flame.jpa.repository.criteria.DailyTaskCriteria.Companion.dailyTaskClient
+import com.coach.flame.jpa.repository.criteria.DailyTaskCriteria.dailyTaskBetweenDate
+import com.coach.flame.jpa.repository.criteria.DailyTaskCriteria.dailyTaskClient
 import com.natpryce.makeiteasy.MakeItEasy.with
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.BeforeEach
@@ -31,22 +31,19 @@ class DailyTaskRepositoryCriteriaTest : AbstractHelperTest() {
         client0 = ClientBuilder.maker()
             .but(
                 with(ClientMaker.clientType, clientType),
-                with(ClientMaker.user, UserBuilder.default()),
-                with(ClientMaker.userSession, UserSessionBuilder.default())
+                with(ClientMaker.user, UserBuilder.default())
             ).make()
 
         client1 = ClientBuilder.maker()
             .but(
                 with(ClientMaker.clientType, clientType),
-                with(ClientMaker.user, UserBuilder.default()),
-                with(ClientMaker.userSession, UserSessionBuilder.default())
+                with(ClientMaker.user, UserBuilder.default())
             ).make()
 
         client2 = ClientBuilder.maker()
             .but(
                 with(ClientMaker.clientType, clientType),
-                with(ClientMaker.user, UserBuilder.default()),
-                with(ClientMaker.userSession, UserSessionBuilder.default())
+                with(ClientMaker.user, UserBuilder.default())
             ).make()
 
         coach0 = CoachBuilder.maker()

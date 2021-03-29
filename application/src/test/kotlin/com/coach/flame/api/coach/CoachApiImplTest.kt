@@ -1,7 +1,12 @@
 package com.coach.flame.api.coach
 
+import com.coach.flame.api.coach.request.ContactInfoRequestBuilder
+import com.coach.flame.api.coach.request.ContactInfoRequestMaker
+import com.coach.flame.configs.ConfigsService
+import com.coach.flame.customer.CustomerService
 import com.coach.flame.customer.coach.CoachService
 import com.coach.flame.domain.*
+import com.coach.flame.exception.RestException
 import com.coach.flame.exception.RestInvalidRequestException
 import com.natpryce.makeiteasy.MakeItEasy.with
 import io.mockk.clearAllMocks
@@ -9,6 +14,8 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.BDDAssertions.catchThrowable
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.AfterEach
@@ -21,6 +28,12 @@ class CoachApiImplTest {
 
     @MockK
     private lateinit var coachService: CoachService
+
+    @MockK
+    private lateinit var customerService: CustomerService
+
+    @MockK
+    private lateinit var configsService: ConfigsService
 
     @InjectMockKs
     private lateinit var classToTest: CoachApiImpl
@@ -129,6 +142,70 @@ class CoachApiImplTest {
         then(thrown)
             .isInstanceOf(RestInvalidRequestException::class.java)
             .hasMessageContaining("Invalid UUID string: INVALID")
+    }
+
+    @Test
+    fun `test get contact info`() {
+
+        val identifier = UUID.randomUUID()
+        val coach = CoachDtoBuilder.maker()
+            .but(with(CoachDtoMaker.loginInfo, LoginInfoDtoBuilder.default()),
+                with(CoachDtoMaker.country, CountryDtoBuilder.default()))
+            .make()
+        every { customerService.getCustomer(identifier, CustomerTypeDto.COACH) } returns coach
+
+        val response = classToTest.getContactInformation(identifier)
+
+        then(response.firstName).isEqualTo(coach.firstName)
+        then(response.lastName).isEqualTo(coach.lastName)
+        then(response.identifier).isEqualTo(coach.identifier)
+        then(response.phoneCode).isEqualTo(coach.phoneCode)
+        then(response.phoneNumber).isEqualTo(coach.phoneNumber)
+        then(response.country?.code).isEqualTo(coach.country?.countryCode)
+        then(response.country?.value).isEqualTo(coach.country?.externalValue)
+
+    }
+
+    @Test
+    fun `test update contact info`() {
+
+        val identifier = UUID.randomUUID()
+        val request = ContactInfoRequestBuilder.maker()
+            .but(with(ContactInfoRequestMaker.countryCode, "PT"))
+            .make()
+        val countryDto = CountryDtoBuilder.maker()
+            .but(with(CountryDtoMaker.countryCode, "PT"),
+                with(CountryDtoMaker.externalValue, "Portugal"))
+            .make()
+        val coach = slot<CoachDto>()
+        val coachDto = CoachDtoBuilder.maker()
+            .but(with(CoachDtoMaker.identifier, identifier),
+                with(CoachDtoMaker.gender, GenderDtoBuilder.default()),
+                with(CoachDtoMaker.loginInfo, LoginInfoDtoBuilder.default()),
+                with(CoachDtoMaker.country, countryDto))
+            .make()
+
+        every { customerService.getCustomer(identifier, CustomerTypeDto.COACH) } returns coachDto
+        every { configsService.getCountry("PT") } returns countryDto
+        every { customerService.updateCustomer(identifier, capture(coach)) } answers { coach.captured }
+
+        val response = classToTest.updateContactInformation(identifier, request)
+
+        then(response.firstName).isEqualTo(request.firstName)
+        then(response.lastName).isEqualTo(response.lastName)
+        then(response.identifier).isEqualTo(identifier)
+        then(response.phoneCode).isEqualTo(request.phoneCode)
+        then(response.phoneNumber).isEqualTo(request.phoneNumber)
+        then(response.country?.code).isEqualTo(request.countryCode)
+        then(response.country?.value).isEqualTo("Portugal")
+
+        then(coach.captured.birthday).isEqualTo(coachDto.birthday)
+        then(coach.captured.listOfClients).isEqualTo(coachDto.listOfClients)
+        then(coach.captured.loginInfo).isEqualTo(coachDto.loginInfo)
+        then(coach.captured.gender).isEqualTo(coachDto.gender)
+        then(coach.captured.customerType).isEqualTo(coachDto.customerType)
+        then(coach.captured.registrationDate).isEqualTo(coachDto.registrationDate)
+
     }
 
 }

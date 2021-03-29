@@ -22,6 +22,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.dao.DataIntegrityViolationException
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 import java.util.stream.Stream
@@ -290,15 +291,11 @@ class CustomerServiceImplTest {
         val password = "12345"
         val userSession = slot<UserSession>()
         val actualDate = LocalDateTime.now()
-        val entityUserSession = UserSessionBuilder.maker()
-            .but(with(UserSessionMaker.expirationDate, actualDate))
-            .make()
         val entityClient = ClientBuilder.maker()
             .but(with(ClientMaker.user,
                 make(a(UserMaker.User,
                     with(UserMaker.email, "test@gmail.com"),
-                    with(UserMaker.password, "12345")))),
-                with(ClientMaker.userSession, entityUserSession))
+                    with(UserMaker.password, "12345")))))
             .make()
         val user = UserBuilder.maker()
             .but(with(UserMaker.email, "test@gmail.com"),
@@ -405,6 +402,123 @@ class CustomerServiceImplTest {
         then(response.loginInfo?.expirationDate).isEqualTo(userSession.captured.expirationDate)
         then(response.loginInfo?.token).isEqualTo(userSession.captured.token)
 
+    }
+
+    @Test
+    fun `update client customer`() {
+
+        val identifier = UUID.randomUUID()
+        val countryDto = CountryDtoBuilder.maker()
+            .but(with(CountryDtoMaker.countryCode, "PT"),
+                with(CountryDtoMaker.externalValue, "Portugal"))
+            .make()
+        val genderDto = GenderDtoBuilder.maker()
+            .but(with(GenderDtoMaker.genderCode, "M"),
+                with(GenderDtoMaker.externalValue, "Male"))
+            .make()
+        val entity = slot<Client>()
+        val client = ClientBuilder.maker()
+            .but(with(ClientMaker.user, UserBuilder.default()),
+                with(ClientMaker.clientStatus, ClientStatus.ACCEPTED),
+                with(ClientMaker.coach, CoachBuilder.default()))
+            .make()
+        val clientDto = ClientDtoBuilder.maker()
+            .but(
+                with(ClientDtoMaker.firstName, "FIRSTNAME"),
+                with(ClientDtoMaker.lastName, "LASTNAME"),
+                with(ClientDtoMaker.birthday, LocalDate.parse("2021-04-04")),
+                with(ClientDtoMaker.phoneCode, "+44"),
+                with(ClientDtoMaker.phoneNumber, "22334455"),
+                with(ClientDtoMaker.country, countryDto),
+                with(ClientDtoMaker.gender, genderDto),
+                with(ClientDtoMaker.weight, 70.5f),
+                with(ClientDtoMaker.height, 1.70f),
+                with(ClientDtoMaker.measureType, MeasureTypeDto.LBS_IN),
+            ).make()
+
+        every { clientRepository.findByUuid(identifier) } returns client
+        every { clientRepository.save(capture(entity)) } answers { entity.captured }
+
+        val response = classToTest.updateCustomer(identifier, clientDto) as ClientDto
+
+        val entityCaptured = entity.captured
+
+        then(entityCaptured.firstName).isEqualTo(clientDto.firstName)
+        then(entityCaptured.lastName).isEqualTo(clientDto.lastName)
+        then(entityCaptured.birthday).isEqualTo(clientDto.birthday)
+        then(entityCaptured.phoneCode).isEqualTo(clientDto.phoneCode)
+        then(entityCaptured.phoneNumber).isEqualTo(clientDto.phoneNumber)
+        then(entityCaptured.country?.countryCode).isEqualTo(clientDto.country?.countryCode)
+        then(entityCaptured.country?.externalValue).isEqualTo(clientDto.country?.externalValue)
+        then(entityCaptured.gender?.genderCode).isEqualTo(clientDto.gender?.genderCode)
+        then(entityCaptured.gender?.externalValue).isEqualTo(clientDto.gender?.externalValue)
+        then(entityCaptured.weight).isEqualTo(clientDto.weight)
+        then(entityCaptured.height).isEqualTo(clientDto.height)
+        then(entityCaptured.measureConfig.code).isEqualTo(clientDto.measureType.code)
+
+        // Attributes should not be updated
+        then(response.identifier).isEqualTo(entityCaptured.uuid)
+        then(response.customerType.name).isEqualTo(entityCaptured.clientType.type.toUpperCase())
+        then(response.loginInfo?.username).isEqualTo(entityCaptured.user.email)
+        then(response.loginInfo?.token).isEqualTo(entityCaptured.user.userSession.token)
+        then(response.loginInfo?.expirationDate).isEqualTo(entityCaptured.user.userSession.expirationDate)
+        then(response.registrationDate).isEqualTo(entityCaptured.registrationDate)
+        then(response.clientStatus?.name).isEqualTo(entityCaptured.clientStatus.name)
+        then(response.coach?.identifier).isEqualTo(entityCaptured.coach?.uuid)
+    }
+
+    @Test
+    fun `update coach customer`() {
+
+        val identifier = UUID.randomUUID()
+        val countryDto = CountryDtoBuilder.maker()
+            .but(with(CountryDtoMaker.countryCode, "PT"),
+                with(CountryDtoMaker.externalValue, "Portugal"))
+            .make()
+        val genderDto = GenderDtoBuilder.maker()
+            .but(with(GenderDtoMaker.genderCode, "M"),
+                with(GenderDtoMaker.externalValue, "Male"))
+            .make()
+        val entity = slot<Coach>()
+        val coach = CoachBuilder.maker()
+            .but(with(CoachMaker.user, UserBuilder.default()))
+            .make()
+        val coachDto = CoachDtoBuilder.maker()
+            .but(
+                with(CoachDtoMaker.firstName, "FIRSTNAME"),
+                with(CoachDtoMaker.lastName, "LASTNAME"),
+                with(CoachDtoMaker.birthday, LocalDate.parse("2021-04-04")),
+                with(CoachDtoMaker.phoneCode, "+44"),
+                with(CoachDtoMaker.phoneNumber, "22334455"),
+                with(CoachDtoMaker.country, countryDto),
+                with(CoachDtoMaker.gender, genderDto),
+            ).make()
+
+        every { coachRepository.findByUuid(identifier) } returns coach
+        every { coachRepository.save(capture(entity)) } answers { entity.captured }
+
+        val response = classToTest.updateCustomer(identifier, coachDto) as CoachDto
+
+        val entityCaptured = entity.captured
+
+        then(entityCaptured.firstName).isEqualTo(coachDto.firstName)
+        then(entityCaptured.lastName).isEqualTo(coachDto.lastName)
+        then(entityCaptured.birthday).isEqualTo(coachDto.birthday)
+        then(entityCaptured.phoneCode).isEqualTo(coachDto.phoneCode)
+        then(entityCaptured.phoneNumber).isEqualTo(coachDto.phoneNumber)
+        then(entityCaptured.country?.countryCode).isEqualTo(coachDto.country?.countryCode)
+        then(entityCaptured.country?.externalValue).isEqualTo(coachDto.country?.externalValue)
+        then(entityCaptured.gender?.genderCode).isEqualTo(coachDto.gender?.genderCode)
+        then(entityCaptured.gender?.externalValue).isEqualTo(coachDto.gender?.externalValue)
+
+        // Attributes should not be updated
+
+        then(response.identifier).isEqualTo(entityCaptured.uuid)
+        then(response.customerType.name).isEqualTo(entityCaptured.clientType.type.toUpperCase())
+        then(response.loginInfo?.username).isEqualTo(entityCaptured.user.email)
+        then(response.loginInfo?.token).isEqualTo(entityCaptured.user.userSession.token)
+        then(response.loginInfo?.expirationDate).isEqualTo(entityCaptured.user.userSession.expirationDate)
+        then(response.registrationDate).isEqualTo(entityCaptured.registrationDate)
     }
 
     // region Parameters

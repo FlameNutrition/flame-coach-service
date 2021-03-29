@@ -15,27 +15,36 @@ class Client(
     val uuid: UUID,
 
     @Column(nullable = false)
-    val firstName: String,
+    var firstName: String,
 
     @Column(nullable = false)
-    val lastName: String,
+    var lastName: String,
 
     @Column(nullable = true)
-    val birthday: LocalDate? = null,
+    var birthday: LocalDate? = null,
 
     @Column(nullable = true)
-    val phoneCode: String? = null,
+    var phoneCode: String? = null,
 
     @Column(nullable = true)
-    val phoneNumber: String? = null,
+    var phoneNumber: String? = null,
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "countryFk", referencedColumnName = "id")
-    val country: CountryConfig? = null,
+    var country: CountryConfig? = null,
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "genderFk", referencedColumnName = "id")
-    val gender: GenderConfig? = null,
+    var gender: GenderConfig? = null,
+
+    @Column(name = "weight", columnDefinition = "float default '0.0'")
+    var weight: Float = 0.0f,
+
+    @Column(name = "height", columnDefinition = "float default '0.0'")
+    var height: Float = 0.0f,
+
+    @Column(nullable = false, columnDefinition = "varchar default 'KG_CM'")
+    var measureConfig: MeasureConfig = MeasureConfig.KG_CM,
 
     @OneToOne(optional = false, fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST])
     @JoinColumn(name = "userFk", referencedColumnName = "id")
