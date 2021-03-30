@@ -1,5 +1,6 @@
 package com.coach.flame.jpa.entity
 
+import com.coach.flame.jpa.converter.MeasureConfigConverter
 import org.hibernate.annotations.Type
 import org.springframework.data.jpa.domain.AbstractPersistable
 import java.time.LocalDate
@@ -43,7 +44,8 @@ class Client(
     @Column(name = "height", columnDefinition = "float default '0.0'")
     var height: Float = 0.0f,
 
-    @Column(nullable = false, columnDefinition = "varchar default 'KG_CM'")
+    @Column(nullable = false, columnDefinition = "varchar(100) default 'KG_CM'")
+    @Convert(converter = MeasureConfigConverter::class)
     var measureConfig: MeasureConfig = MeasureConfig.KG_CM,
 
     @OneToOne(optional = false, fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST])
