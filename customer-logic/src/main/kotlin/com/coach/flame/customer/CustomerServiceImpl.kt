@@ -8,6 +8,7 @@ import com.coach.flame.domain.converters.ClientDtoConverter
 import com.coach.flame.domain.converters.CoachDtoConverter
 import com.coach.flame.jpa.entity.*
 import com.coach.flame.jpa.repository.*
+import com.coach.flame.jpa.repository.cache.ConfigCache
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.dao.DataIntegrityViolationException
@@ -25,6 +26,8 @@ class CustomerServiceImpl(
     private val userRepository: UserRepository,
     private val clientDtoConverter: ClientDtoConverter,
     private val coachDtoConverter: CoachDtoConverter,
+    private val countryConfigCache: ConfigCache<CountryConfig>,
+    private val genderConfigCache: ConfigCache<GenderConfig>,
 ) : CustomerService {
 
     companion object {
@@ -72,8 +75,8 @@ class CustomerServiceImpl(
                 client.birthday = clientDto.birthday
                 client.phoneCode = clientDto.phoneCode
                 client.phoneNumber = clientDto.phoneNumber
-                client.country = clientDto.country?.let { CountryConfig(it.countryCode, it.externalValue) }
-                client.gender = clientDto.gender?.let { GenderConfig(it.genderCode, it.externalValue) }
+                client.country = clientDto.country?.let { countryConfigCache.getValue(it.countryCode).get() }
+                client.gender = clientDto.gender?.let { genderConfigCache.getValue(it.genderCode).get() }
                 client.measureConfig = MeasureConfig.valueOf(clientDto.measureType.code)
                 client.weight = clientDto.weight
                 client.height = clientDto.height
@@ -92,8 +95,8 @@ class CustomerServiceImpl(
                 coach.birthday = coachDto.birthday
                 coach.phoneCode = coachDto.phoneCode
                 coach.phoneNumber = coachDto.phoneNumber
-                coach.country = coachDto.country?.let { CountryConfig(it.countryCode, it.externalValue) }
-                coach.gender = coachDto.gender?.let { GenderConfig(it.genderCode, it.externalValue) }
+                coach.country = coachDto.country?.let { countryConfigCache.getValue(it.countryCode).get() }
+                coach.gender = coachDto.gender?.let { genderConfigCache.getValue(it.genderCode).get() }
 
                 val newCoach = coachRepository.save(coach)
 

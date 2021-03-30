@@ -7,6 +7,7 @@ import com.coach.flame.domain.converters.CountryDtoConverter
 import com.coach.flame.domain.converters.GenderDtoConverter
 import com.coach.flame.jpa.entity.*
 import com.coach.flame.jpa.repository.*
+import com.coach.flame.jpa.repository.cache.ConfigCache
 import com.natpryce.makeiteasy.MakeItEasy.*
 import io.mockk.*
 import io.mockk.impl.annotations.InjectMockKs
@@ -44,6 +45,12 @@ class CustomerServiceImplTest {
 
     @MockK
     private lateinit var userSessionRepository: UserSessionRepository
+
+    @MockK
+    private lateinit var countryConfigCache: ConfigCache<CountryConfig>
+
+    @MockK
+    private lateinit var genderConfigCache: ConfigCache<GenderConfig>
 
     @SpyK
     private var genderDtoConverter: GenderDtoConverter = GenderDtoConverter()
@@ -437,6 +444,14 @@ class CustomerServiceImplTest {
             ).make()
 
         every { clientRepository.findByUuid(identifier) } returns client
+        every { countryConfigCache.getValue("PT") } returns Optional.of(CountryBuilder.maker()
+            .but(with(CountryMaker.externalValue, "Portugal"),
+                with(CountryMaker.countryCode, "PT"))
+            .make())
+        every { genderConfigCache.getValue("M") } returns Optional.of(GenderBuilder.maker()
+            .but(with(GenderMaker.genderCode, "M"),
+                with(GenderMaker.externalValue, "Male"))
+            .make())
         every { clientRepository.save(capture(entity)) } answers { entity.captured }
 
         val response = classToTest.updateCustomer(identifier, clientDto) as ClientDto
@@ -494,6 +509,14 @@ class CustomerServiceImplTest {
                 with(CoachDtoMaker.gender, genderDto),
             ).make()
 
+        every { countryConfigCache.getValue("PT") } returns Optional.of(CountryBuilder.maker()
+            .but(with(CountryMaker.externalValue, "Portugal"),
+                with(CountryMaker.countryCode, "PT"))
+            .make())
+        every { genderConfigCache.getValue("M") } returns Optional.of(GenderBuilder.maker()
+            .but(with(GenderMaker.genderCode, "M"),
+                with(GenderMaker.externalValue, "Male"))
+            .make())
         every { coachRepository.findByUuid(identifier) } returns coach
         every { coachRepository.save(capture(entity)) } answers { entity.captured }
 

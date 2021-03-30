@@ -3,6 +3,8 @@ package com.coach.flame.testing.integration.base
 import com.coach.flame.FlameCoachServiceApplication
 import com.coach.flame.jpa.entity.*
 import com.coach.flame.jpa.repository.*
+import com.coach.flame.jpa.repository.configs.CountryConfigRepository
+import com.coach.flame.jpa.repository.configs.GenderConfigRepository
 import com.google.gson.JsonObject
 import com.natpryce.makeiteasy.MakeItEasy.an
 import com.natpryce.makeiteasy.Maker
@@ -59,6 +61,12 @@ abstract class BaseIntegrationTest {
 
     @Autowired
     protected lateinit var coachRepository: CoachRepository
+
+    @Autowired
+    protected lateinit var countryConfigRepository: CountryConfigRepository
+
+    @Autowired
+    protected lateinit var genderConfigRepository: GenderConfigRepository
 
     protected val userMaker: Maker<User> = an(UserMaker.User)
     protected val clientTypeMaker: Maker<ClientType> = an(ClientTypeMaker.ClientType)
