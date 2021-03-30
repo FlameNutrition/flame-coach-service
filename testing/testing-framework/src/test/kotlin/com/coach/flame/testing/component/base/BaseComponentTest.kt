@@ -3,6 +3,7 @@ package com.coach.flame.testing.component.base
 import com.coach.flame.FlameCoachServiceApplication
 import com.coach.flame.jpa.entity.*
 import com.coach.flame.jpa.repository.*
+import com.coach.flame.jpa.repository.cache.ConfigCache
 import com.google.gson.JsonObject
 import com.natpryce.makeiteasy.MakeItEasy.an
 import com.natpryce.makeiteasy.Maker
@@ -55,6 +56,12 @@ abstract class BaseComponentTest {
 
     @Autowired
     protected lateinit var coachRepositoryMock: CoachRepository
+
+    @Autowired
+    protected lateinit var countryConfigCacheMock: ConfigCache<CountryConfig>
+
+    @Autowired
+    protected lateinit var genderConfigCacheMock: ConfigCache<GenderConfig>
 
     protected lateinit var clientMaker: Maker<Client>
     protected lateinit var coachMaker: Maker<Coach>

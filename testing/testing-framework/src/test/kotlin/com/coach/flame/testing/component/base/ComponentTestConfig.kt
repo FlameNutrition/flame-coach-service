@@ -1,6 +1,9 @@
 package com.coach.flame.testing.component.base
 
+import com.coach.flame.jpa.entity.CountryConfig
+import com.coach.flame.jpa.entity.GenderConfig
 import com.coach.flame.jpa.repository.*
+import com.coach.flame.jpa.repository.cache.ConfigCache
 import io.mockk.mockk
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
@@ -36,4 +39,11 @@ class ComponentTestConfig {
     @Bean(name = ["coachRepositoryMock"])
     fun coachRepository() = mockk<CoachRepository>(relaxed = false)
 
+    @Primary
+    @Bean(name = ["countryConfigCacheMock"])
+    fun countryConfigCache() = mockk<ConfigCache<CountryConfig>>(relaxed = false)
+
+    @Primary
+    @Bean(name = ["genderConfigCacheMock"])
+    fun genderConfigCache() = mockk<ConfigCache<GenderConfig>>(relaxed = false)
 }
