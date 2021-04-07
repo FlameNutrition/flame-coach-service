@@ -1,6 +1,7 @@
 package com.coach.flame.api.client
 
 import com.coach.flame.api.client.request.EnrollmentRequest
+import com.coach.flame.api.client.response.Coach
 import com.coach.flame.api.client.response.EnrollmentResponse
 import com.coach.flame.aspect.LoggingRequest
 import com.coach.flame.aspect.LoggingResponse
@@ -10,6 +11,7 @@ import com.coach.flame.exception.RestInvalidRequestException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.*
+import java.util.*
 
 @RestController
 @RequestMapping("/api/client/enrollment")
@@ -22,7 +24,12 @@ class EnrollmentCoachApiImpl(
 
         private val converter = { client: ClientDto ->
             EnrollmentResponse(
-                coach = client.coach?.identifier,
+                coach = client.coach?.let {
+                    Coach(
+                        identifier = it.identifier,
+                        firstName = it.firstName,
+                        lastName = it.lastName)
+                },
                 status = client.clientStatus!!.name,
                 client = client.identifier
             )
@@ -78,5 +85,14 @@ class EnrollmentCoachApiImpl(
             LOGGER.warn("opr='init', msg='Invalid request'", ex)
             throw RestInvalidRequestException(ex)
         }
+    }
+
+    @LoggingRequest
+    @LoggingResponse
+    @GetMapping("/status")
+    @ResponseBody
+    override fun status(@RequestHeader(required = true) clientUUID: UUID): EnrollmentResponse {
+        val client = enrollmentProcess.status(clientUUID)
+        return converter(client)
     }
 }

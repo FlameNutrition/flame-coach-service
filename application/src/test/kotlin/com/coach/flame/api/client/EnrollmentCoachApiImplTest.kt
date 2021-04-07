@@ -60,7 +60,7 @@ class EnrollmentCoachApiImplTest {
         val response = classToTest.init(enrollmentProcessRequest)
 
         then(response.client).isEqualTo(enrollmentProcessRequest.client)
-        then(response.coach).isEqualTo(enrollmentProcessRequest.coach)
+        then(response.coach?.identifier).isEqualTo(enrollmentProcessRequest.coach)
         then(response.status).isEqualTo("PENDING")
 
     }
@@ -107,7 +107,9 @@ class EnrollmentCoachApiImplTest {
         val response = classToTest.finish(enrollmentProcessRequest)
 
         then(response.client).isEqualTo(enrollmentProcessRequest.client)
-        then(response.coach).isEqualTo(clientDto.coach!!.identifier)
+        then(response.coach?.identifier).isEqualTo(clientDto.coach!!.identifier)
+        then(response.coach?.firstName).isEqualTo(clientDto.coach!!.firstName)
+        then(response.coach?.lastName).isEqualTo(clientDto.coach!!.lastName)
         then(response.status).isEqualTo("ACCEPTED")
 
     }
@@ -170,6 +172,29 @@ class EnrollmentCoachApiImplTest {
         then(response)
             .isInstanceOf(RestInvalidRequestException::class.java)
             .hasMessageContaining("Missing required parameter request: $param")
+
+    }
+
+    @Test
+    fun `test get status enrollment client`() {
+
+        val clientUUID = UUID.randomUUID()
+        val coachDto = CoachDtoBuilder.default()
+        val clientDto = ClientDtoBuilder.maker()
+            .but(with(ClientDtoMaker.identifier, clientUUID),
+                with(ClientDtoMaker.coach, coachDto),
+                with(ClientDtoMaker.clientStatus, ClientStatusDto.ACCEPTED))
+            .make()
+
+        every { enrollmentProcess.status(clientUUID) } returns clientDto
+
+        val response = classToTest.status(clientUUID)
+
+        then(response.client).isEqualTo(clientUUID)
+        then(response.status).isEqualTo("ACCEPTED")
+        then(response.coach?.identifier).isEqualTo(coachDto.identifier)
+        then(response.coach?.firstName).isEqualTo(coachDto.firstName)
+        then(response.coach?.lastName).isEqualTo(coachDto.lastName)
 
     }
 

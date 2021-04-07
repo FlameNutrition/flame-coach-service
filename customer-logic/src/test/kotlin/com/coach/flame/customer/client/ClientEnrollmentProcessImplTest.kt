@@ -156,4 +156,23 @@ class ClientEnrollmentProcessImplTest {
 
     }
 
+    @Test
+    fun `test get status the enrollment`() {
+
+        val uuidClient = UUID.randomUUID()
+
+        val clientDto = ClientDtoBuilder.maker()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.ACCEPTED),
+                with(ClientDtoMaker.coach, CoachDtoBuilder.default()))
+            .make()
+
+        every { customerService.getCustomer(uuidClient, CustomerTypeDto.CLIENT) } returns clientDto
+
+        val result = classToTest.status(uuidClient)
+
+        then(result.clientStatus).isEqualTo(ClientStatusDto.ACCEPTED)
+        then(result.coach).isNotNull
+
+    }
+
 }

@@ -5,5 +5,5 @@ import java.util.*
 data class EnrollmentResponse(
     val client: UUID,
     val status: String,
-    val coach: UUID?,
+    val coach: Coach?,
 )

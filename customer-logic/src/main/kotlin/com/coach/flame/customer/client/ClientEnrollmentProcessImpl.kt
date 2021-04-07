@@ -68,7 +68,14 @@ class ClientEnrollmentProcessImpl(
 
         LOGGER.info("opr='break', msg='Break the link between the client and coach'")
         return clientService.unlinkCoach(client)
-        
+
+    }
+
+    override fun status(client: UUID): ClientDto {
+
+        LOGGER.info("opr='status', msg='Get enrollment status', client={}", client)
+        return customerService.getCustomer(client, CustomerTypeDto.CLIENT) as ClientDto
+
     }
 
 }

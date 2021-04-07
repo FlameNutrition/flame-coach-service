@@ -10,4 +10,6 @@ interface ClientEnrollmentProcess {
     fun finish(client: UUID, accept: Boolean): ClientDto
 
     fun `break`(client: UUID): ClientDto
+
+    fun status(client: UUID): ClientDto
 }

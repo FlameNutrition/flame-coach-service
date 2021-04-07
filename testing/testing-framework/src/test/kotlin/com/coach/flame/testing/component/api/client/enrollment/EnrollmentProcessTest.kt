@@ -58,7 +58,9 @@ class EnrollmentProcessTest : BaseComponentTest() {
         then(mvnResponse.response.contentType).isEqualTo(MediaType.APPLICATION_JSON_VALUE)
         val jsonResponse = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        then(jsonResponse.getAsJsonPrimitive("coach").asString).isEqualTo(client.captured.coach?.uuid.toString())
+        then(jsonResponse.getAsJsonObject("coach").asJsonObject.get("identifier").asString).isEqualTo(client.captured.coach?.uuid.toString())
+        then(jsonResponse.getAsJsonObject("coach").asJsonObject.get("firstName").asString).isEqualTo(client.captured.coach?.firstName)
+        then(jsonResponse.getAsJsonObject("coach").asJsonObject.get("lastName").asString).isEqualTo(client.captured.coach?.lastName)
         then(jsonResponse.getAsJsonPrimitive("client").asString).isEqualTo(client.captured.uuid.toString())
         then(jsonResponse.getAsJsonPrimitive("status").asString).isEqualTo("PENDING")
 
@@ -98,7 +100,9 @@ class EnrollmentProcessTest : BaseComponentTest() {
         then(mvnResponse.response.contentType).isEqualTo(MediaType.APPLICATION_JSON_VALUE)
         val jsonResponse = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        then(jsonResponse.getAsJsonPrimitive("coach").asString).isEqualTo(client.captured.coach?.uuid.toString())
+        then(jsonResponse.getAsJsonObject("coach").asJsonObject.get("identifier").asString).isEqualTo(client.captured.coach?.uuid.toString())
+        then(jsonResponse.getAsJsonObject("coach").asJsonObject.get("firstName").asString).isEqualTo(client.captured.coach?.firstName)
+        then(jsonResponse.getAsJsonObject("coach").asJsonObject.get("lastName").asString).isEqualTo(client.captured.coach?.lastName)
         then(jsonResponse.getAsJsonPrimitive("client").asString).isEqualTo(client.captured.uuid.toString())
         then(jsonResponse.getAsJsonPrimitive("status").asString).isEqualTo("ACCEPTED")
 
@@ -181,6 +185,83 @@ class EnrollmentProcessTest : BaseComponentTest() {
         then(jsonResponse.get("coach").isJsonNull).isTrue
         then(jsonResponse.getAsJsonPrimitive("client").asString).isEqualTo(client.captured.uuid.toString())
         then(jsonResponse.getAsJsonPrimitive("status").asString).isEqualTo("AVAILABLE")
+
+    }
+
+    @LoadRequest(
+        endpoint = "/api/client/enrollment/status",
+        httpMethod = RequestMethod.GET,
+        headers = ["clientUUID:798cf556-7c23-4637-9aef-a862dc62cba8"]
+    )
+    fun `test get status (accepted) enrollment between client and coach`() {
+
+        // given
+        val uuidClient = UUID.fromString("798cf556-7c23-4637-9aef-a862dc62cba8")
+        val coach = CoachBuilder.default()
+        val client0 = ClientBuilder.maker()
+            .but(with(ClientMaker.clientStatus, ClientStatus.ACCEPTED),
+                with(ClientMaker.uuid, uuidClient),
+                with(ClientMaker.coach, coach))
+            .make()
+
+        val client = slot<Client>()
+
+        every { clientRepositoryMock.findByUuid(uuidClient) } returns client0
+
+        // when
+        val mvnResponse = mockMvc.perform(request!!)
+            .andDo { MockMvcResultHandlers.print() }
+            .andDo { MockMvcResultHandlers.log() }
+            .andReturn()
+
+        // then
+        then(mvnResponse.response).isNotNull
+        then(mvnResponse.response.status).isEqualTo(HttpStatus.OK.value())
+        then(mvnResponse.response.contentType).isEqualTo(MediaType.APPLICATION_JSON_VALUE)
+        val jsonResponse = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
+
+        then(jsonResponse.getAsJsonObject("coach").asJsonObject.get("identifier").asString).isEqualTo(client.captured.coach?.uuid.toString())
+        then(jsonResponse.getAsJsonObject("coach").asJsonObject.get("firstName").asString).isEqualTo(client.captured.coach?.firstName)
+        then(jsonResponse.getAsJsonObject("coach").asJsonObject.get("lastName").asString).isEqualTo(client.captured.coach?.lastName)
+        then(jsonResponse.getAsJsonPrimitive("client").asString).isEqualTo(client.captured.uuid.toString())
+        then(jsonResponse.getAsJsonPrimitive("status").asString).isEqualTo("ACCEPTED")
+
+    }
+
+    @LoadRequest(
+        endpoint = "/api/client/enrollment/status",
+        httpMethod = RequestMethod.GET,
+        headers = ["clientUUID:798cf556-7c23-4637-9aef-a862dc62cba8"]
+    )
+    fun `test get status (available) enrollment between client and coach`() {
+
+        // given
+        val uuidClient = UUID.fromString("798cf556-7c23-4637-9aef-a862dc62cba8")
+        val client0 = ClientBuilder.maker()
+            .but(with(ClientMaker.clientStatus, ClientStatus.AVAILABLE),
+                with(ClientMaker.uuid, uuidClient),
+                with(ClientMaker.coach, null as Coach?))
+            .make()
+
+        val client = slot<Client>()
+
+        every { clientRepositoryMock.findByUuid(uuidClient) } returns client0
+
+        // when
+        val mvnResponse = mockMvc.perform(request!!)
+            .andDo { MockMvcResultHandlers.print() }
+            .andDo { MockMvcResultHandlers.log() }
+            .andReturn()
+
+        // then
+        then(mvnResponse.response).isNotNull
+        then(mvnResponse.response.status).isEqualTo(HttpStatus.OK.value())
+        then(mvnResponse.response.contentType).isEqualTo(MediaType.APPLICATION_JSON_VALUE)
+        val jsonResponse = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
+
+        then(jsonResponse.get("coach").isJsonNull).isTrue
+        then(jsonResponse.getAsJsonPrimitive("client").asString).isEqualTo(client.captured.uuid.toString())
+        then(jsonResponse.getAsJsonPrimitive("status").asString).isEqualTo("ACCEPTED")
 
     }
 
