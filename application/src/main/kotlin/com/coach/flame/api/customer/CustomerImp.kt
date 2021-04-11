@@ -9,6 +9,7 @@ import com.coach.flame.aspect.LoggingResponse
 import com.coach.flame.customer.CustomerService
 import com.coach.flame.exception.RestException
 import com.coach.flame.exception.RestInvalidRequestException
+import com.coach.flame.failure.domain.ErrorCode
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.*
@@ -32,11 +33,11 @@ class CustomerImp(
     override fun registerNewCustomer(@RequestBody(required = true) customer: CustomerRequest): CustomerResponse {
         try {
 
-            requireNotNull(customer.firstname) { "Missing required parameter request: firstname" }
-            requireNotNull(customer.lastname) { "Missing required parameter request: lastname" }
-            requireNotNull(customer.email) { "Missing required parameter request: email" }
-            requireNotNull(customer.password) { "Missing required parameter request: password" }
-            requireNotNull(customer.type) { "Missing required parameter request: type" }
+            requireNotNull(customer.firstname) { "missing required parameter: firstname" }
+            requireNotNull(customer.lastname) { "missing required parameter: lastname" }
+            requireNotNull(customer.email) { "missing required parameter: email" }
+            requireNotNull(customer.password) { "missing required parameter: password" }
+            requireNotNull(customer.type) { "missing required parameter: type" }
 
             val clientDomain = customerRequestConverter.convert(customer)
 
@@ -48,11 +49,11 @@ class CustomerImp(
             when (ex) {
                 is IllegalArgumentException -> {
                     LOGGER.warn("opr='registerNewCustomer', msg='Invalid request'", ex)
-                    throw RestInvalidRequestException(ex)
+                    throw RestInvalidRequestException(ex.localizedMessage, ex)
                 }
                 is IllegalStateException -> {
                     LOGGER.warn("opr='registerNewCustomer', msg='Please check following problem'", ex)
-                    throw RestException(ex)
+                    throw RestException(ErrorCode.CODE_1000, ex.localizedMessage, ex)
                 }
                 else -> {
                     throw ex
@@ -80,11 +81,11 @@ class CustomerImp(
             when (ex) {
                 is IllegalArgumentException -> {
                     LOGGER.warn("opr='getNewCustomerSession', msg='Invalid request'", ex)
-                    throw RestInvalidRequestException(ex)
+                    throw RestInvalidRequestException(ex.localizedMessage, ex)
                 }
                 is IllegalStateException -> {
                     LOGGER.warn("opr='getNewCustomerSession', msg='Please check following problem'", ex)
-                    throw RestException(ex)
+                    throw RestException(ErrorCode.CODE_1000, ex.localizedMessage, ex)
                 }
                 else -> {
                     throw ex

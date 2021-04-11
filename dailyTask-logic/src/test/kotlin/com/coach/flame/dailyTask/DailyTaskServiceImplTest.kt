@@ -166,7 +166,7 @@ class DailyTaskServiceImplTest {
         every { clientRepository.findByUuid(any()) } returns mockk()
 
         // when & then
-        thenExceptionOfType(ClientNotFoundException::class.java)
+        thenExceptionOfType(CustomerNotFoundException::class.java)
             .isThrownBy { dailyTaskServiceImpl.createDailyTask(DailyTaskDtoBuilder.default()) }
             .withMessage("Didn't find any coach with this identifier, please check the coach identifier.")
 
@@ -180,7 +180,7 @@ class DailyTaskServiceImplTest {
         every { clientRepository.findByUuid(any()) } returns null
 
         // when & then
-        thenExceptionOfType(ClientNotFoundException::class.java)
+        thenExceptionOfType(CustomerNotFoundException::class.java)
             .isThrownBy { dailyTaskServiceImpl.createDailyTask(DailyTaskDtoBuilder.default()) }
             .withMessage("Didn't find any client with this identifier, please check the client identifier.")
 

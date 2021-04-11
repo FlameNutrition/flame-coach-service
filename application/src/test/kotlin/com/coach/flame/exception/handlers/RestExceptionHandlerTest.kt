@@ -1,6 +1,7 @@
 package com.coach.flame.exception.handlers
 
 import com.coach.flame.exception.RestException
+import com.coach.flame.failure.domain.ErrorCode
 import com.coach.flame.failure.domain.ErrorDetail
 import io.mockk.clearAllMocks
 import io.mockk.impl.annotations.MockK
@@ -30,7 +31,7 @@ class RestExceptionHandlerTest {
     fun `test handler for rest exceptions`() {
 
         // given
-        val restException = RestException("EXCEPTION")
+        val restException = RestException(ErrorCode.CODE_1001, "EXCEPTION", IllegalArgumentException())
 
         // when
         val responseEntity = restExceptionHandler.handleRestException(restException, request)

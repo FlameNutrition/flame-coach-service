@@ -12,7 +12,9 @@ import com.coach.flame.customer.CustomerService
 import com.coach.flame.customer.coach.CoachService
 import com.coach.flame.domain.CoachDto
 import com.coach.flame.domain.CustomerTypeDto
+import com.coach.flame.exception.RestException
 import com.coach.flame.exception.RestInvalidRequestException
+import com.coach.flame.failure.domain.ErrorCode
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.*
@@ -56,7 +58,7 @@ class CoachApiImpl(
             return convertToCoachResponse(coach)
         } catch (ex: IllegalArgumentException) {
             LOGGER.warn("opr='getClientsCoach', msg='Invalid request'", ex)
-            throw RestInvalidRequestException(ex)
+            throw RestInvalidRequestException(ex.localizedMessage, ex)
         }
     }
 
@@ -65,13 +67,12 @@ class CoachApiImpl(
     @GetMapping("/getClientsCoachPlusClientsAvailable")
     @ResponseBody
     override fun getClientsCoachPlusClientsAvailable(@RequestParam(required = true) identifier: String): CoachResponse {
-
         try {
             val coach = coachService.getCoachWithClientsAvailable(UUID.fromString(identifier))
             return convertToCoachResponse(coach)
         } catch (ex: IllegalArgumentException) {
             LOGGER.warn("opr='getClientsCoachPlusClientsAvailable', msg='Invalid request'", ex)
-            throw RestInvalidRequestException(ex)
+            throw RestInvalidRequestException(ex.localizedMessage, ex)
         }
     }
 

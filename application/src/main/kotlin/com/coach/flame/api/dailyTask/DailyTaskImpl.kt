@@ -14,6 +14,7 @@ import com.coach.flame.date.stringToDate
 import com.coach.flame.domain.DailyTaskDto
 import com.coach.flame.exception.RestException
 import com.coach.flame.exception.RestInvalidRequestException
+import com.coach.flame.failure.domain.ErrorCode
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.*
@@ -45,11 +46,7 @@ class DailyTaskImpl(
     @ResponseBody
     override fun createDailyTasks(@RequestBody(required = true) dailyTasks: List<DailyTaskRequest>): DailyTaskResponse {
 
-        if (dailyTasks.isEmpty()) {
-            throw RestInvalidRequestException("Empty request structure")
-        }
-
-        throw RestException("This is not supported yet")
+        throw RestException(ErrorCode.CODE_1000, "This is not supported yet", UnsupportedOperationException())
 
     }
 
@@ -92,11 +89,11 @@ class DailyTaskImpl(
             when (ex) {
                 is IllegalArgumentException -> {
                     LOGGER.warn("opr='createDailyTask', msg='Invalid request'", ex)
-                    throw RestInvalidRequestException(ex)
+                    throw RestInvalidRequestException(ex.localizedMessage, ex)
                 }
                 is IllegalStateException -> {
                     LOGGER.warn("opr='createDailyTask', msg='Please check following problem'", ex)
-                    throw RestException(ex)
+                    throw RestException(ErrorCode.CODE_1000, ex.localizedMessage, ex)
                 }
                 else -> {
                     throw ex
@@ -144,7 +141,7 @@ class DailyTaskImpl(
                             }
                         }
                     } catch (ex: IllegalArgumentException) {
-                        throw IllegalStateException("${it.type} is an invalid filter")
+                        throw IllegalArgumentException("${it.type} is an invalid filter", ex)
                     }
                 }
                 .toSet()
@@ -157,11 +154,11 @@ class DailyTaskImpl(
             when (ex) {
                 is IllegalArgumentException -> {
                     LOGGER.warn("opr='getDailyTasksUsingFilters', msg='Invalid request'", ex)
-                    throw RestInvalidRequestException(ex)
+                    throw RestInvalidRequestException(ex.localizedMessage, ex)
                 }
                 is IllegalStateException -> {
                     LOGGER.warn("opr='getDailyTasksUsingFilters', msg='Invalid request'", ex)
-                    throw RestInvalidRequestException(ex)
+                    throw RestException(ErrorCode.CODE_1000, ex.localizedMessage, ex)
                 }
                 else -> {
                     throw ex
@@ -205,11 +202,11 @@ class DailyTaskImpl(
             when (ex) {
                 is IllegalArgumentException -> {
                     LOGGER.warn("opr='updateDailyTask', msg='Invalid request'", ex)
-                    throw RestInvalidRequestException(ex)
+                    throw RestInvalidRequestException(ex.localizedMessage, ex)
                 }
                 is IllegalStateException -> {
                     LOGGER.warn("opr='updateDailyTask', msg='Please check following problem'", ex)
-                    throw RestException(ex)
+                    throw RestException(ErrorCode.CODE_1000, ex.localizedMessage, ex)
                 }
                 else -> {
                     throw ex
@@ -240,11 +237,11 @@ class DailyTaskImpl(
             when (ex) {
                 is IllegalArgumentException -> {
                     LOGGER.warn("opr='deleteDailyTaskById', msg='Invalid request'", ex)
-                    throw RestInvalidRequestException(ex)
+                    throw RestInvalidRequestException(ex.localizedMessage, ex)
                 }
                 is IllegalStateException -> {
                     LOGGER.warn("opr='deleteDailyTaskById', msg='Please check following problem'", ex)
-                    throw RestException(ex)
+                    throw RestException(ErrorCode.CODE_1000, ex.localizedMessage, ex)
                 }
                 else -> {
                     throw ex

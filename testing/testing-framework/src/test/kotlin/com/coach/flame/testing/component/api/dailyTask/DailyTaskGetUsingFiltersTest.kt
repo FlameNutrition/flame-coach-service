@@ -114,6 +114,7 @@ class DailyTaskGetUsingFiltersTest : BaseComponentTest() {
         thenErrorMessageTitle(body).isEqualTo("RestInvalidRequestException")
         thenErrorMessageDetail(body).contains("INVALID is an invalid filter")
         thenErrorMessageStatus(body).isEqualTo("400")
+        thenErrorCode(body).isEqualTo("1001")
         thenErrorMessageInstance(body).isNotEmpty
         thenErrorMessageDebug(body).isEmpty()
 
@@ -138,15 +139,16 @@ class DailyTaskGetUsingFiltersTest : BaseComponentTest() {
 
         // then
         then(mvnResponse).isNotNull
-        then(mvnResponse.response.status).isEqualTo(HttpStatus.BAD_REQUEST.value())
+        then(mvnResponse.response.status).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value())
         then(mvnResponse.response.contentType).isEqualTo(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("RestInvalidRequestException.html")
-        thenErrorMessageTitle(body).isEqualTo("RestInvalidRequestException")
+        thenErrorMessageType(body).endsWith("RestException.html")
+        thenErrorMessageTitle(body).isEqualTo("RestException")
         thenErrorMessageDetail(body).contains("BETWEEN_DATES has an invalid number of params")
-        thenErrorMessageStatus(body).isEqualTo("400")
+        thenErrorMessageStatus(body).isEqualTo("500")
+        thenErrorCode(body).isEqualTo("1000")
         thenErrorMessageInstance(body).isNotEmpty
         thenErrorMessageDebug(body).isEmpty()
 
@@ -180,6 +182,7 @@ class DailyTaskGetUsingFiltersTest : BaseComponentTest() {
         thenErrorMessageTitle(body).isEqualTo("RestInvalidRequestException")
         thenErrorMessageDetail(body).contains("IDENTIFIER is an invalid filter")
         thenErrorMessageStatus(body).isEqualTo("400")
+        thenErrorCode(body).isEqualTo("1001")
         thenErrorMessageInstance(body).isNotEmpty
         thenErrorMessageDebug(body).isEmpty()
 

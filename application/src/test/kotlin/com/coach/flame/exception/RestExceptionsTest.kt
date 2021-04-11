@@ -2,6 +2,7 @@ package com.coach.flame.exception
 
 import com.coach.flame.failure.HttpStatus
 import com.coach.flame.failure.Status
+import com.coach.flame.failure.domain.ErrorCode
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 
@@ -11,7 +12,7 @@ class RestExceptionsTest {
     fun `check status RestException exception`() {
 
         // given
-        val exception = RestException(RuntimeException("EXCEPTION"))
+        val exception = RestException(ErrorCode.CODE_1001, "exception", IllegalArgumentException())
 
         // when
         val annotationStatus = exception::class.java.getAnnotation(Status::class.java)
@@ -21,20 +22,4 @@ class RestExceptionsTest {
         then(annotationStatus.httpStatus).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
 
     }
-
-    @Test
-    fun `check status RestInvalidRequest exception`() {
-
-        // given
-        val invalidRequest = RestInvalidRequestException(RuntimeException("EXCEPTION"))
-
-        // when
-        val annotationStatus = invalidRequest::class.java.getAnnotation(Status::class.java)
-
-        // when & then
-        then(annotationStatus).isNotNull
-        then(annotationStatus.httpStatus).isEqualTo(HttpStatus.BAD_REQUEST)
-
-    }
-
 }

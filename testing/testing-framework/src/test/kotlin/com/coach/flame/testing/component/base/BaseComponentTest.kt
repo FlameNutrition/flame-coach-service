@@ -109,6 +109,12 @@ abstract class BaseComponentTest {
         return assertThat(param)
     }
 
+    protected fun thenErrorCode(body: JsonObject): AbstractStringAssert<*> {
+        val param = body.getAsJsonPrimitive("code").asString
+        requireNotNull(param) { "body doesn't have any code parameter" }
+        return assertThat(param)
+    }
+
     protected fun thenErrorMessageInstance(body: JsonObject): AbstractStringAssert<*> {
         val param = body.getAsJsonPrimitive("instance").asString
         requireNotNull(param) { "body doesn't have any instance parameter" }

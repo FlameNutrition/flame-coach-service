@@ -102,6 +102,7 @@ class UpdateContactInformationCoachTest : BaseComponentTest() {
         thenErrorMessageTitle(body).isEqualTo("InternalServerException")
         thenErrorMessageDetail(body).isEqualTo("This is an internal problem, please contact the admin system")
         thenErrorMessageStatus(body).isEqualTo("500")
+        thenErrorCode(body).isEqualTo("9999")
         thenErrorMessageInstance(body).isNotEmpty
         thenErrorMessageDebug(body).isEmpty()
 
@@ -200,6 +201,7 @@ class UpdateContactInformationCoachTest : BaseComponentTest() {
         thenErrorMessageTitle(body).isEqualTo("UnexpectedConfigException")
         thenErrorMessageDetail(body).isEqualTo("Country Code: 'KILL' is not present in the system.")
         thenErrorMessageStatus(body).isEqualTo("500")
+        thenErrorCode(body).isEqualTo("5001")
         thenErrorMessageInstance(body).isNotEmpty
         thenErrorMessageDebug(body).isEmpty()
 

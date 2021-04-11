@@ -1,5 +1,6 @@
 package com.coach.flame.exception.handlers
 
+import com.coach.flame.failure.domain.ErrorCode
 import com.coach.flame.failure.domain.ErrorDetail
 import com.coach.flame.failure.exception.BusinessException
 import io.mockk.clearAllMocks
@@ -30,7 +31,7 @@ class BusinessExceptionHandlerTest {
     fun `test handler for business exceptions`() {
 
         // given
-        val exception = BusinessException("BUSINESS EXCEPTION")
+        val exception = BusinessException(ErrorCode.CODE_1001, "BUSINESS EXCEPTION")
 
         // when
         val responseEntity = businessExceptionHandler.handleBusinessExceptions(exception, request)

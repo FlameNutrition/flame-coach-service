@@ -7,7 +7,9 @@ import com.coach.flame.aspect.LoggingRequest
 import com.coach.flame.aspect.LoggingResponse
 import com.coach.flame.customer.client.ClientEnrollmentProcess
 import com.coach.flame.domain.ClientDto
+import com.coach.flame.exception.RestException
 import com.coach.flame.exception.RestInvalidRequestException
+import com.coach.flame.failure.domain.ErrorCode
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.*
@@ -42,15 +44,15 @@ class EnrollmentCoachApiImpl(
     @ResponseBody
     override fun init(@RequestBody(required = true) enrollmentRequest: EnrollmentRequest): EnrollmentResponse {
         try {
-            requireNotNull(enrollmentRequest.coach) { "Missing required parameter request: coach" }
-            requireNotNull(enrollmentRequest.client) { "Missing required parameter request: client" }
+            requireNotNull(enrollmentRequest.coach) { "missing required parameter: coach" }
+            requireNotNull(enrollmentRequest.client) { "missing required parameter: client" }
 
             val client = enrollmentProcess.init(enrollmentRequest.client, enrollmentRequest.coach)
 
             return converter(client)
         } catch (ex: IllegalArgumentException) {
             LOGGER.warn("opr='init', msg='Invalid request'", ex)
-            throw RestInvalidRequestException(ex)
+            throw RestInvalidRequestException(ex.localizedMessage, ex)
         }
     }
 
@@ -60,14 +62,14 @@ class EnrollmentCoachApiImpl(
     @ResponseBody
     override fun finish(@RequestBody(required = true) enrollmentRequest: EnrollmentRequest): EnrollmentResponse {
         try {
-            requireNotNull(enrollmentRequest.client) { "Missing required parameter request: client" }
-            requireNotNull(enrollmentRequest.accept) { "Missing required parameter request: accept" }
+            requireNotNull(enrollmentRequest.client) { "missing required parameter: client" }
+            requireNotNull(enrollmentRequest.accept) { "missing required parameter: accept" }
 
             val client = enrollmentProcess.finish(enrollmentRequest.client, enrollmentRequest.accept)
             return converter(client)
         } catch (ex: IllegalArgumentException) {
-            LOGGER.warn("opr='init', msg='Invalid request'", ex)
-            throw RestInvalidRequestException(ex)
+            LOGGER.warn("opr='finish', msg='Invalid request'", ex)
+            throw RestInvalidRequestException(ex.localizedMessage, ex)
         }
     }
 
@@ -77,13 +79,13 @@ class EnrollmentCoachApiImpl(
     @ResponseBody
     override fun `break`(@RequestBody(required = true) enrollmentRequest: EnrollmentRequest): EnrollmentResponse {
         try {
-            requireNotNull(enrollmentRequest.client) { "Missing required parameter request: client" }
+            requireNotNull(enrollmentRequest.client) { "missing required parameter: client" }
 
             val client = enrollmentProcess.`break`(enrollmentRequest.client)
             return converter(client)
         } catch (ex: IllegalArgumentException) {
-            LOGGER.warn("opr='init', msg='Invalid request'", ex)
-            throw RestInvalidRequestException(ex)
+            LOGGER.warn("opr='break', msg='Invalid request'", ex)
+            throw RestInvalidRequestException(ex.localizedMessage, ex)
         }
     }
 

@@ -97,8 +97,9 @@ class RegisterCustomerClientTest : BaseComponentTest() {
 
         thenErrorMessageType(body).endsWith("RestInvalidRequestException.html")
         thenErrorMessageTitle(body).isEqualTo("RestInvalidRequestException")
-        thenErrorMessageDetail(body).isEqualTo("java.lang.IllegalArgumentException: Missing required parameter request: lastname")
+        thenErrorMessageDetail(body).isEqualTo("missing required parameter: lastname")
         thenErrorMessageStatus(body).isEqualTo("400")
+        thenErrorCode(body).isEqualTo("1001")
         thenErrorMessageInstance(body).isNotEmpty
         thenErrorMessageDebug(body).isEmpty()
     }
@@ -131,6 +132,7 @@ class RegisterCustomerClientTest : BaseComponentTest() {
         thenErrorMessageTitle(body).isEqualTo("CustomerRegisterDuplicateException")
         thenErrorMessageDetail(body).isEqualTo("The following customer already exists")
         thenErrorMessageStatus(body).isEqualTo("400")
+        thenErrorCode(body).isEqualTo("2002")
         thenErrorMessageInstance(body).isNotEmpty
         thenErrorMessageDebug(body).isEmpty()
     }
@@ -163,6 +165,7 @@ class RegisterCustomerClientTest : BaseComponentTest() {
         thenErrorMessageTitle(body).isEqualTo("InternalServerException")
         thenErrorMessageDetail(body).isEqualTo("This is an internal problem, please contact the admin system")
         thenErrorMessageStatus(body).isEqualTo("500")
+        thenErrorCode(body).isEqualTo("9999")
         thenErrorMessageInstance(body).isNotEmpty
         thenErrorMessageDebug(body).isEmpty()
     }

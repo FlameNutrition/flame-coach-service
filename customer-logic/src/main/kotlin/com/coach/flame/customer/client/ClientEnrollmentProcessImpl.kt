@@ -5,6 +5,7 @@ import com.coach.flame.customer.EnrollmentProcessException
 import com.coach.flame.domain.ClientDto
 import com.coach.flame.domain.ClientStatusDto
 import com.coach.flame.domain.CustomerTypeDto
+import com.coach.flame.failure.domain.ErrorCode
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -38,7 +39,7 @@ class ClientEnrollmentProcessImpl(
             return clientDto
         }
 
-        throw EnrollmentProcessException("Client already has a coach assigned.")
+        throw EnrollmentProcessException(ErrorCode.CODE_3001, "Client already has a coach assigned.")
 
     }
 
@@ -58,7 +59,8 @@ class ClientEnrollmentProcessImpl(
                 return clientDto
             }
 
-            throw EnrollmentProcessException("Client didn't start the enrollment process or already has a coach assigned.")
+            throw EnrollmentProcessException(ErrorCode.CODE_3002,
+                "Client didn't start the enrollment process or already has a coach assigned.")
         } else {
             return clientService.unlinkCoach(client)
         }

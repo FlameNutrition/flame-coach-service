@@ -5,6 +5,7 @@ import com.coach.flame.api.client.request.EnrollmentRequestBuilder
 import com.coach.flame.api.client.request.EnrollmentRequestMaker
 import com.coach.flame.customer.client.ClientEnrollmentProcess
 import com.coach.flame.domain.*
+import com.coach.flame.exception.RestException
 import com.coach.flame.exception.RestInvalidRequestException
 import com.natpryce.makeiteasy.MakeItEasy.with
 import io.mockk.clearAllMocks
@@ -83,7 +84,7 @@ class EnrollmentCoachApiImplTest {
 
         then(response)
             .isInstanceOf(RestInvalidRequestException::class.java)
-            .hasMessageContaining("Missing required parameter request: $param")
+            .hasMessageContaining("missing required parameter: $param")
 
     }
 
@@ -132,7 +133,7 @@ class EnrollmentCoachApiImplTest {
 
         then(response)
             .isInstanceOf(RestInvalidRequestException::class.java)
-            .hasMessageContaining("Missing required parameter request: $param")
+            .hasMessageContaining("missing required parameter: $param")
 
     }
 
@@ -171,7 +172,7 @@ class EnrollmentCoachApiImplTest {
 
         then(response)
             .isInstanceOf(RestInvalidRequestException::class.java)
-            .hasMessageContaining("Missing required parameter request: $param")
+            .hasMessageContaining("missing required parameter: $param")
 
     }
 

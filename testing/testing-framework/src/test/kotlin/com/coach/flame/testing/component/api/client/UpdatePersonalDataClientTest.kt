@@ -1,5 +1,6 @@
 package com.coach.flame.testing.component.api.client
 
+import com.coach.flame.failure.domain.ErrorCode
 import com.coach.flame.jpa.entity.*
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
@@ -99,6 +100,7 @@ class UpdatePersonalDataClientTest : BaseComponentTest() {
         thenErrorMessageTitle(body).isEqualTo("InternalServerException")
         thenErrorMessageDetail(body).isEqualTo("This is an internal problem, please contact the admin system")
         thenErrorMessageStatus(body).isEqualTo("500")
+        thenErrorCode(body).isEqualTo("9999")
         thenErrorMessageInstance(body).isNotEmpty
         thenErrorMessageDebug(body).isEmpty()
 
@@ -188,6 +190,7 @@ class UpdatePersonalDataClientTest : BaseComponentTest() {
         thenErrorMessageTitle(body).isEqualTo("UnexpectedConfigException")
         thenErrorMessageDetail(body).isEqualTo("Gender Code: 'KILL' is not present in the system.")
         thenErrorMessageStatus(body).isEqualTo("500")
+        thenErrorCode(body).isEqualTo("5001")
         thenErrorMessageInstance(body).isNotEmpty
         thenErrorMessageDebug(body).isEmpty()
 

@@ -85,7 +85,7 @@ class RegisterCustomerCoachTest : BaseComponentTest() {
         endpoint = "/api/customer/create",
         httpMethod = RequestMethod.POST
     )
-    fun `test register new client with missing mandatory param`() {
+    fun `test register new coach with missing mandatory param`() {
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -102,8 +102,9 @@ class RegisterCustomerCoachTest : BaseComponentTest() {
 
         thenErrorMessageType(body).endsWith("RestInvalidRequestException.html")
         thenErrorMessageTitle(body).isEqualTo("RestInvalidRequestException")
-        thenErrorMessageDetail(body).isEqualTo("java.lang.IllegalArgumentException: Missing required parameter request: lastname")
+        thenErrorMessageDetail(body).isEqualTo("missing required parameter: lastname")
         thenErrorMessageStatus(body).isEqualTo("400")
+        thenErrorCode(body).isEqualTo("1001")
         thenErrorMessageInstance(body).isNotEmpty
         thenErrorMessageDebug(body).isEmpty()
     }
@@ -114,7 +115,7 @@ class RegisterCustomerCoachTest : BaseComponentTest() {
         endpoint = "/api/customer/create",
         httpMethod = RequestMethod.POST
     )
-    fun `test register new client duplicated`() {
+    fun `test register new coach duplicated`() {
 
         every { clientTypeRepositoryMock.getByType("COACH") } returns clientTypeMaker
             .but(with(ClientTypeMaker.type, "COACH"))
@@ -138,6 +139,7 @@ class RegisterCustomerCoachTest : BaseComponentTest() {
         thenErrorMessageTitle(body).isEqualTo("CustomerRegisterDuplicateException")
         thenErrorMessageDetail(body).isEqualTo("The following customer already exists")
         thenErrorMessageStatus(body).isEqualTo("400")
+        thenErrorCode(body).isEqualTo("2002")
         thenErrorMessageInstance(body).isNotEmpty
         thenErrorMessageDebug(body).isEmpty()
     }
@@ -148,7 +150,7 @@ class RegisterCustomerCoachTest : BaseComponentTest() {
         endpoint = "/api/customer/create",
         httpMethod = RequestMethod.POST
     )
-    fun `test register new client but occurred an internal exception`() {
+    fun `test register new coach but occurred an internal exception`() {
 
         every { clientTypeRepositoryMock.getByType("COACH") } returns clientTypeMaker
             .but(with(ClientTypeMaker.type, "COACH"))
@@ -172,6 +174,7 @@ class RegisterCustomerCoachTest : BaseComponentTest() {
         thenErrorMessageTitle(body).isEqualTo("InternalServerException")
         thenErrorMessageDetail(body).isEqualTo("This is an internal problem, please contact the admin system")
         thenErrorMessageStatus(body).isEqualTo("500")
+        thenErrorCode(body).isEqualTo("9999")
         thenErrorMessageInstance(body).isNotEmpty
         thenErrorMessageDebug(body).isEmpty()
     }

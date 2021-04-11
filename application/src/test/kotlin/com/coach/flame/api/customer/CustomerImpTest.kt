@@ -16,6 +16,7 @@ import com.coach.flame.domain.ClientDtoMaker.Companion.ClientDto
 import com.coach.flame.domain.LoginInfoDto
 import com.coach.flame.domain.LoginInfoDtoMaker
 import com.coach.flame.domain.LoginInfoDtoMaker.Companion.LoginInfoDto
+import com.coach.flame.exception.RestException
 import com.coach.flame.exception.RestInvalidRequestException
 import com.natpryce.makeiteasy.MakeItEasy.*
 import com.natpryce.makeiteasy.Maker
@@ -103,7 +104,7 @@ class CustomerImpTest {
         //then
         then(thrown)
             .isInstanceOf(RestInvalidRequestException::class.java)
-            .hasMessageContaining("Missing required parameter request: $missingParam")
+            .hasMessageContaining("missing required parameter: $missingParam")
 
     }
 

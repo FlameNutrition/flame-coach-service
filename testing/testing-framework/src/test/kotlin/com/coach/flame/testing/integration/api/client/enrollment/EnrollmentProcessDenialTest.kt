@@ -86,7 +86,9 @@ class EnrollmentProcessDenialTest : BaseIntegrationTest() {
 
         val body = JsonBuilder.getJsonFromString(response.body!!)
 
-        then(body.getAsJsonPrimitive("coach").asString).isEqualTo(coach1.uuid.toString())
+        then(body.getAsJsonObject("coach").getAsJsonPrimitive("identifier").asString).isEqualTo(coach1.uuid.toString())
+        then(body.getAsJsonObject("coach").getAsJsonPrimitive("firstName").asString).isEqualTo(coach1.firstName)
+        then(body.getAsJsonObject("coach").getAsJsonPrimitive("lastName").asString).isEqualTo(coach1.lastName)
         then(body.getAsJsonPrimitive("client").asString).isEqualTo(client1.uuid.toString())
         then(body.getAsJsonPrimitive("status").asString).isEqualTo("PENDING")
     }

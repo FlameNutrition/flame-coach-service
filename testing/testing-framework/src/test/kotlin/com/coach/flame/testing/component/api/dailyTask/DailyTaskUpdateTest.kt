@@ -111,6 +111,7 @@ class DailyTaskUpdateTest : BaseComponentTest() {
         thenErrorMessageTitle(body).isEqualTo("DailyTaskNotFoundException")
         thenErrorMessageDetail(body).isEqualTo("Daily task not found, please check the identifier.")
         thenErrorMessageStatus(body).isEqualTo("404")
+        thenErrorCode(body).isEqualTo("4001")
         thenErrorMessageInstance(body).isNotEmpty
         thenErrorMessageDebug(body).isEmpty()
 
@@ -142,8 +143,9 @@ class DailyTaskUpdateTest : BaseComponentTest() {
 
         thenErrorMessageType(body).endsWith("RestInvalidRequestException.html")
         thenErrorMessageTitle(body).isEqualTo("RestInvalidRequestException")
-        thenErrorMessageDetail(body).isEqualTo("java.lang.IllegalArgumentException: ticked is a mandatory parameters")
+        thenErrorMessageDetail(body).isEqualTo("ticked is a mandatory parameters")
         thenErrorMessageStatus(body).isEqualTo("400")
+        thenErrorCode(body).isEqualTo("1001")
         thenErrorMessageInstance(body).isNotEmpty
         thenErrorMessageDebug(body).isEmpty()
 

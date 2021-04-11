@@ -153,6 +153,7 @@ class GetClientsCoachPlusAvailableClientsTest : BaseComponentTest() {
         thenErrorMessageTitle(body).isEqualTo("CustomerNotFoundException")
         thenErrorMessageDetail(body).isEqualTo("Could not found any coach with uuid: e59343bc-6563-4488-a77e-112e886c57ae")
         thenErrorMessageStatus(body).isEqualTo("404")
+        thenErrorCode(body).isEqualTo("2001")
         thenErrorMessageInstance(body).isNotEmpty
         thenErrorMessageDebug(body).isEmpty()
     }

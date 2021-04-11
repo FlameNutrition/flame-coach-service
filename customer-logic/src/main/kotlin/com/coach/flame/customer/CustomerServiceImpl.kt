@@ -6,6 +6,7 @@ import com.coach.flame.domain.Customer
 import com.coach.flame.domain.CustomerTypeDto
 import com.coach.flame.domain.converters.ClientDtoConverter
 import com.coach.flame.domain.converters.CoachDtoConverter
+import com.coach.flame.failure.domain.ErrorCode
 import com.coach.flame.jpa.entity.*
 import com.coach.flame.jpa.repository.*
 import com.coach.flame.jpa.repository.cache.ConfigCache
@@ -55,7 +56,7 @@ class CustomerServiceImpl(
                 return coachDtoConverter.convert(coach)
 
             }
-            else -> throw CustomerRetrieveException("$customerType is an invalid customer type")
+            else -> throw CustomerException(ErrorCode.CODE_2004, "$customerType is an invalid customer type")
         }
     }
 
@@ -103,7 +104,7 @@ class CustomerServiceImpl(
                 return coachDtoConverter.convert(newCoach)
 
             }
-            else -> throw CustomerRetrieveException("${customer.customerType} is an invalid customer type")
+            else -> throw CustomerException(ErrorCode.CODE_2004, "${customer.customerType} is an invalid customer type")
         }
     }
 
@@ -158,7 +159,8 @@ class CustomerServiceImpl(
                     val client = coachRepository.save(entity)
                     return coachDtoConverter.convert(client)
                 }
-                else -> throw CustomerRegisterException("${customer.customerType} is a invalid customer type")
+                else -> throw CustomerException(ErrorCode.CODE_2004,
+                    "${customer.customerType} is a invalid customer type")
             }
 
         } catch (ex: Exception) {

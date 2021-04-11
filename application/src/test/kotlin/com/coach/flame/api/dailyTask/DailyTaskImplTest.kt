@@ -8,7 +8,6 @@ import com.coach.flame.domain.DailyTaskDtoBuilder
 import com.coach.flame.domain.DailyTaskDtoMaker
 import com.coach.flame.exception.RestException
 import com.coach.flame.exception.RestInvalidRequestException
-import com.natpryce.makeiteasy.MakeItEasy
 import com.natpryce.makeiteasy.MakeItEasy.an
 import com.natpryce.makeiteasy.MakeItEasy.with
 import com.natpryce.makeiteasy.Maker
@@ -224,7 +223,7 @@ class DailyTaskImplTest {
 
         //then
         then(thrown)
-            .isInstanceOf(RestInvalidRequestException::class.java)
+            .isInstanceOf(RestException::class.java)
             .hasMessageContaining("filters can not be empty")
     }
 
@@ -246,7 +245,7 @@ class DailyTaskImplTest {
 
         //then
         then(thrown)
-            .isInstanceOf(RestInvalidRequestException::class.java)
+            .isInstanceOf(RestException::class.java)
             .hasMessageContaining("INVALID is an invalid filter")
     }
 

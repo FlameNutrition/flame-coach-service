@@ -1,6 +1,7 @@
 package com.coach.flame.failure.domain
 
 import com.coach.flame.failure.Status
+import com.coach.flame.failure.exception.BusinessException
 import com.fasterxml.jackson.annotation.JsonInclude
 import java.net.URI
 import java.util.*
@@ -8,6 +9,7 @@ import java.util.Objects.hash
 
 class ErrorDetail private constructor(
     val type: URI?,
+    val code: Int?,
     val title: String?,
     val detail: String?,
     val status: Int,
@@ -22,6 +24,7 @@ class ErrorDetail private constructor(
     @JsonInclude(JsonInclude.Include.NON_NULL)
     data class Builder(
         private var type: URI? = null,
+        private var errorCode: ErrorCode = ErrorCode.CODE_9999,
         private var title: String? = null,
         private var detail: String? = null,
         private var status: Int = 500,
@@ -67,6 +70,14 @@ class ErrorDetail private constructor(
             this.debug = throwable!!.stackTraceToString()
         }
 
+        private fun buildCode() {
+            this.errorCode = if (throwable is BusinessException) {
+                (throwable as BusinessException).errorCode
+            } else {
+                ErrorCode.CODE_9999
+            }
+        }
+
         fun withEnableDebug(enableDebug: Boolean) = apply {
             this.enableDebug = enableDebug
         }
@@ -81,10 +92,10 @@ class ErrorDetail private constructor(
             buildStatus()
             buildInstance()
             buildDetail()
-
+            buildCode()
         }
 
-        fun build() = ErrorDetail(type, title, detail, status, instance, debug)
+        fun build() = ErrorDetail(type, errorCode.code, title, detail, status, instance, debug)
     }
 
     override fun equals(other: Any?): Boolean {

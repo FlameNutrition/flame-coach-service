@@ -157,7 +157,6 @@
 
                         <!-- Exceptions -->
                         <exclude>**/flame/exception/RestException.*</exclude>
-                        <exclude>**/flame/exception/RestInvalidRequestException.*</exclude>
                         <exclude>**/flame/exception/InternalServerException.*</exclude>
 
                         <!-- FIXME: Review this classes -->

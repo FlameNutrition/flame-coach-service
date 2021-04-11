@@ -2,6 +2,7 @@ package com.coach.flame.dailyTask
 
 import com.coach.flame.dailyTask.filter.Filter
 import com.coach.flame.domain.DailyTaskDto
+import com.coach.flame.failure.domain.ErrorCode
 import com.coach.flame.jpa.entity.DailyTask
 import com.coach.flame.jpa.repository.ClientRepository
 import com.coach.flame.jpa.repository.CoachRepository
@@ -100,14 +101,14 @@ class DailyTaskServiceImpl(
             ?: run {
                 LOGGER.warn("opr='createDailyTask', msg='Invalid coach token', coachToken={}",
                     dailyTask.coachIdentifier)
-                throw ClientNotFoundException("Didn't find any coach with this identifier, please check the coach identifier.")
+                throw CustomerNotFoundException("Didn't find any coach with this identifier, please check the coach identifier.")
             }
 
         val client = clientRepository.findByUuid(dailyTask.clientIdentifier!!)
             ?: run {
                 LOGGER.warn("opr='createDailyTask', msg='Invalid client identifier', clientIdentifier={}",
                     dailyTask.clientIdentifier)
-                throw ClientNotFoundException("Didn't find any client with this identifier, please check the client identifier.")
+                throw CustomerNotFoundException("Didn't find any client with this identifier, please check the client identifier.")
             }
 
         val newDailyTask = DailyTask(

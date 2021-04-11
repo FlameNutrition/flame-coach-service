@@ -6,7 +6,6 @@ import com.coach.flame.customer.CustomerService
 import com.coach.flame.domain.*
 import com.coach.flame.exception.RestException
 import com.coach.flame.exception.RestInvalidRequestException
-import com.natpryce.makeiteasy.MakeItEasy
 import com.natpryce.makeiteasy.MakeItEasy.with
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -14,7 +13,6 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.slot
-import io.mockk.verify
 import org.assertj.core.api.BDDAssertions.catchThrowable
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.AfterEach
@@ -214,7 +212,7 @@ class ClientApiImplTest {
 
         then(response)
             .isInstanceOf(RestInvalidRequestException::class.java)
-            .hasMessageContaining("java.lang.IllegalArgumentException: measureTypeCode invalid")
+            .hasMessageContaining("measureTypeCode invalid")
 
     }
 }
