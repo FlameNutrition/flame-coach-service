@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "flamecoach.rest.debug.enable",
+      "type": "java.lang.Boolean",
+      "description": "Enable response debug."
+    }
+  ]
+}

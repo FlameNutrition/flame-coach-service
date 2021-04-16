@@ -47,7 +47,7 @@ class RegisterCustomerClientTest : BaseComponentTest() {
                 with(ClientMaker.user, user))
             .make()
         every { clientTypeRepositoryMock.getByType("CLIENT") } returns clientTypeMaker.make()
-        every { clientRepositoryMock.save(any()) } returns client
+        every { clientRepositoryMock.saveAndFlush(any()) } returns client
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -113,7 +113,7 @@ class RegisterCustomerClientTest : BaseComponentTest() {
     fun `test register new client duplicated`() {
 
         every { clientTypeRepositoryMock.getByType("CLIENT") } returns clientTypeMaker.make()
-        every { clientRepositoryMock.save(any()) } throws DataIntegrityViolationException("SQL Error -> Duplicate client")
+        every { clientRepositoryMock.saveAndFlush(any()) } throws DataIntegrityViolationException("SQL Error -> Duplicate client")
 
         // when
         val mvnResponse = mockMvc.perform(request!!)

@@ -144,7 +144,7 @@ class CustomerServiceImpl(
                         clientStatus = ClientStatus.AVAILABLE,
                         registrationDate = customer.registrationDate
                     )
-                    val client = clientRepository.save(entity)
+                    val client = clientRepository.saveAndFlush(entity)
                     return clientDtoConverter.convert(client)
                 }
                 CustomerTypeDto.COACH -> {
@@ -156,7 +156,7 @@ class CustomerServiceImpl(
                         user = user,
                         registrationDate = customer.registrationDate
                     )
-                    val client = coachRepository.save(entity)
+                    val client = coachRepository.saveAndFlush(entity)
                     return coachDtoConverter.convert(client)
                 }
                 else -> throw CustomerException(ErrorCode.CODE_2004,

@@ -52,7 +52,7 @@ class RegisterCustomerCoachTest : BaseComponentTest() {
                 with(CoachMaker.user, user))
             .make()
         every { clientTypeRepositoryMock.getByType("COACH") } returns clientType
-        every { coachRepositoryMock.save(any()) } returns coach
+        every { coachRepositoryMock.saveAndFlush(any()) } returns coach
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -120,7 +120,7 @@ class RegisterCustomerCoachTest : BaseComponentTest() {
         every { clientTypeRepositoryMock.getByType("COACH") } returns clientTypeMaker
             .but(with(ClientTypeMaker.type, "COACH"))
             .make()
-        every { coachRepositoryMock.save(any()) } throws DataIntegrityViolationException("SQL Error -> Duplicate client")
+        every { coachRepositoryMock.saveAndFlush(any()) } throws DataIntegrityViolationException("SQL Error -> Duplicate client")
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
