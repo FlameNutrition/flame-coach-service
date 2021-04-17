@@ -5,6 +5,7 @@ import com.coach.flame.customer.security.HashPassword
 import com.coach.flame.customer.security.Salt
 import com.coach.flame.jpa.entity.*
 import com.coach.flame.jpa.repository.*
+import com.coach.flame.jpa.repository.cache.ConfigCache
 import com.coach.flame.jpa.repository.configs.CountryConfigRepository
 import com.coach.flame.jpa.repository.configs.GenderConfigRepository
 import com.google.gson.JsonObject
@@ -76,6 +77,15 @@ abstract class BaseIntegrationTest {
     @Autowired
     protected lateinit var hashPasswordTool: HashPassword
 
+    @Autowired
+    protected lateinit var countryConfigCache: ConfigCache<CountryConfig>
+
+    @Autowired
+    protected lateinit var customerTypeCache: ConfigCache<ClientType>
+
+    @Autowired
+    protected lateinit var genderConfigCache: ConfigCache<GenderConfig>
+
     protected val userMaker: Maker<User> = an(UserMaker.User)
     protected val clientTypeMaker: Maker<ClientType> = an(ClientTypeMaker.ClientType)
     protected val clientMaker: Maker<Client> = an(ClientMaker.Client)
@@ -95,6 +105,12 @@ abstract class BaseIntegrationTest {
             LOGGER.info("opr='cleanUp', msg='Cleaning database...this process will truncate all tables'")
             sqlClean.beforeEach()
         }
+
+        LOGGER.info("opr='cleanUp', msg='Cleaning caches...'")
+        countryConfigCache.clean()
+        customerTypeCache.clean()
+        genderConfigCache.clean()
+
     }
 
     protected fun thenErrorMessageType(body: JsonObject): AbstractStringAssert<*> {

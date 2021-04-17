@@ -75,6 +75,8 @@ class SQLClean {
             }
         }
 
+        LOGGER.debug("opr='loadTablesToClean', msg='Tables to clean', tatbles={}", tablesToClean)
+
         return tablesToClean
     }
 
@@ -87,8 +89,9 @@ class SQLClean {
         connection.prepareStatement(REFERENTIAL_INTEGRITY_DISABLE_QUERY).execute()
 
         for (i in tablesNames.indices) {
-            connection.prepareStatement("TRUNCATE TABLE ${tablesNames[i].fullyQualifiedTableName} RESTART IDENTITY")
-                .execute()
+            val statement = "TRUNCATE TABLE ${tablesNames[i].fullyQualifiedTableName} RESTART IDENTITY"
+            connection.prepareStatement(statement).execute()
+            LOGGER.debug("opr='cleanTablesData', msg='Statement ran', statement={}", statement)
         }
 
         connection.prepareStatement(REFERENTIAL_INTEGRITY_ENABLE_QUERY).execute()

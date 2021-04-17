@@ -33,8 +33,6 @@ class EnrollmentProcessBreakTest : BaseIntegrationTest() {
 
         if (!isPopulated) {
 
-            enableDatabaseClean = false
-
             val clientType = clientTypeRepository
                 .saveAndFlush(ClientTypeBuilder.maker().but(with(ClientTypeMaker.type, "CLIENT")).make())
             val coachType = clientTypeRepository

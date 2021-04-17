@@ -34,6 +34,10 @@ class ConfigCache<Entity>(
         return Optional.empty()
     }
 
+    fun clean() {
+        this.cache.invalidateAll()
+    }
+
     private class Loader<Entity>(
         private val cacheLoaderRepository: CacheLoaderRepository<Entity>,
     ) : CacheLoader<String, Entity>() {

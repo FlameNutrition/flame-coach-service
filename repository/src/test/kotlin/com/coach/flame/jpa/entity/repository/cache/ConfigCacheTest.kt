@@ -80,4 +80,20 @@ class ConfigCacheTest {
         verify(exactly = 2) { repository.findByKey("COACH") }
 
     }
+
+    @Test
+    fun testCleanCache() {
+
+        val client = ClientTypeBuilder.default()
+
+        every { repository.findByKey("CLIENT") } returns client
+
+        then(classToTest.getValue("CLIENT").get()).isEqualTo(client)
+
+        classToTest.clean()
+
+        then(classToTest.getValue("CLIENT").get()).isEqualTo(client)
+
+        verify(exactly = 2) { repository.findByKey("CLIENT") }
+    }
 }

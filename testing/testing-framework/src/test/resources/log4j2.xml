@@ -16,6 +16,7 @@
         </Root>
 
         <Logger name="com.coach.flame.testing.framework.JsonBuilder" level="DEBUG"/>
+        <Logger name="com.coach.flame.testing.integration.base.SQLClean" level="DEBUG"/>
         <Logger name="com.coach.flame" level="INFO"/>
         <Logger name="org.springframework" level="INFO"/>
     </Loggers>
