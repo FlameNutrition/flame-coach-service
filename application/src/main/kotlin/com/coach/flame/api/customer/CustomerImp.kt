@@ -72,7 +72,6 @@ class CustomerImp(
             requireNotNull(customer.email) { "Missing required parameter request: email" }
             requireNotNull(customer.password) { "Missing required parameter request: password" }
 
-            //FIXME: Send the password encrypted
             val customerPersisted = customerService.getNewCustomerSession(customer.email, customer.password)
 
             return customerResponseConverter.convert(customerPersisted)

@@ -33,17 +33,19 @@ class GetNewCustomerSessionTest : BaseComponentTest() {
 
         // given
         val oldDate = LocalDateTime.now()
+        val salt = saltTool.generate()
         val client = clientMaker
             .but(with(ClientMaker.user, userMaker
                 .but(with(UserMaker.email, "test@gmail.com"))
                 .make()))
             .make()
-        val user = userMaker
-            .but(with(UserMaker.email, "test@gmail.com"))
-            .but(with(UserMaker.password, "12345"))
-            .but(with(UserMaker.client, client))
+        val user = UserBuilder.maker()
+            .but(with(UserMaker.email, "test@gmail.com"),
+                with(UserMaker.client, client),
+                with(UserMaker.key, salt),
+                with(UserMaker.password, hashPasswordTool.generate("12345", salt)))
             .make()
-        every { userRepositoryMock.findUserByEmailAndPassword("test@gmail.com", "12345") } returns user
+        every { userRepositoryMock.findUserByEmail("test@gmail.com") } returns user
         every { userSessionRepositoryMock.save(any()) } returns mockk()
 
         // when
@@ -79,7 +81,7 @@ class GetNewCustomerSessionTest : BaseComponentTest() {
     fun `test get a new client session but username is invalid`() {
 
         // given
-        every { userRepositoryMock.findUserByEmailAndPassword("test.test@gmail.com", "12345") } returns null
+        every { userRepositoryMock.findUserByEmail("test.test@gmail.com") } returns null
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -96,13 +98,55 @@ class GetNewCustomerSessionTest : BaseComponentTest() {
 
         thenErrorMessageType(body).endsWith("CustomerUsernameOrPasswordException.html")
         thenErrorMessageTitle(body).isEqualTo("CustomerUsernameOrPasswordException")
-        thenErrorMessageDetail(body).isEqualTo("Username or password invalid")
+        thenErrorMessageDetail(body).isEqualTo("Username invalid")
         thenErrorMessageStatus(body).isEqualTo("400")
         thenErrorCode(body).isEqualTo("2003")
         thenErrorMessageInstance(body).isNotEmpty
         thenErrorMessageDebug(body).isEmpty()
 
     }
+
+    @Test
+    @LoadRequest(
+        pathOfRequest = "requests/component/customer/newCustomerSessionInvalidUsername.json",
+        endpoint = "/api/customer/newSession",
+        httpMethod = RequestMethod.POST
+    )
+    fun `test get a new client session but password is invalid`() {
+
+        //given
+        val salt = saltTool.generate()
+        val user = UserBuilder.maker()
+            .but(with(UserMaker.email, "test.test@gmail.com"),
+                with(UserMaker.client, ClientBuilder.default()),
+                with(UserMaker.key, salt),
+                with(UserMaker.password, hashPasswordTool.generate("other_password", salt)))
+            .make()
+        every { userRepositoryMock.findUserByEmail("test.test@gmail.com") } returns user
+
+        // when
+        val mvnResponse = mockMvc.perform(request!!)
+            .andDo { MockMvcResultHandlers.print() }
+            .andDo { MockMvcResultHandlers.log() }
+            .andReturn()
+
+        // then
+        then(mvnResponse).isNotNull
+        then(mvnResponse.response.status).isEqualTo(HttpStatus.BAD_REQUEST.value())
+        then(mvnResponse.response.contentType).isEqualTo(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
+
+        val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
+
+        thenErrorMessageType(body).endsWith("CustomerUsernameOrPasswordException.html")
+        thenErrorMessageTitle(body).isEqualTo("CustomerUsernameOrPasswordException")
+        thenErrorMessageDetail(body).isEqualTo("Password invalid")
+        thenErrorMessageStatus(body).isEqualTo("400")
+        thenErrorCode(body).isEqualTo("2003")
+        thenErrorMessageInstance(body).isNotEmpty
+        thenErrorMessageDebug(body).isEmpty()
+
+    }
+
 
     @Test
     @LoadRequest(
@@ -113,10 +157,13 @@ class GetNewCustomerSessionTest : BaseComponentTest() {
     fun `test get a new client session but throws unexpected exception`() {
 
         // given
+        val salt = saltTool.generate()
         val user = UserBuilder.maker()
-            .but(with(UserMaker.client, ClientBuilder.default()))
+            .but(with(UserMaker.client, ClientBuilder.default()),
+                with(UserMaker.key, salt),
+                with(UserMaker.password, hashPasswordTool.generate("12345", salt)))
             .make()
-        every { userRepositoryMock.findUserByEmailAndPassword("test@gmail.com", "12345") } returns user
+        every { userRepositoryMock.findUserByEmail("test@gmail.com") } returns user
         every { userSessionRepositoryMock.save(any()) } throws SQLException("This is a sensible information")
 
         // when

@@ -1,5 +1,7 @@
 package com.coach.flame.customer
 
+import com.coach.flame.customer.security.HashPassword
+import com.coach.flame.customer.security.Salt
 import com.coach.flame.domain.ClientDto
 import com.coach.flame.domain.CoachDto
 import com.coach.flame.domain.Customer
@@ -29,6 +31,8 @@ class CustomerServiceImpl(
     private val coachDtoConverter: CoachDtoConverter,
     private val countryConfigCache: ConfigCache<CountryConfig>,
     private val genderConfigCache: ConfigCache<GenderConfig>,
+    private val hashPasswordTool: HashPassword,
+    private val saltTool: Salt,
 ) : CustomerService {
 
     companion object {
@@ -118,13 +122,13 @@ class CustomerServiceImpl(
             checkNotNull(customer.loginInfo) { "loginInfo is a mandatory parameter" }
 
             val clientType = clientTypeRepository.getByType(customer.customerType.name)
+            val keyDecrypt = saltTool.generate()
 
             val expirationDate = LocalDateTime.now().plusHours(2)
-
             val user = User(
                 email = customer.loginInfo!!.username,
-                //TODO: Encrypt password
-                password = customer.loginInfo!!.password,
+                keyDecrypt = keyDecrypt,
+                password = hashPasswordTool.generate(customer.loginInfo!!.password, keyDecrypt),
                 userSession = UserSession(
                     expirationDate = expirationDate,
                     token = UUID.randomUUID()
@@ -144,7 +148,7 @@ class CustomerServiceImpl(
                         clientStatus = ClientStatus.AVAILABLE,
                         registrationDate = customer.registrationDate
                     )
-                    val client = clientRepository.save(entity)
+                    val client = clientRepository.saveAndFlush(entity)
                     return clientDtoConverter.convert(client)
                 }
                 CustomerTypeDto.COACH -> {
@@ -156,7 +160,7 @@ class CustomerServiceImpl(
                         user = user,
                         registrationDate = customer.registrationDate
                     )
-                    val client = coachRepository.save(entity)
+                    val client = coachRepository.saveAndFlush(entity)
                     return coachDtoConverter.convert(client)
                 }
                 else -> throw CustomerException(ErrorCode.CODE_2004,
@@ -176,8 +180,14 @@ class CustomerServiceImpl(
 
         LOGGER.info("opr='getNewCustomerSession', msg='Get a new customer session'")
 
-        val user = userRepository.findUserByEmailAndPassword(username, password)
-            ?: throw CustomerUsernameOrPasswordException("Username or password invalid")
+        val user = userRepository.findUserByEmail(username)
+            ?: throw CustomerUsernameOrPasswordException("Username invalid")
+
+        if (!hashPasswordTool.verify(password, user.password, user.keyDecrypt)) {
+            throw CustomerUsernameOrPasswordException("Password invalid")
+        } else {
+            LOGGER.info("opr='getNewCustomerSession', msg='Username and password correct'")
+        }
 
         if (user.client !== null || user.coach !== null) {
             LOGGER.info("opr='getNewCustomerSession', msg='Update the session'")

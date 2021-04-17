@@ -1,6 +1,8 @@
 package com.coach.flame.testing.component.base
 
 import com.coach.flame.FlameCoachServiceApplication
+import com.coach.flame.customer.security.HashPassword
+import com.coach.flame.customer.security.Salt
 import com.coach.flame.jpa.entity.*
 import com.coach.flame.jpa.repository.*
 import com.coach.flame.jpa.repository.cache.ConfigCache
@@ -62,6 +64,12 @@ abstract class BaseComponentTest {
 
     @Autowired
     protected lateinit var genderConfigCacheMock: ConfigCache<GenderConfig>
+
+    @Autowired
+    protected lateinit var saltTool: Salt
+
+    @Autowired
+    protected lateinit var hashPasswordTool: HashPassword
 
     protected lateinit var clientMaker: Maker<Client>
     protected lateinit var coachMaker: Maker<Coach>

@@ -6,6 +6,7 @@ import java.util.*
 data class LoginInfoDto(
     val username: String,
     val password: String,
+    val keyDecrypt: String?,
     val expirationDate: LocalDateTime? = null,
     val token: UUID? = null
 )

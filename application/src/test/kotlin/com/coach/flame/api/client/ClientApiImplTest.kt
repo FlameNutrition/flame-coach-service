@@ -13,6 +13,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.BDDAssertions.catchThrowable
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.AfterEach
@@ -213,6 +214,52 @@ class ClientApiImplTest {
         then(response)
             .isInstanceOf(RestInvalidRequestException::class.java)
             .hasMessageContaining("measureTypeCode invalid")
+
+    }
+
+    @Test
+    fun `test update personal data but gender is null`() {
+
+        val identifier = UUID.randomUUID()
+        val request = PersonalDataRequestBuilder.maker()
+            .but(with(PersonalDataRequestMaker.genderCode, null as String?))
+            .make()
+        val client = slot<ClientDto>()
+        val clientDto = ClientDtoBuilder.maker()
+            .but(with(ClientDtoMaker.gender, null as GenderDto?))
+            .make()
+
+        every { customerService.getCustomer(identifier, CustomerTypeDto.CLIENT) } returns clientDto
+        every { customerService.updateCustomer(identifier, capture(client)) } answers { client.captured }
+
+        val response = classToTest.updatePersonalData(identifier, request)
+
+        verify(exactly = 0) { configsService.getGender(any()) }
+
+        then(response.gender).isNull()
+
+    }
+
+    @Test
+    fun `test update contact info but country is null`() {
+
+        val identifier = UUID.randomUUID()
+        val request = ContactInfoRequestBuilder.maker()
+            .but(with(ContactInfoRequestMaker.countryCode, null as String?))
+            .make()
+        val client = slot<ClientDto>()
+        val clientDto = ClientDtoBuilder.maker()
+            .but(with(ClientDtoMaker.country, null as CountryDto?))
+            .make()
+
+        every { customerService.getCustomer(identifier, CustomerTypeDto.CLIENT) } returns clientDto
+        every { customerService.updateCustomer(identifier, capture(client)) } answers { client.captured }
+
+        val response = classToTest.updateContactInformation(identifier, request)
+
+        verify(exactly = 0) { configsService.getCountry(any()) }
+
+        then(response.country).isNull()
 
     }
 }

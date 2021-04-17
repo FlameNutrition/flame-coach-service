@@ -148,6 +148,8 @@
                         <exclude>**/customer/CustomerUsernameOrPasswordException.*</exclude>
                         <exclude>**/customer/CustomerRetrieveException.*</exclude>
                         <exclude>**/customer/CustomerNewSessionException.*</exclude>
+                        <exclude>**/customer/CustomerException.*</exclude>
+                        <exclude>**/customer/SecurityException.*</exclude>
                         <exclude>**/customer/EnrollmentProcessException.*</exclude>
                     </excludes>
                 </configuration>

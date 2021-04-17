@@ -6,7 +6,6 @@ import com.coach.flame.configs.ConfigsService
 import com.coach.flame.customer.CustomerService
 import com.coach.flame.customer.coach.CoachService
 import com.coach.flame.domain.*
-import com.coach.flame.exception.RestException
 import com.coach.flame.exception.RestInvalidRequestException
 import com.natpryce.makeiteasy.MakeItEasy.with
 import io.mockk.clearAllMocks
@@ -15,6 +14,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.BDDAssertions.catchThrowable
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.AfterEach
@@ -204,6 +204,29 @@ class CoachApiImplTest {
         then(coach.captured.gender).isEqualTo(coachDto.gender)
         then(coach.captured.customerType).isEqualTo(coachDto.customerType)
         then(coach.captured.registrationDate).isEqualTo(coachDto.registrationDate)
+
+    }
+
+    @Test
+    fun `test update contact info but country is null`() {
+
+        val identifier = UUID.randomUUID()
+        val request = ContactInfoRequestBuilder.maker()
+            .but(with(ContactInfoRequestMaker.countryCode, null as String?))
+            .make()
+        val coach = slot<CoachDto>()
+        val coachDto = CoachDtoBuilder.maker()
+            .but(with(CoachDtoMaker.country, null as CountryDto?))
+            .make()
+
+        every { customerService.getCustomer(identifier, CustomerTypeDto.COACH) } returns coachDto
+        every { customerService.updateCustomer(identifier, capture(coach)) } answers { coach.captured }
+
+        val response = classToTest.updateContactInformation(identifier, request)
+
+        verify(exactly = 0) { configsService.getCountry(any()) }
+
+        then(response.country).isNull()
 
     }
 

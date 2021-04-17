@@ -30,6 +30,7 @@ class CustomerRequestConverter : Converter<CustomerRequest, ClientDto> {
             loginInfo = LoginInfoDto(
                 username = customerRequest.email!!,
                 password = customerRequest.password!!,
+                keyDecrypt = null
             ),
             clientStatus = null,
             registrationDate = LocalDate.now(),

@@ -53,7 +53,8 @@ class CoachDtoConverter(
             customerType = clientTypeDto,
             loginInfo = LoginInfoDto(
                 username = coach.user.email,
-                password = "******",
+                password = coach.user.password,
+                keyDecrypt = coach.user.keyDecrypt,
                 expirationDate = coach.user.userSession.expirationDate,
                 token = coach.user.userSession.token
             ),
@@ -71,7 +72,8 @@ class CoachDtoConverter(
                         customerType = CustomerTypeDto.CLIENT,
                         loginInfo = LoginInfoDto(
                             username = it.user.email,
-                            password = "******"
+                            password = "******",
+                            keyDecrypt = "******"
                         ),
                         clientStatus = ClientStatusDto.valueOf(it.clientStatus.name),
                         registrationDate = it.registrationDate,

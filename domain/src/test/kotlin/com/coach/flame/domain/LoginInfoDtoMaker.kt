@@ -14,6 +14,7 @@ class LoginInfoDtoMaker {
         private val fake = Faker()
         val username: Property<LoginInfoDto, String> = newProperty()
         val password: Property<LoginInfoDto, String> = newProperty()
+        val keyDecrypt: Property<LoginInfoDto, String> = newProperty()
         val expirationDate: Property<LoginInfoDto, LocalDateTime?> = newProperty()
         val token: Property<LoginInfoDto, UUID?> = newProperty()
 
@@ -21,6 +22,7 @@ class LoginInfoDtoMaker {
             LoginInfoDto(
                 username = it.valueOf(username, fake.internet().emailAddress()),
                 password = it.valueOf(password, fake.internet().password()),
+                keyDecrypt = it.valueOf(keyDecrypt, "MY_SALT"),
                 expirationDate = it.valueOf(expirationDate, null as LocalDateTime?),
                 token = it.valueOf(token, null as UUID?)
             )

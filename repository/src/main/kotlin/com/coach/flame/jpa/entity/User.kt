@@ -13,6 +13,9 @@ class User(
     @Column(nullable = false)
     val password: String,
 
+    @Column(nullable = false)
+    val keyDecrypt: String,
+
     @OneToOne(optional = false, fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST])
     @JoinColumn(name = "userSessionFk", referencedColumnName = "id", nullable = false)
     val userSession: UserSession,

@@ -60,16 +60,20 @@ class AuthClientTest : BaseIntegrationTest() {
         // when
         clientTypeRepository.saveAndFlush(clientTypeMaker.make())
 
+        val salt = saltTool.generate()
+        val password = hashPasswordTool.generate("12345", salt)
+
         val client = clientMaker
-            .but(with(ClientMaker.firstname, "Miguel"))
-            .but(with(ClientMaker.lastname, "Teixeira"))
-            .but(with(ClientMaker.clientType, clientTypeRepository.getByType("CLIENT")))
-            .but(with(ClientMaker.user, userMaker
-                .but(with(UserMaker.email, "test@gmail.com"))
-                .but(with(UserMaker.password, "12345"))
-                .make()))
-            .but(with(ClientMaker.country, null as CountryConfig?))
-            .but(with(ClientMaker.gender, null as GenderConfig?))
+            .but(with(ClientMaker.firstname, "Miguel"),
+                with(ClientMaker.lastname, "Teixeira"),
+                with(ClientMaker.clientType, clientTypeRepository.getByType("CLIENT")),
+                with(ClientMaker.user, userMaker
+                    .but(with(UserMaker.email, "test@gmail.com"),
+                        with(UserMaker.password, password),
+                        with(UserMaker.key, salt))
+                    .make()),
+                with(ClientMaker.country, null as CountryConfig?),
+                with(ClientMaker.gender, null as GenderConfig?))
             .make()
 
         clientRepository.saveAndFlush(client)

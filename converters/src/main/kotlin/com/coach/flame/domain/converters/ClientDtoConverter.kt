@@ -53,7 +53,8 @@ class ClientDtoConverter(
             customerType = clientTypeDto,
             loginInfo = LoginInfoDto(
                 username = client.user.email,
-                password = "******",
+                password = client.user.password,
+                keyDecrypt = client.user.keyDecrypt,
                 expirationDate = client.user.userSession.expirationDate,
                 token = client.user.userSession.token
             ),

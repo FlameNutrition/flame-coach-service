@@ -58,6 +58,9 @@ class AuthCoachTest : BaseIntegrationTest() {
     )
     fun `get new coach session`() {
 
+        val salt = saltTool.generate()
+        val password = hashPasswordTool.generate("12345", salt)
+
         // when
         val coachType = clientTypeRepository.saveAndFlush(clientTypeMaker
             .but(with(ClientTypeMaker.type, "COACH"))
@@ -68,8 +71,9 @@ class AuthCoachTest : BaseIntegrationTest() {
                 with(ClientMaker.lastname, "Teixeira"),
                 with(ClientMaker.clientType, coachType),
                 with(ClientMaker.user, userMaker
-                    .but(with(UserMaker.email, "test@gmail.com"))
-                    .but(with(UserMaker.password, "12345"))
+                    .but(with(UserMaker.email, "test@gmail.com"),
+                        with(UserMaker.password, password),
+                        with(UserMaker.key, salt))
                     .make()))
             .make()
 

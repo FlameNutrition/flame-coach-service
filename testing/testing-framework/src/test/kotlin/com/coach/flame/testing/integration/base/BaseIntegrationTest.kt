@@ -1,6 +1,8 @@
 package com.coach.flame.testing.integration.base
 
 import com.coach.flame.FlameCoachServiceApplication
+import com.coach.flame.customer.security.HashPassword
+import com.coach.flame.customer.security.Salt
 import com.coach.flame.jpa.entity.*
 import com.coach.flame.jpa.repository.*
 import com.coach.flame.jpa.repository.configs.CountryConfigRepository
@@ -67,6 +69,12 @@ abstract class BaseIntegrationTest {
 
     @Autowired
     protected lateinit var genderConfigRepository: GenderConfigRepository
+
+    @Autowired
+    protected lateinit var saltTool: Salt
+
+    @Autowired
+    protected lateinit var hashPasswordTool: HashPassword
 
     protected val userMaker: Maker<User> = an(UserMaker.User)
     protected val clientTypeMaker: Maker<ClientType> = an(ClientTypeMaker.ClientType)
