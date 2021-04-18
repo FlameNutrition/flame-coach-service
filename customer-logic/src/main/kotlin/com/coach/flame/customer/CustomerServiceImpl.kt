@@ -220,7 +220,7 @@ class CustomerServiceImpl(
         val keyDecrypt = saltTool.generate()
 
         user.keyDecrypt = keyDecrypt
-        user.password = hashPasswordTool.generate(user.password, keyDecrypt)
+        user.password = hashPasswordTool.generate(newPassword, keyDecrypt)
 
         userRepository.saveAndFlush(user)
 

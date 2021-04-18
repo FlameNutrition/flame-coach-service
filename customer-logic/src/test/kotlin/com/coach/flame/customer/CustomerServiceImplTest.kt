@@ -584,6 +584,7 @@ class CustomerServiceImplTest {
         every { saltTool.generate() } returns "MY_SALT"
         every { hashPasswordTool.verify("OLD", "##55-332", "MY_SALT") } returns true
         every { hashPasswordTool.generate("##55-332", "MY_SALT") } returns "HASH_PASSWORD"
+        every { hashPasswordTool.generate("NEW", "MY_SALT") } returns "HASH_PASSWORD_2"
         every { userRepository.findUserByEmail("test@gmail.com") } returns user
         every { userRepository.saveAndFlush(capture(entity)) } returns mockk()
 
@@ -594,7 +595,7 @@ class CustomerServiceImplTest {
         verify(exactly = 1) { userRepository.saveAndFlush(any()) }
         verify(exactly = 1) { userRepository.findUserByEmail("test@gmail.com") }
         then(entity.captured.keyDecrypt).isEqualTo("MY_SALT")
-        then(entity.captured.password).isEqualTo("HASH_PASSWORD")
+        then(entity.captured.password).isEqualTo("HASH_PASSWORD_2")
     }
 
     // region Parameters
