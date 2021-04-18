@@ -2,8 +2,10 @@ package com.coach.flame.api.customer
 
 import com.coach.flame.api.customer.request.CustomerRequest
 import com.coach.flame.api.customer.request.CustomerRequestConverter
+import com.coach.flame.api.customer.request.UpdatePasswordRequest
 import com.coach.flame.api.customer.response.CustomerResponse
 import com.coach.flame.api.customer.response.CustomerResponseConverter
+import com.coach.flame.api.customer.response.UpdatePasswordResponse
 import com.coach.flame.aspect.LoggingRequest
 import com.coach.flame.aspect.LoggingResponse
 import com.coach.flame.customer.CustomerService
@@ -91,6 +93,18 @@ class CustomerImp(
                 }
             }
         }
+    }
+
+    @LoggingRequest
+    @LoggingResponse
+    @PostMapping("/updatePassword")
+    @ResponseBody
+    override fun updatePassword(@RequestBody(required = true) request: UpdatePasswordRequest): UpdatePasswordResponse {
+
+        customerService.updateCustomerPassword(request.email, request.oldPassword, request.newPassword)
+
+        return UpdatePasswordResponse(true)
+
     }
 
 }

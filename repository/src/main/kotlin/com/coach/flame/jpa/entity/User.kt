@@ -11,10 +11,10 @@ class User(
     val email: String,
 
     @Column(nullable = false)
-    val password: String,
+    var password: String,
 
     @Column(nullable = false)
-    val keyDecrypt: String,
+    var keyDecrypt: String,
 
     @OneToOne(optional = false, fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST])
     @JoinColumn(name = "userSessionFk", referencedColumnName = "id", nullable = false)

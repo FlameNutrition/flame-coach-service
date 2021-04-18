@@ -15,4 +15,6 @@ interface CustomerService {
 
     fun getNewCustomerSession(username: String, password: String): Customer
 
+    fun updateCustomerPassword(email: String, oldPassword: String, newPassword: String)
+
 }

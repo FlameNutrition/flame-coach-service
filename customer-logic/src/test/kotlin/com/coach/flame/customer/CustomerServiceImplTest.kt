@@ -572,6 +572,31 @@ class CustomerServiceImplTest {
         then(response.registrationDate).isEqualTo(entityCaptured.registrationDate)
     }
 
+    @Test
+    fun `update password customer`() {
+
+        val user = UserBuilder.maker()
+            .but(with(UserMaker.password, "##55-332"),
+                with(UserMaker.key, "MY_SALT"))
+            .make()
+        val entity = slot<User>()
+
+        every { saltTool.generate() } returns "MY_SALT"
+        every { hashPasswordTool.verify("OLD", "##55-332", "MY_SALT") } returns true
+        every { hashPasswordTool.generate("##55-332", "MY_SALT") } returns "HASH_PASSWORD"
+        every { userRepository.findUserByEmail("test@gmail.com") } returns user
+        every { userRepository.saveAndFlush(capture(entity)) } returns mockk()
+
+        // when
+        classToTest.updateCustomerPassword("test@gmail.com", "OLD", "NEW")
+
+        // then
+        verify(exactly = 1) { userRepository.saveAndFlush(any()) }
+        verify(exactly = 1) { userRepository.findUserByEmail("test@gmail.com") }
+        then(entity.captured.keyDecrypt).isEqualTo("MY_SALT")
+        then(entity.captured.password).isEqualTo("HASH_PASSWORD")
+    }
+
     // region Parameters
 
     companion object {

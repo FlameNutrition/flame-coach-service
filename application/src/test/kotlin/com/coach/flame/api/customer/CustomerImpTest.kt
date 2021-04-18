@@ -5,6 +5,7 @@ import com.coach.flame.api.customer.request.CustomerRequestConverter
 import com.coach.flame.api.customer.request.CustomerRequestMaker
 import com.coach.flame.api.customer.request.CustomerRequestMaker.Companion.CustomerRequest
 import com.coach.flame.api.customer.request.CustomerRequestMaker.Companion.type
+import com.coach.flame.api.customer.request.UpdatePasswordRequest
 import com.coach.flame.api.customer.response.CustomerResponse
 import com.coach.flame.api.customer.response.CustomerResponseConverter
 import com.coach.flame.api.customer.response.CustomerResponseMaker
@@ -26,6 +27,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.SpyK
 import io.mockk.junit5.MockKExtension
+import io.mockk.mockk
 import org.assertj.core.api.BDDAssertions.catchThrowable
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.AfterEach
@@ -243,6 +245,26 @@ class CustomerImpTest {
         then(thrown)
             .isInstanceOf(RestInvalidRequestException::class.java)
             .hasMessageContaining("Missing required parameter request: $missingParam")
+
+    }
+
+    // endregion
+
+    // region Update
+
+    @Test
+    fun `update customer password`() {
+
+        // given
+        val request = UpdatePasswordRequest("test@gmail.com", "OLD", "NEW")
+
+        every { customerService.updateCustomerPassword("test@gmail.com", "OLD", "NEW") } returns mockk()
+
+        // when
+        val response = classToTest.updatePassword(request)
+
+        // then
+        then(response.result).isTrue
 
     }
 

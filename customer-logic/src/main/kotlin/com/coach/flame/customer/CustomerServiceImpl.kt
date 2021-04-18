@@ -180,14 +180,7 @@ class CustomerServiceImpl(
 
         LOGGER.info("opr='getNewCustomerSession', msg='Get a new customer session'")
 
-        val user = userRepository.findUserByEmail(username)
-            ?: throw CustomerUsernameOrPasswordException("Username invalid")
-
-        if (!hashPasswordTool.verify(password, user.password, user.keyDecrypt)) {
-            throw CustomerUsernameOrPasswordException("Password invalid")
-        } else {
-            LOGGER.info("opr='getNewCustomerSession', msg='Username and password correct'")
-        }
+        val user = getUserCheckingUsernameAndPassword(username, password)
 
         if (user.client !== null || user.coach !== null) {
             LOGGER.info("opr='getNewCustomerSession', msg='Update the session'")
@@ -215,6 +208,38 @@ class CustomerServiceImpl(
                 throw RuntimeException("Something is wrong with jpa")
             }
         }
+    }
+
+    @Transactional
+    override fun updateCustomerPassword(email: String, oldPassword: String, newPassword: String) {
+
+        LOGGER.info("opr='updateCustomerPassword', msg='Update customer password'")
+
+        val user = getUserCheckingUsernameAndPassword(email, oldPassword)
+
+        val keyDecrypt = saltTool.generate()
+
+        user.keyDecrypt = keyDecrypt
+        user.password = hashPasswordTool.generate(user.password, keyDecrypt)
+
+        userRepository.saveAndFlush(user)
+
+        LOGGER.info("opr='updateCustomerPassword', msg='Customer password updated with success'")
+
+    }
+
+    private fun getUserCheckingUsernameAndPassword(email: String, password: String): User {
+
+        val user = userRepository.findUserByEmail(email)
+            ?: throw CustomerUsernameOrPasswordException("Username invalid")
+
+        if (!hashPasswordTool.verify(password, user.password, user.keyDecrypt)) {
+            throw CustomerUsernameOrPasswordException("Password invalid")
+        } else {
+            LOGGER.info("opr='checkUsernameAndPassword', msg='Username and password correct'")
+        }
+
+        return user
     }
 
 
