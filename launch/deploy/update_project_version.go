@@ -23,25 +23,38 @@ func main() {
 	}
 
 	cmdReleaseVersion := exec.Command("mvn", "versions:set", fmt.Sprintf("-DnewVersion=%s", *releaseVersion), "-f", "../../pom.xml")
-	log.Printf("Command: %v", cmdReleaseVersion.String())
+	log.Printf("1 Command: %v", cmdReleaseVersion.String())
 
-	/*out,err := cmdReleaseVersion.Output()
-	if err != nil {
-		log.Fatalf("Command release version finished with error: %v", err)
-	}
-	log.Printf("Output: %s", out)
-	*/
+	gitCommitRelease := exec.Command("git", "commit", "--all", "-m", fmt.Sprintf("AUTO-RELEASE: %s", *releaseVersion))
+	log.Printf("2 Command: %v", gitCommitRelease.String())
 
-	gitCommitRelease := exec.Command("git", "commit", "--all", "-m", fmt.Sprintf("\"AUTO-RELEASE: %s\"", *releaseVersion))
-	log.Printf("Command: %v", gitCommitRelease.String())
-
-	gitTagRelease := exec.Command("git", "tag", "-a", fmt.Sprintf("v%s", *releaseVersion), "-m", fmt.Sprintf("\"Flame Coach Service version: %s\"", *releaseVersion))
-	log.Printf("Command: %v", gitTagRelease.String())
+	gitTagRelease := exec.Command("git", "tag", "-a", fmt.Sprintf("v%s", *releaseVersion), "-m", fmt.Sprintf("Flame Coach Service version: %s", *releaseVersion))
+	log.Printf("3 Command: %v", gitTagRelease.String())
 
 	cmdSnapshotVersion := exec.Command("mvn", "versions:set", fmt.Sprintf("-DnewVersion=%s-SNAPSHOT", *snapshotVersion), "-f", "../../pom.xml")
-	log.Printf("Command: %v", cmdSnapshotVersion.String())
+	log.Printf("4 Command: %v", cmdSnapshotVersion.String())
 
-	gitCommitSnapshot := exec.Command("git", "commit", "--all", "-m", fmt.Sprintf("\"AUTO-SNAPSHOT: %s\"", *snapshotVersion))
-	log.Printf("Command: %v", gitCommitSnapshot.String())
+	gitCommitSnapshot := exec.Command("git", "commit", "--all", "-m", fmt.Sprintf("AUTO-SNAPSHOT: %s", *snapshotVersion))
+	log.Printf("5 Command: %v", gitCommitSnapshot.String())
+
+	executeCmd(cmdReleaseVersion, "cmdReleaseVersion")
+	executeCmd(gitCommitRelease, "gitCommitRelease")
+	executeCmd(gitTagRelease, "gitTagRelease")
+	executeCmd(cmdSnapshotVersion, "cmdSnapshotVersion")
+	executeCmd(gitCommitSnapshot, "gitCommitSnapshot")
+
+	gitPush := exec.Command("git", "push", "origin", "--tags")
+	executeCmd(gitPush, "gitPush")
+
+}
+
+func executeCmd(cmd *exec.Cmd, commandTag string) {
+
+	// 1 Command
+	out, err := cmd.Output()
+	if err != nil {
+		log.Fatalf("Command %s version finished with error: %v", commandTag, err)
+	}
+	log.Printf("Output: %s", out)
 
 }
