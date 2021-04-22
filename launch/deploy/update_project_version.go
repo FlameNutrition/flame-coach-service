@@ -43,8 +43,9 @@ func main() {
 	executeCmd(cmdSnapshotVersion, "cmdSnapshotVersion")
 	executeCmd(gitCommitSnapshot, "gitCommitSnapshot")
 
-	gitPush := exec.Command("git", "push", "origin", "--tags")
-	executeCmd(gitPush, "gitPush")
+	log.Printf("IMPORTANT: Please push the code manually! This is temporary")
+	//gitPush := exec.Command("git", "push", "origin", "--tags")
+	//executeCmd(gitPush, "gitPush")
 
 }
 
