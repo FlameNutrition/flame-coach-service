@@ -49,69 +49,69 @@
             <dependency>
                 <groupId>com.coach.flame</groupId>
                 <artifactId>repository</artifactId>
-                <version>${project.parent.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.coach.flame</groupId>
                 <artifactId>customer-logic</artifactId>
-                <version>${project.parent.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.coach.flame</groupId>
                 <artifactId>application</artifactId>
-                <version>${project.parent.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.coach.flame</groupId>
                 <artifactId>converters</artifactId>
-                <version>${project.parent.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.coach.flame</groupId>
                 <artifactId>configs-logic</artifactId>
-                <version>${project.parent.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.coach.flame</groupId>
                 <artifactId>domain</artifactId>
-                <version>${project.parent.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.coach.flame</groupId>
                 <artifactId>dailyTask-logic</artifactId>
-                <version>${project.parent.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.coach.flame</groupId>
                 <artifactId>failureDetail-logic</artifactId>
-                <version>${project.parent.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.coach.flame</groupId>
                 <artifactId>utilities</artifactId>
-                <version>${project.parent.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.coach.flame</groupId>
                 <artifactId>domain</artifactId>
                 <type>test-jar</type>
-                <version>${project.parent.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.coach.flame</groupId>
                 <artifactId>repository</artifactId>
                 <type>test-jar</type>
-                <version>${project.parent.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <!-- Spring -->
