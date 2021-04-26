@@ -8,8 +8,8 @@
         </Console>
 
         <RollingFile name="RollingFile"
-                     fileName="./target/logs/flame-coach-service.log"
-                     filePattern="./target/logs/$${date:yyyy-MM}/flame-coach-service-%d{-dd-MMMM-yyyy}-%i.log.gz">
+                     fileName="/var/logs/flame-coach/flame-coach-service.log"
+                     filePattern="/var/logs/flame-coach/${date:yyyy-MM}/flame-coach-service-%d{-dd-MMMM-yyyy}-%i.log.gz">
             <PatternLayout>
                 <pattern>%style{%d{ISO8601}} %highlight{%-5level }[%style{%t}{bright,blue}] %style{%C{1.}}{bright,yellow}: %msg%n%throwable</pattern>
             </PatternLayout>

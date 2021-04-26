@@ -37,11 +37,15 @@ func main() {
 	gitCommitSnapshot := exec.Command("git", "commit", "--all", "-m", fmt.Sprintf("AUTO-SNAPSHOT: %s", *snapshotVersion))
 	log.Printf("5 Command: %v", gitCommitSnapshot.String())
 
+	cmdVersionsCommit := exec.Command("mvn", "versions:commit", "-f", "../../pom.xml")
+	log.Printf("6 Command: %v", cmdVersionsCommit.String())
+
 	executeCmd(cmdReleaseVersion, "cmdReleaseVersion")
 	executeCmd(gitCommitRelease, "gitCommitRelease")
 	executeCmd(gitTagRelease, "gitTagRelease")
 	executeCmd(cmdSnapshotVersion, "cmdSnapshotVersion")
 	executeCmd(gitCommitSnapshot, "gitCommitSnapshot")
+	executeCmd(cmdVersionsCommit, "cmdVersionsCommit")
 
 	log.Printf("IMPORTANT: Please push the code manually! This is temporary")
 	//gitPush := exec.Command("git", "push", "origin", "--tags")
