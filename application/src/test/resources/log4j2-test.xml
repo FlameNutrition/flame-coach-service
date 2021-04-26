@@ -11,7 +11,7 @@
     <Loggers>
 
         <!-- LOG everything at INFO level -->
-        <Root level="INFO">
+        <Root level="OFF">
             <AppenderRef ref="Console"/>
         </Root>
 
