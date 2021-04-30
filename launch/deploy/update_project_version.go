@@ -15,11 +15,11 @@ func main() {
 	flag.Parse()
 
 	if *releaseVersion == "" {
-		log.Fatal("Missing -releaseVersion flag")
+		log.Fatal("Missing --releaseVersion flag")
 	}
 
 	if *snapshotVersion == "" {
-		log.Fatal("Missing -snapshotVersion flag")
+		log.Fatal("Missing --snapshotVersion flag")
 	}
 
 	cmdReleaseVersion := exec.Command("mvn", "versions:set", fmt.Sprintf("-DnewVersion=%s", *releaseVersion), "-f", "../../pom.xml")
@@ -48,6 +48,8 @@ func main() {
 	executeCmd(cmdVersionsCommit, "cmdVersionsCommit")
 
 	log.Printf("IMPORTANT: Please push the code manually! This is temporary")
+	log.Printf("git push")
+	log.Printf("git push origin --tags")
 	//gitPush := exec.Command("git", "push", "origin", "--tags")
 	//executeCmd(gitPush, "gitPush")
 
