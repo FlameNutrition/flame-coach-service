@@ -1,8 +1,8 @@
 #!/bin/sh
 
-mkdir /var/logs/flame-coach/scripts > /dev/null
-touch /var/logs/flame-coach/scripts/waitAndRun.log > /dev/null
-processId=$(/bin/ps -fu $1 | grep "flame-coach.jar" | grep -v "grep" | awk '{print $2}')
+mkdir /var/logs/flame-coach/scripts 2> /dev/null
+touch /var/logs/flame-coach/scripts/waitAndRun.log 2> /dev/null
+processId=$(/bin/ps -fu root | grep "flame-coach.jar" | grep -v "grep" | awk '{print $2}')
 
 if [ "$processId" ]
 then
@@ -18,3 +18,5 @@ then
   echo "Process $processId has finished" >> /var/logs/flame-coach/scripts/waitAndRun.log
 
 fi
+
+exit 0
