@@ -34,7 +34,7 @@ class RequestLoggingAspect {
             loggingFormatArgs = "$loggingFormatArgs, request='N/A'"
         }
 
-        LOGGER.info("operation='{}',$loggingFormatArgs", *listOfArgs.toTypedArray())
+        LOGGER.info("opr='{}',$loggingFormatArgs", *listOfArgs.toTypedArray())
 
     }
 

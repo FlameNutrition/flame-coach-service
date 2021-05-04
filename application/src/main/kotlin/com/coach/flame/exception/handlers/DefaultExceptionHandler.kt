@@ -28,8 +28,7 @@ class DefaultExceptionHandler(
     @ExceptionHandler(Exception::class)
     fun handleRootException(ex: Exception, request: WebRequest): ResponseEntity<Any> {
 
-        LOGGER.error("opr=handleRootException, msg='Unexpected error happened'", ex)
-        LOGGER.info("opr=handleRootException, msg='Mapping unexpected problem to InternalServerException'")
+        LOGGER.error("opr=handleRootException, msg='Unexpected error happened. This will be wrapped into InternalServerException'", ex)
 
         val internalException = InternalServerException(ErrorCode.CODE_9999,
             "This is an internal problem, please contact the admin system",

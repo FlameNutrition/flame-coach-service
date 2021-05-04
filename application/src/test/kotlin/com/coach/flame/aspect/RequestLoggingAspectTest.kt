@@ -54,9 +54,8 @@ class RequestLoggingAspectTest {
         requestLoggingAspect.requestLogging(joinPoint)
 
         assertEquals(Level.INFO, captorLoggingEvent.captured.level)
-        assertEquals("operation='{}', msg='Request', request='N/A'", captorLoggingEvent.captured.message.format)
-        assertEquals(
-            "operation='methodName', msg='Request', request='N/A'",
+        assertEquals("opr='{}', msg='Request', request='N/A'", captorLoggingEvent.captured.message.format)
+        assertEquals("opr='methodName', msg='Request', request='N/A'",
             captorLoggingEvent.captured.message.formattedMessage
         )
 
@@ -74,9 +73,8 @@ class RequestLoggingAspectTest {
         requestLoggingAspect.requestLogging(joinPoint)
 
         assertEquals(Level.INFO, captorLoggingEvent.captured.level)
-        assertEquals("operation='{}', msg='Request', arg1={}", captorLoggingEvent.captured.message.format)
-        assertEquals(
-            "operation='methodName', msg='Request', arg1=10",
+        assertEquals("opr='{}', msg='Request', arg1={}", captorLoggingEvent.captured.message.format)
+        assertEquals("opr='methodName', msg='Request', arg1=10",
             captorLoggingEvent.captured.message.formattedMessage
         )
 
@@ -94,12 +92,10 @@ class RequestLoggingAspectTest {
         requestLoggingAspect.requestLogging(joinPoint)
 
         assertEquals(Level.INFO, captorLoggingEvent.captured.level)
-        assertEquals(
-            "operation='{}', msg='Request', request={}, arg2={}, stringValue={}",
+        assertEquals("opr='{}', msg='Request', request={}, arg2={}, stringValue={}",
             captorLoggingEvent.captured.message.format
         )
-        assertEquals(
-            "operation='methodName', msg='Request', request=10, arg2=30, stringValue=Hello Test",
+        assertEquals("opr='methodName', msg='Request', request=10, arg2=30, stringValue=Hello Test",
             captorLoggingEvent.captured.message.formattedMessage
         )
 

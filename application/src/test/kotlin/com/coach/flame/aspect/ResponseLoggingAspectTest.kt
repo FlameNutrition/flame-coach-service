@@ -1,6 +1,5 @@
 package com.coach.flame.aspect
 
-import com.coach.flame.aspect.ResponseLoggingAspect
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -51,11 +50,25 @@ class ResponseLoggingAspectTest {
         responseLoggingAspect.responseLogging(joinPoint, "Hello")
 
         assertEquals(Level.INFO, captorLoggingEvent.captured.level)
-        assertEquals("operation='{}', msg='Response', response='{}'", captorLoggingEvent.captured.message.format)
-        assertEquals(
-            "operation='methodName', msg='Response', response='Hello'",
+        assertEquals("opr='{}', msg='Response', response='{}'", captorLoggingEvent.captured.message.format)
+        assertEquals("opr='methodName', msg='Response', response='Hello'",
             captorLoggingEvent.captured.message.formattedMessage
         )
+
+    }
+
+    @Test
+    fun `test logging response when exception occurred`() {
+
+        every { joinPoint.signature.name } returns "methodName"
+        every { appender.append(capture(captorLoggingEvent)) }
+
+        responseLoggingAspect.responseLogging(joinPoint, IllegalArgumentException("Invalid arg"))
+
+        assertEquals(Level.INFO, captorLoggingEvent.captured.level)
+        assertEquals("opr='{}', msg='Response', response='{}'", captorLoggingEvent.captured.message.format)
+        assertEquals("opr='methodName', msg='Response', response='java.lang.IllegalArgumentException: Invalid arg'",
+            captorLoggingEvent.captured.message.formattedMessage)
 
     }
 
