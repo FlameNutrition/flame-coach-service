@@ -6,5 +6,18 @@ data class CustomerRequest(
     val email: String?,
     val password: String?,
     val type: String?,
-    val policy: Boolean?
-)
+    val policy: Boolean?,
+) {
+
+    override fun toString(): String {
+        return "CustomerRequest(" +
+                "firstname=$firstname, " +
+                "lastname=$lastname, " +
+                "email=$email, " +
+                "password=******, " +
+                "type=$type, " +
+                "policy=$policy" +
+                ")"
+    }
+}
+
