@@ -4,8 +4,8 @@ import com.coach.flame.api.dailyTask.request.*
 import com.coach.flame.dailyTask.DailyTaskService
 import com.coach.flame.date.stringToDate
 import com.coach.flame.domain.DailyTaskDto
-import com.coach.flame.domain.DailyTaskDtoBuilder
-import com.coach.flame.domain.DailyTaskDtoMaker
+import com.coach.flame.domain.maker.DailyTaskDtoBuilder
+import com.coach.flame.domain.maker.DailyTaskDtoMaker
 import com.coach.flame.exception.RestException
 import com.coach.flame.exception.RestInvalidRequestException
 import com.natpryce.makeiteasy.MakeItEasy.an

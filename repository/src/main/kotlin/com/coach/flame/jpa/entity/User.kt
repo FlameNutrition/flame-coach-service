@@ -1,5 +1,7 @@
 package com.coach.flame.jpa.entity
 
+import com.coach.flame.domain.LoginInfoDto
+import com.coach.flame.jpa.entity.UserSession.Companion.toUserSession
 import org.springframework.data.jpa.domain.AbstractPersistable
 import javax.persistence.*
 
@@ -25,4 +27,27 @@ class User(
 
     @OneToOne(mappedBy = "user")
     val coach: Coach? = null,
-) : AbstractPersistable<Long>()
+) : AbstractPersistable<Long>() {
+
+    fun toDto(): LoginInfoDto {
+        return LoginInfoDto(
+            userId = this.id,
+            sessionId = this.userSession.id,
+            username = this.email,
+            password = this.password,
+            keyDecrypt = this.keyDecrypt,
+            expirationDate = this.userSession.expirationDate,
+            token = this.userSession.token
+        )
+    }
+
+    companion object {
+        fun LoginInfoDto.toUser(): User {
+            requireNotNull(keyDecrypt) { "keyDecrypt can not be null" }
+            val user = User(username, password, keyDecrypt!!, this.toUserSession())
+            user.id = userId
+            return user
+        }
+    }
+
+}

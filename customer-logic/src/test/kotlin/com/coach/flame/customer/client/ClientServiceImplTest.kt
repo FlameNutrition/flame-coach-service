@@ -2,11 +2,12 @@ package com.coach.flame.customer.client
 
 import com.coach.flame.customer.CustomerNotFoundException
 import com.coach.flame.domain.ClientStatusDto
-import com.coach.flame.domain.CoachDtoBuilder
-import com.coach.flame.domain.converters.ClientDtoConverter
-import com.coach.flame.domain.converters.CountryDtoConverter
-import com.coach.flame.domain.converters.GenderDtoConverter
+import com.coach.flame.domain.maker.CoachDtoBuilder
 import com.coach.flame.jpa.entity.*
+import com.coach.flame.jpa.entity.maker.ClientBuilder
+import com.coach.flame.jpa.entity.maker.ClientMaker
+import com.coach.flame.jpa.entity.maker.CoachBuilder
+import com.coach.flame.jpa.entity.maker.CoachMaker
 import com.coach.flame.jpa.repository.ClientRepository
 import com.coach.flame.jpa.repository.CoachRepository
 import com.natpryce.makeiteasy.MakeItEasy.with
@@ -14,7 +15,6 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.impl.annotations.SpyK
 import io.mockk.junit5.MockKExtension
 import io.mockk.slot
 import io.mockk.verify
@@ -33,15 +33,6 @@ class ClientServiceImplTest {
 
     @MockK
     private lateinit var coachRepository: CoachRepository
-
-    @SpyK
-    private var genderDtoConverter: GenderDtoConverter = GenderDtoConverter()
-
-    @SpyK
-    private var countryDtoConverter: CountryDtoConverter = CountryDtoConverter()
-
-    @SpyK
-    private var clientDtoConverter: ClientDtoConverter = ClientDtoConverter(countryDtoConverter, genderDtoConverter)
 
     @InjectMockKs
     private lateinit var classToTest: ClientServiceImpl
@@ -68,7 +59,6 @@ class ClientServiceImplTest {
 
         val result = classToTest.getAllClients()
 
-        verify(exactly = 4) { clientDtoConverter.convert(any()) }
         then(result).isNotEmpty
         then(result).hasSize(4)
 
@@ -103,7 +93,6 @@ class ClientServiceImplTest {
 
         val result = classToTest.getAllClientsFromCoach(coach.identifier)
 
-        verify(exactly = 3) { clientDtoConverter.convert(any()) }
         then(result).isNotEmpty
         then(result).hasSize(3)
 
@@ -123,7 +112,6 @@ class ClientServiceImplTest {
 
         val result = classToTest.getAllClientsForCoach(uuidCoach)
 
-        verify(exactly = 2) { clientDtoConverter.convert(any()) }
         then(result).isNotEmpty
         then(result).hasSize(2)
 
@@ -143,7 +131,6 @@ class ClientServiceImplTest {
 
         val result = classToTest.updateClientStatus(uuid, ClientStatusDto.PENDING)
 
-        verify(exactly = 1) { clientDtoConverter.convert(any()) }
         then(clientSlot.isCaptured).isTrue
         then(clientSlot.captured.clientStatus).isEqualTo(ClientStatus.PENDING)
         then(result.clientStatus).isEqualTo(ClientStatusDto.PENDING)
@@ -184,7 +171,6 @@ class ClientServiceImplTest {
 
         classToTest.linkCoach(uuidClient, uuidCoach)
 
-        verify(exactly = 1) { clientDtoConverter.convert(any()) }
         then(clientSlot.isCaptured).isTrue
         then(clientSlot.captured.coach).isNotNull
 
@@ -227,7 +213,6 @@ class ClientServiceImplTest {
 
         classToTest.unlinkCoach(uuidClient)
 
-        verify(exactly = 1) { clientDtoConverter.convert(any()) }
         then(clientSlot.isCaptured).isTrue
         then(clientSlot.captured.coach).isNull()
         then(clientSlot.captured.clientStatus).isEqualTo(ClientStatus.AVAILABLE)

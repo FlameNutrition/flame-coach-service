@@ -4,6 +4,7 @@ import com.coach.flame.FlameCoachServiceApplication
 import com.coach.flame.customer.security.HashPassword
 import com.coach.flame.customer.security.Salt
 import com.coach.flame.jpa.entity.*
+import com.coach.flame.jpa.entity.maker.*
 import com.coach.flame.jpa.repository.*
 import com.coach.flame.jpa.repository.cache.ConfigCache
 import com.coach.flame.jpa.repository.configs.CountryConfigRepository

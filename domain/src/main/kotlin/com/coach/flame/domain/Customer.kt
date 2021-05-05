@@ -4,6 +4,7 @@ import java.time.LocalDate
 import java.util.*
 
 interface Customer {
+    val id: Long?
     val identifier: UUID
     val firstName: String
     val lastName: String

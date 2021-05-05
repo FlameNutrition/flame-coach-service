@@ -1,5 +1,6 @@
 package com.coach.flame.jpa.entity
 
+import com.coach.flame.domain.MeasureWeightDto
 import org.springframework.data.jpa.domain.AbstractPersistable
 import java.time.LocalDate
 import javax.persistence.*
@@ -14,8 +15,26 @@ class ClientMeasureWeight(
     @Column(nullable = false)
     val measureDate: LocalDate,
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "clientFk", referencedColumnName = "id")
-    val client: Client
+    ) : AbstractPersistable<Long>() {
 
-) : AbstractPersistable<Long>()
+    fun toDto(): MeasureWeightDto {
+        return MeasureWeightDto(
+            id = this.id,
+            date = this.measureDate,
+            value = this.weight
+        )
+    }
+
+    companion object {
+        fun MeasureWeightDto.toClientMeasureWeight(): ClientMeasureWeight {
+            val clientMeasureWeigh = ClientMeasureWeight(
+                weight = value,
+                measureDate = date
+            )
+
+            clientMeasureWeigh.id = id
+            return clientMeasureWeigh
+        }
+    }
+
+}

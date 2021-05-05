@@ -1,9 +1,9 @@
 package com.coach.flame.api.customer.response
 
 import com.coach.flame.domain.ClientDto
-import com.coach.flame.domain.ClientDtoMaker
+import com.coach.flame.domain.maker.ClientDtoMaker
 import com.coach.flame.domain.LoginInfoDto
-import com.coach.flame.domain.LoginInfoDtoMaker
+import com.coach.flame.domain.maker.LoginInfoDtoMaker
 import com.natpryce.makeiteasy.MakeItEasy.*
 import com.natpryce.makeiteasy.Maker
 import org.assertj.core.api.BDDAssertions.catchThrowable

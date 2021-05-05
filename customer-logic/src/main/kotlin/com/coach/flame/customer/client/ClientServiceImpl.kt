@@ -3,7 +3,6 @@ package com.coach.flame.customer.client
 import com.coach.flame.customer.CustomerNotFoundException
 import com.coach.flame.domain.ClientDto
 import com.coach.flame.domain.ClientStatusDto
-import com.coach.flame.domain.converters.ClientDtoConverter
 import com.coach.flame.jpa.entity.Client
 import com.coach.flame.jpa.entity.ClientStatus
 import com.coach.flame.jpa.entity.Coach
@@ -18,8 +17,7 @@ import java.util.*
 @Service
 class ClientServiceImpl(
     private val clientRepository: ClientRepository,
-    private val coachRepository: CoachRepository,
-    private val clientDtoConverter: ClientDtoConverter,
+    private val coachRepository: CoachRepository
 ) : ClientService {
 
     companion object {
@@ -29,21 +27,21 @@ class ClientServiceImpl(
     @Transactional(readOnly = true)
     override fun getAllClients(): Set<ClientDto> {
         return clientRepository.findAll()
-            .map { clientDtoConverter.convert(it) }
+            .map { it.toDto(it.coach?.toDto()) }
             .toSet()
     }
 
     @Transactional(readOnly = true)
     override fun getAllClientsFromCoach(uuid: UUID): Set<ClientDto> {
         return clientRepository.findClientsWithCoach(uuid)
-            .map { clientDtoConverter.convert(it) }
+            .map { it.toDto(it.coach?.toDto()) }
             .toSet()
     }
 
     @Transactional(readOnly = true)
     override fun getAllClientsForCoach(uuid: UUID): Set<ClientDto> {
         return clientRepository.findClientsForCoach(uuid.toString())
-            .map { clientDtoConverter.convert(it) }
+            .map { it.toDto(it.coach?.toDto()) }
             .toSet()
     }
 
@@ -57,10 +55,11 @@ class ClientServiceImpl(
         client.clientStatus = ClientStatus.valueOf(status.name)
 
         val clientUpdated = clientRepository.save(client)
+        val coach = clientUpdated.coach
 
         LOGGER.info("opr='updateClientStatus', msg='Client new status', status={}", clientUpdated.clientStatus)
 
-        return clientDtoConverter.convert(clientUpdated)
+        return clientUpdated.toDto(coach?.toDto())
 
     }
 
@@ -79,7 +78,7 @@ class ClientServiceImpl(
 
         LOGGER.info("opr='linkCoach', msg='Client new coach', coach={}", clientUpdated.coach!!.uuid)
 
-        return clientDtoConverter.convert(clientUpdated)
+        return clientUpdated.toDto(clientUpdated.coach?.toDto())
 
     }
 
@@ -96,7 +95,7 @@ class ClientServiceImpl(
 
         LOGGER.info("opr='unlinkCoach', msg='Coach unlinked from a client', client={}", clientUpdated.uuid)
 
-        return clientDtoConverter.convert(clientUpdated)
+        return clientUpdated.toDto(client.coach?.toDto())
     }
 
     /**

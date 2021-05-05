@@ -5,7 +5,10 @@ import com.coach.flame.api.client.request.EnrollmentRequestBuilder
 import com.coach.flame.api.client.request.EnrollmentRequestMaker
 import com.coach.flame.customer.client.ClientEnrollmentProcess
 import com.coach.flame.domain.*
-import com.coach.flame.exception.RestException
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.domain.maker.ClientDtoMaker
+import com.coach.flame.domain.maker.CoachDtoBuilder
+import com.coach.flame.domain.maker.CoachDtoMaker
 import com.coach.flame.exception.RestInvalidRequestException
 import com.natpryce.makeiteasy.MakeItEasy.with
 import io.mockk.clearAllMocks

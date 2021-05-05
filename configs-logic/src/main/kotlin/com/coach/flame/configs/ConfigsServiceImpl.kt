@@ -30,7 +30,7 @@ class ConfigsServiceImpl(
         val value = countryConfigCache.getValue(key)
 
         return if (value.isPresent) {
-            CountryDto(value.get().countryCode, value.get().externalValue)
+            CountryDto(value.get().id, value.get().countryCode, value.get().externalValue)
         } else {
             throw UnexpectedConfigException("Country Code: '$key' is not present in the system.")
         }
@@ -40,10 +40,10 @@ class ConfigsServiceImpl(
         val value = genderConfigCache.getValue(key)
 
         return if (value.isPresent) {
-            GenderDto(value.get().genderCode, value.get().externalValue)
+            GenderDto(value.get().id, value.get().genderCode, value.get().externalValue)
         } else {
             throw UnexpectedConfigException("Gender Code: '$key' is not present in the system.")
         }
     }
-    
+
 }

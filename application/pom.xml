@@ -12,7 +12,7 @@
     <artifactId>application</artifactId>
 
     <properties>
-        <rest.debug.enable>true</rest.debug.enable>
+        <rest.debug.enable>false</rest.debug.enable>
     </properties>
 
     <dependencies>

@@ -25,11 +25,6 @@
 
         <dependency>
             <groupId>com.coach.flame</groupId>
-            <artifactId>converters</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.coach.flame</groupId>
             <artifactId>failureDetail-logic</artifactId>
         </dependency>
 

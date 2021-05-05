@@ -3,18 +3,15 @@ package com.coach.flame.customer
 import com.coach.flame.customer.security.HashPassword
 import com.coach.flame.customer.security.Salt
 import com.coach.flame.domain.*
-import com.coach.flame.domain.converters.ClientDtoConverter
-import com.coach.flame.domain.converters.CoachDtoConverter
-import com.coach.flame.domain.converters.CountryDtoConverter
-import com.coach.flame.domain.converters.GenderDtoConverter
+import com.coach.flame.domain.maker.*
 import com.coach.flame.jpa.entity.*
+import com.coach.flame.jpa.entity.maker.*
 import com.coach.flame.jpa.repository.*
 import com.coach.flame.jpa.repository.cache.ConfigCache
 import com.natpryce.makeiteasy.MakeItEasy.*
 import io.mockk.*
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.impl.annotations.SpyK
 import io.mockk.junit5.MockKExtension
 import org.assertj.core.api.BDDAssertions.catchThrowable
 import org.assertj.core.api.BDDAssertions.then
@@ -60,18 +57,6 @@ class CustomerServiceImplTest {
     @MockK
     private lateinit var saltTool: Salt
 
-    @SpyK
-    private var genderDtoConverter: GenderDtoConverter = GenderDtoConverter()
-
-    @SpyK
-    private var countryDtoConverter: CountryDtoConverter = CountryDtoConverter()
-
-    @SpyK
-    private var clientDtoConverter: ClientDtoConverter = ClientDtoConverter(countryDtoConverter, genderDtoConverter)
-
-    @SpyK
-    private var coachDtoConverter: CoachDtoConverter = CoachDtoConverter(countryDtoConverter, genderDtoConverter)
-
     @InjectMockKs
     private lateinit var classToTest: CustomerServiceImpl
 
@@ -84,17 +69,26 @@ class CustomerServiceImplTest {
     fun `get valid client`() {
 
         // given
-        val uuid = UUID.randomUUID()
-        val client = ClientBuilder.default()
-        every { clientRepository.findByUuid(uuid) } returns client
+        val uuid1 = UUID.randomUUID()
+        val uuid2 = UUID.randomUUID()
+        val clientWithoutCoach = ClientBuilder.default()
+        val clientWithCoach = ClientBuilder.maker()
+            .but(with(ClientMaker.coach, CoachBuilder.default()))
+            .make()
+
+        every { clientRepository.findByUuid(uuid1) } returns clientWithoutCoach
+        every { clientRepository.findByUuid(uuid2) } returns clientWithCoach
 
         // when
-        val clientDto = classToTest.getCustomer(uuid, CustomerTypeDto.CLIENT)
+        val clientDtoWithoutCoach = classToTest.getCustomer(uuid1, CustomerTypeDto.CLIENT)
+        val clientDtoWithCoach = classToTest.getCustomer(uuid2, CustomerTypeDto.CLIENT)
 
         // then
-        then(clientDto).isNotNull
-        verify(exactly = 1) { clientDtoConverter.convert(client) }
-        verify(exactly = 1) { clientRepository.findByUuid(uuid) }
+        verify(exactly = 1) { clientRepository.findByUuid(uuid1) }
+        verify(exactly = 1) { clientRepository.findByUuid(uuid2) }
+        then(clientDtoWithoutCoach).isNotNull
+        then(clientDtoWithCoach).isNotNull
+        then((clientDtoWithCoach as ClientDto).coach).isNotNull
 
     }
 
@@ -111,7 +105,6 @@ class CustomerServiceImplTest {
 
         // then
         then(clientDto).isNotNull
-        verify(exactly = 1) { coachDtoConverter.convert(coach) }
         verify(exactly = 1) { coachRepository.findByUuid(uuid) }
 
     }
@@ -130,7 +123,6 @@ class CustomerServiceImplTest {
         then(thrown)
             .isInstanceOf(CustomerNotFoundException::class.java)
             .hasMessageContaining("Could not found any client with uuid: $uuid")
-        verify(exactly = 0) { clientDtoConverter.convert(any()) }
         verify(exactly = 1) { clientRepository.findByUuid(uuid) }
 
     }
@@ -149,7 +141,6 @@ class CustomerServiceImplTest {
         then(thrown)
             .isInstanceOf(CustomerNotFoundException::class.java)
             .hasMessageContaining("Could not found any coach with uuid: $uuid")
-        verify(exactly = 0) { coachDtoConverter.convert(any()) }
         verify(exactly = 1) { coachRepository.findByUuid(uuid) }
 
     }
@@ -179,7 +170,6 @@ class CustomerServiceImplTest {
         val postClientDto = classToTest.registerCustomer(preClientDto) as ClientDto
 
         // then
-        verify(exactly = 1) { clientDtoConverter.convert(any()) }
         verify(exactly = 1) { clientRepository.saveAndFlush(any()) }
         verify(exactly = 0) { coachRepository.saveAndFlush(any()) }
         then(clientCaptorSlot.isCaptured).isTrue
@@ -222,7 +212,6 @@ class CustomerServiceImplTest {
         val postClientDto = classToTest.registerCustomer(preClientDto) as CoachDto
 
         // then
-        verify(exactly = 1) { coachDtoConverter.convert(any()) }
         verify(exactly = 0) { clientRepository.saveAndFlush(any()) }
         verify(exactly = 1) { coachRepository.saveAndFlush(any()) }
         then(clientCaptorSlot.isCaptured).isTrue
@@ -255,7 +244,6 @@ class CustomerServiceImplTest {
         val exception = catchThrowable { classToTest.registerCustomer(clientDto) }
 
         // then
-        verify(exactly = 0) { clientDtoConverter.convert(any()) }
         then(exception)
             .isInstanceOf(CustomerRegisterDuplicateException::class.java)
             .hasMessageContaining("The following customer already exists")
@@ -279,7 +267,6 @@ class CustomerServiceImplTest {
         val exception = catchThrowable { classToTest.registerCustomer(clientDto) }
 
         // then
-        verify(exactly = 0) { clientDtoConverter.convert(any()) }
         then(exception)
             .isInstanceOf(RuntimeException::class.java)
             .hasMessageContaining("Something wrong happened!")
@@ -305,7 +292,6 @@ class CustomerServiceImplTest {
         val exception = catchThrowable { classToTest.registerCustomer(clientDto) }
 
         // then
-        verify(exactly = 0) { clientDtoConverter.convert(any()) }
         then(exception)
             .isInstanceOf(IllegalStateException::class.java)
             .hasMessageContaining(expectedMessage)
@@ -316,45 +302,61 @@ class CustomerServiceImplTest {
     fun `get a new client session`() {
 
         // given
-        val username = "test@gmail.com"
         val password = "12345"
         val userSession = slot<UserSession>()
         val actualDate = LocalDateTime.now()
-        val entityClient = ClientBuilder.maker()
+        val entityClientWithoutCoach = ClientBuilder.maker()
             .but(with(ClientMaker.user,
                 make(a(UserMaker.User,
                     with(UserMaker.email, "test@gmail.com"),
                     with(UserMaker.password, "HASHING_PASSWORD")))))
             .make()
-        val user = UserBuilder.maker()
+        val entityClientWithCoach = ClientBuilder.maker()
+            .but(with(ClientMaker.user, make(a(UserMaker.User,
+                with(UserMaker.email, "test@gmail.com"),
+                with(UserMaker.password, "HASHING_PASSWORD")))),
+                with(ClientMaker.coach, CoachBuilder.default()))
+            .make()
+        val userWithoutCoach = UserBuilder.maker()
             .but(with(UserMaker.email, "test@gmail.com"),
                 with(UserMaker.password, "HASHING_PASSWORD"),
-                with(UserMaker.client, entityClient))
+                with(UserMaker.client, entityClientWithoutCoach))
+            .make()
+        val userWithCoach = UserBuilder.maker()
+            .but(with(UserMaker.email, "test2@gmail.com"),
+                with(UserMaker.password, "HASHING_PASSWORD"),
+                with(UserMaker.client, entityClientWithCoach))
             .make()
 
-        every { hashPasswordTool.generate("HASHING_PASSWORD",  "salt") } returns "HASHING_PASSWORD"
+        every { hashPasswordTool.generate("HASHING_PASSWORD", "salt") } returns "HASHING_PASSWORD"
         every { hashPasswordTool.verify("12345", "HASHING_PASSWORD", "salt") } returns true
-        every { userRepository.findUserByEmail("test@gmail.com") } returns user
+        every { userRepository.findUserByEmail("test@gmail.com") } returns userWithoutCoach
+        every { userRepository.findUserByEmail("test2@gmail.com") } returns userWithCoach
         every { userSessionRepository.save(capture(userSession)) } returns mockk()
 
         // when
-        val response = classToTest.getNewCustomerSession(username, password) as ClientDto
+        val responseWithoutCoach = classToTest.getNewCustomerSession("test@gmail.com", password) as ClientDto
 
         // then
         verify(exactly = 1) { userRepository.findUserByEmail("test@gmail.com") }
         verify(exactly = 1) { userSessionRepository.save(any()) }
-        verify(exactly = 1) { clientDtoConverter.convert(any()) }
         then(userSession.isCaptured).isTrue
         then(userSession.captured.token).isNotNull
         then(userSession.captured.expirationDate).isNotEqualTo(actualDate)
-        then(response.firstName).isNotEmpty
-        then(response.lastName).isNotEmpty
-        then(response.loginInfo?.username).isEqualTo("test@gmail.com")
-        then(response.loginInfo?.password).isEqualTo("HASHING_PASSWORD")
-        then(response.loginInfo?.keyDecrypt).isEqualTo("salt")
-        then(response.loginInfo?.expirationDate).isEqualTo(userSession.captured.expirationDate)
-        then(response.loginInfo?.token).isEqualTo(userSession.captured.token)
+        then(responseWithoutCoach.firstName).isNotEmpty
+        then(responseWithoutCoach.lastName).isNotEmpty
+        then(responseWithoutCoach.coach).isNull()
+        then(responseWithoutCoach.loginInfo?.username).isEqualTo("test@gmail.com")
+        then(responseWithoutCoach.loginInfo?.password).isEqualTo("HASHING_PASSWORD")
+        then(responseWithoutCoach.loginInfo?.keyDecrypt).isEqualTo("salt")
+        then(responseWithoutCoach.loginInfo?.expirationDate).isEqualTo(userSession.captured.expirationDate)
+        then(responseWithoutCoach.loginInfo?.token).isEqualTo(userSession.captured.token)
 
+        val responseWithCoach = classToTest.getNewCustomerSession("test2@gmail.com", password) as ClientDto
+
+        verify(exactly = 1) { userRepository.findUserByEmail("test2@gmail.com") }
+        verify(exactly = 2) { userSessionRepository.save(any()) }
+        then(responseWithCoach.coach).isNotNull
     }
 
     @Test
@@ -368,7 +370,6 @@ class CustomerServiceImplTest {
 
         // then
         verify(exactly = 1) { userRepository.findUserByEmail("INVALID") }
-        verify(exactly = 0) { clientDtoConverter.convert(any()) }
         verify(exactly = 0) { userSessionRepository.saveAndFlush(any()) }
         then(exception1)
             .isInstanceOf(CustomerUsernameOrPasswordException::class.java)
@@ -382,7 +383,6 @@ class CustomerServiceImplTest {
 
         // then
         verify(exactly = 1) { userRepository.findUserByEmail("test@gmail.com") }
-        verify(exactly = 0) { clientDtoConverter.convert(any()) }
         verify(exactly = 0) { userSessionRepository.saveAndFlush(any()) }
         then(exception2)
             .isInstanceOf(CustomerUsernameOrPasswordException::class.java)
@@ -414,7 +414,7 @@ class CustomerServiceImplTest {
                 with(UserMaker.coach, entityCoach))
             .make()
 
-        every { hashPasswordTool.generate("HASHING_PASSWORD",  "salt") } returns "HASHING_PASSWORD"
+        every { hashPasswordTool.generate("HASHING_PASSWORD", "salt") } returns "HASHING_PASSWORD"
         every { hashPasswordTool.verify("12345", "HASHING_PASSWORD", "salt") } returns true
         every { userRepository.findUserByEmail("test@gmail.com") } returns user
         every { userSessionRepository.save(capture(userSession)) } returns mockk()
@@ -425,7 +425,6 @@ class CustomerServiceImplTest {
         // then
         verify(exactly = 1) { userRepository.findUserByEmail("test@gmail.com") }
         verify(exactly = 1) { userSessionRepository.save(any()) }
-        verify(exactly = 1) { coachDtoConverter.convert(any()) }
         then(userSession.isCaptured).isTrue
         then(userSession.captured.token).isNotNull
         then(userSession.captured.expirationDate).isNotEqualTo(actualDate)
@@ -442,7 +441,8 @@ class CustomerServiceImplTest {
     @Test
     fun `update client customer`() {
 
-        val identifier = UUID.randomUUID()
+        val identifier1 = UUID.randomUUID()
+        val identifier2 = UUID.randomUUID()
         val countryDto = CountryDtoBuilder.maker()
             .but(with(CountryDtoMaker.countryCode, "PT"),
                 with(CountryDtoMaker.externalValue, "Portugal"))
@@ -457,6 +457,10 @@ class CustomerServiceImplTest {
                 with(ClientMaker.clientStatus, ClientStatus.ACCEPTED),
                 with(ClientMaker.coach, CoachBuilder.default()))
             .make()
+        val clientWithoutCoach = ClientBuilder.maker()
+            .but(with(ClientMaker.user, UserBuilder.default()),
+                with(ClientMaker.clientStatus, ClientStatus.ACCEPTED))
+            .make()
         val clientDto = ClientDtoBuilder.maker()
             .but(
                 with(ClientDtoMaker.firstName, "FIRSTNAME"),
@@ -470,8 +474,10 @@ class CustomerServiceImplTest {
                 with(ClientDtoMaker.height, 1.70f),
                 with(ClientDtoMaker.measureType, MeasureTypeDto.LBS_IN),
             ).make()
+        val clientDtoWithoutCoach = ClientDtoBuilder.default()
 
-        every { clientRepository.findByUuid(identifier) } returns client
+        every { clientRepository.findByUuid(identifier1) } returns client
+        every { clientRepository.findByUuid(identifier2) } returns clientWithoutCoach
         every { countryConfigCache.getValue("PT") } returns Optional.of(CountryBuilder.maker()
             .but(with(CountryMaker.externalValue, "Portugal"),
                 with(CountryMaker.countryCode, "PT"))
@@ -482,7 +488,7 @@ class CustomerServiceImplTest {
             .make())
         every { clientRepository.save(capture(entity)) } answers { entity.captured }
 
-        val response = classToTest.updateCustomer(identifier, clientDto) as ClientDto
+        val response1 = classToTest.updateCustomer(identifier1, clientDto) as ClientDto
 
         val entityCaptured = entity.captured
 
@@ -500,14 +506,20 @@ class CustomerServiceImplTest {
         then(entityCaptured.measureConfig.code).isEqualTo(clientDto.measureType.code)
 
         // Attributes should not be updated
-        then(response.identifier).isEqualTo(entityCaptured.uuid)
-        then(response.customerType.name).isEqualTo(entityCaptured.clientType.type.toUpperCase())
-        then(response.loginInfo?.username).isEqualTo(entityCaptured.user.email)
-        then(response.loginInfo?.token).isEqualTo(entityCaptured.user.userSession.token)
-        then(response.loginInfo?.expirationDate).isEqualTo(entityCaptured.user.userSession.expirationDate)
-        then(response.registrationDate).isEqualTo(entityCaptured.registrationDate)
-        then(response.clientStatus?.name).isEqualTo(entityCaptured.clientStatus.name)
-        then(response.coach?.identifier).isEqualTo(entityCaptured.coach?.uuid)
+        then(response1.identifier).isEqualTo(entityCaptured.uuid)
+        then(response1.customerType.name).isEqualTo(entityCaptured.clientType.type.toUpperCase())
+        then(response1.loginInfo?.username).isEqualTo(entityCaptured.user.email)
+        then(response1.loginInfo?.token).isEqualTo(entityCaptured.user.userSession.token)
+        then(response1.loginInfo?.expirationDate).isEqualTo(entityCaptured.user.userSession.expirationDate)
+        then(response1.registrationDate).isEqualTo(entityCaptured.registrationDate)
+        then(response1.clientStatus?.name).isEqualTo(entityCaptured.clientStatus.name)
+        then(response1.coach?.identifier).isEqualTo(entityCaptured.coach?.uuid)
+
+
+        every { clientRepository.save(any()) } returns clientWithoutCoach
+        val response2 = classToTest.updateCustomer(identifier2, clientDtoWithoutCoach) as ClientDto
+
+        then(response2.coach).isNull()
     }
 
     @Test
@@ -597,6 +609,51 @@ class CustomerServiceImplTest {
         then(entity.captured.keyDecrypt).isEqualTo("MY_SALT")
         then(entity.captured.password).isEqualTo("HASH_PASSWORD_2")
     }
+
+    @Test
+    fun `update password customer but previous password is wrong`() {
+
+        val user = UserBuilder.maker()
+            .but(with(UserMaker.password, "##55-332"),
+                with(UserMaker.key, "MY_SALT"))
+            .make()
+
+        every { userRepository.findUserByEmail("test@gmail.com") } returns user
+        every { hashPasswordTool.verify("OLD", "##55-332", "MY_SALT") } returns false
+
+        // when
+        val exception = catchThrowable { classToTest.updateCustomerPassword("test@gmail.com", "OLD", "NEW") }
+
+        // then
+        verify(exactly = 1) { userRepository.findUserByEmail("test@gmail.com") }
+        then(exception)
+            .isInstanceOf(CustomerUsernameOrPasswordException::class.java)
+            .hasMessageContaining("Password invalid")
+    }
+
+    @Test
+    fun `test when customer type is invalid`() {
+
+        // when
+        val getCustomer = catchThrowable { classToTest.getCustomer(UUID.randomUUID(), CustomerTypeDto.UNKNOWN) }
+        val updateCustomer = catchThrowable {
+            classToTest.updateCustomer(UUID.randomUUID(), ClientDtoBuilder
+                .maker()
+                .but(with(ClientDtoMaker.customerType, CustomerTypeDto.UNKNOWN))
+                .make())
+        }
+
+        // then
+        then(getCustomer)
+            .isInstanceOf(CustomerException::class.java)
+            .hasMessageContaining("UNKNOWN is an invalid customer type")
+
+        then(updateCustomer)
+            .isInstanceOf(CustomerException::class.java)
+            .hasMessageContaining("UNKNOWN is an invalid customer type")
+
+    }
+
 
     // region Parameters
 

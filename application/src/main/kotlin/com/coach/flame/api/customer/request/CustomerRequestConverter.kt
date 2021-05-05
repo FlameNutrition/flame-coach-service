@@ -28,6 +28,8 @@ class CustomerRequestConverter : Converter<CustomerRequest, ClientDto> {
             lastName = customerRequest.lastname!!,
             customerType = clientTypeDto!!,
             loginInfo = LoginInfoDto(
+                userId = null,
+                sessionId = null,
                 username = customerRequest.email!!,
                 password = customerRequest.password!!,
                 keyDecrypt = null

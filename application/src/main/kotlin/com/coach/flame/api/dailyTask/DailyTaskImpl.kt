@@ -78,6 +78,8 @@ class DailyTaskImpl(
                 ticked = false,
                 clientIdentifier = clientIdentifier,
                 coachIdentifier = coachIdentifier,
+                coach = null,
+                client = null
             )
 
             val createdDailyTask = dailyTaskService.createDailyTask(dailyTaskDto)
@@ -191,6 +193,8 @@ class DailyTaskImpl(
                 ticked = request.ticked,
                 clientIdentifier = null,
                 coachIdentifier = null,
+                client = null,
+                coach = null
             )
 
             val createdDailyTask = dailyTaskService.updateDailyTask(dailyTaskDto)

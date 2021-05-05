@@ -23,18 +23,6 @@ class DailyTaskServiceImpl(
 
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(DailyTaskServiceImpl::class.java)
-
-        private val converter = { entity: DailyTask ->
-            DailyTaskDto(
-                identifier = entity.uuid,
-                name = entity.name,
-                description = entity.description,
-                date = entity.date,
-                ticked = entity.ticked,
-                coachIdentifier = entity.createdBy.uuid,
-                clientIdentifier = entity.client.uuid
-            )
-        }
     }
 
     @Transactional(readOnly = true)
@@ -48,7 +36,7 @@ class DailyTaskServiceImpl(
             throw DailyTaskNotFoundException("Could not found any daily task with id: $taskId")
         }
 
-        return converter(dailyTask.get())
+        return dailyTask.get().toDto()
 
     }
 
@@ -65,7 +53,7 @@ class DailyTaskServiceImpl(
 
         return dailyTasks
             .get()
-            .map { converter(it) }
+            .map { it.toDto() }
             .toSet()
 
     }
@@ -84,7 +72,7 @@ class DailyTaskServiceImpl(
         }
 
         return dailyTaskRepository.findAll(criterias)
-            .map(converter)
+            .map { it.toDto() }
             .toSet()
 
     }
@@ -123,7 +111,7 @@ class DailyTaskServiceImpl(
 
         val entity = dailyTaskRepository.save(newDailyTask)
 
-        return converter(entity)
+        return entity.toDto()
 
     }
 
@@ -147,7 +135,7 @@ class DailyTaskServiceImpl(
 
         val entity = dailyTaskRepository.save(task)
 
-        return converter(entity)
+        return entity.toDto()
 
     }
 

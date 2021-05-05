@@ -1,15 +1,9 @@
 package com.coach.flame.dailyTask
 
-import com.coach.flame.domain.ClientDtoBuilder
-import com.coach.flame.domain.ClientDtoMaker
-import com.coach.flame.domain.LoginInfoDto
 import com.coach.flame.failure.HttpStatus
 import com.coach.flame.failure.Status
 import com.coach.flame.failure.domain.ErrorCode
 import com.coach.flame.failure.exception.BusinessException
-import com.natpryce.makeiteasy.MakeItEasy
-import io.mockk.verify
-import org.assertj.core.api.BDDAssertions
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest

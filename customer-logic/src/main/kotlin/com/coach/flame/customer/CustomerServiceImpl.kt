@@ -2,12 +2,7 @@ package com.coach.flame.customer
 
 import com.coach.flame.customer.security.HashPassword
 import com.coach.flame.customer.security.Salt
-import com.coach.flame.domain.ClientDto
-import com.coach.flame.domain.CoachDto
-import com.coach.flame.domain.Customer
-import com.coach.flame.domain.CustomerTypeDto
-import com.coach.flame.domain.converters.ClientDtoConverter
-import com.coach.flame.domain.converters.CoachDtoConverter
+import com.coach.flame.domain.*
 import com.coach.flame.failure.domain.ErrorCode
 import com.coach.flame.jpa.entity.*
 import com.coach.flame.jpa.repository.*
@@ -27,8 +22,6 @@ class CustomerServiceImpl(
     private val clientTypeRepository: ClientTypeRepository,
     private val userSessionRepository: UserSessionRepository,
     private val userRepository: UserRepository,
-    private val clientDtoConverter: ClientDtoConverter,
-    private val coachDtoConverter: CoachDtoConverter,
     private val countryConfigCache: ConfigCache<CountryConfig>,
     private val genderConfigCache: ConfigCache<GenderConfig>,
     private val hashPasswordTool: HashPassword,
@@ -44,20 +37,16 @@ class CustomerServiceImpl(
 
         LOGGER.info("opr='getCustomer', msg='Get Customer', uuid={}, type={}", uuid, customerType)
 
-        when (customerType) {
+        return when (customerType) {
             CustomerTypeDto.CLIENT -> {
-                val client =
-                    clientRepository.findByUuid(uuid)
-                        ?: throw CustomerNotFoundException("Could not found any client with uuid: $uuid")
+                val client = getClient(uuid)
 
-                return clientDtoConverter.convert(client)
+                client.toDto(client.coach?.toDto())
             }
             CustomerTypeDto.COACH -> {
-                val coach =
-                    coachRepository.findByUuid(uuid)
-                        ?: throw CustomerNotFoundException("Could not found any coach with uuid: $uuid")
+                val coach = getCoach(uuid)
 
-                return coachDtoConverter.convert(coach)
+                coach.toDto()
 
             }
             else -> throw CustomerException(ErrorCode.CODE_2004, "$customerType is an invalid customer type")
@@ -72,40 +61,38 @@ class CustomerServiceImpl(
         when (customer.customerType) {
             CustomerTypeDto.CLIENT -> {
                 val clientDto = customer as ClientDto
-                val client = clientRepository.findByUuid(uuid)
-                    ?: throw CustomerNotFoundException("Could not found any client with uuid: $uuid")
+                val client = getClient(uuid)
 
                 client.firstName = clientDto.firstName
                 client.lastName = clientDto.lastName
                 client.birthday = clientDto.birthday
                 client.phoneCode = clientDto.phoneCode
                 client.phoneNumber = clientDto.phoneNumber
-                client.country = clientDto.country?.let { countryConfigCache.getValue(it.countryCode).get() }
-                client.gender = clientDto.gender?.let { genderConfigCache.getValue(it.genderCode).get() }
+                client.country = getCountryConfigFromCache(clientDto.country)
+                client.gender = getGenderConfigFromCache(clientDto.gender)
                 client.measureConfig = MeasureConfig.valueOf(clientDto.measureType.code)
                 client.weight = clientDto.weight
                 client.height = clientDto.height
 
                 val newClient = clientRepository.save(client)
 
-                return clientDtoConverter.convert(newClient)
+                return newClient.toDto(newClient.coach?.toDto())
             }
             CustomerTypeDto.COACH -> {
                 val coachDto = customer as CoachDto
-                val coach = coachRepository.findByUuid(uuid)
-                    ?: throw CustomerNotFoundException("Could not found any coach with uuid: $uuid")
+                val coach = getCoach(uuid)
 
                 coach.firstName = coachDto.firstName
                 coach.lastName = coachDto.lastName
                 coach.birthday = coachDto.birthday
                 coach.phoneCode = coachDto.phoneCode
                 coach.phoneNumber = coachDto.phoneNumber
-                coach.country = coachDto.country?.let { countryConfigCache.getValue(it.countryCode).get() }
-                coach.gender = coachDto.gender?.let { genderConfigCache.getValue(it.genderCode).get() }
+                coach.country = getCountryConfigFromCache(coachDto.country)
+                coach.gender = getGenderConfigFromCache(coachDto.gender)
 
                 val newCoach = coachRepository.save(coach)
 
-                return coachDtoConverter.convert(newCoach)
+                return newCoach.toDto()
 
             }
             else -> throw CustomerException(ErrorCode.CODE_2004, "${customer.customerType} is an invalid customer type")
@@ -149,7 +136,7 @@ class CustomerServiceImpl(
                         registrationDate = customer.registrationDate
                     )
                     val client = clientRepository.saveAndFlush(entity)
-                    return clientDtoConverter.convert(client)
+                    return client.toDto()
                 }
                 CustomerTypeDto.COACH -> {
                     val entity = Coach(
@@ -160,8 +147,8 @@ class CustomerServiceImpl(
                         user = user,
                         registrationDate = customer.registrationDate
                     )
-                    val client = coachRepository.saveAndFlush(entity)
-                    return coachDtoConverter.convert(client)
+                    val coach = coachRepository.saveAndFlush(entity)
+                    return coach.toDto()
                 }
                 else -> throw CustomerException(ErrorCode.CODE_2004,
                     "${customer.customerType} is a invalid customer type")
@@ -196,11 +183,11 @@ class CustomerServiceImpl(
         return when {
             user.client !== null -> {
                 userSessionRepository.save(user.client!!.user.userSession)
-                clientDtoConverter.convert(user.client!!)
+                user.client!!.toDto(user.client!!.coach?.toDto())
             }
             user.coach !== null -> {
                 userSessionRepository.save(user.coach!!.user.userSession)
-                coachDtoConverter.convert(user.coach!!)
+                user.coach!!.toDto()
             }
             else -> {
                 LOGGER.error("opr='getNewCustomerSession', " +
@@ -242,5 +229,16 @@ class CustomerServiceImpl(
         return user
     }
 
+    private fun getClient(identifier: UUID) = clientRepository.findByUuid(identifier)
+        ?: throw CustomerNotFoundException("Could not found any client with uuid: $identifier")
+
+    private fun getCoach(identifier: UUID) = coachRepository.findByUuid(identifier)
+        ?: throw CustomerNotFoundException("Could not found any coach with uuid: $identifier")
+
+    private fun getCountryConfigFromCache(country: CountryDto?) =
+        country?.let { countryConfigCache.getValue(it.countryCode).get() }
+
+    private fun getGenderConfigFromCache(gender: GenderDto?) =
+        gender?.let { genderConfigCache.getValue(it.genderCode).get() }
 
 }

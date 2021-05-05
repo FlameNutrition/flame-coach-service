@@ -1,6 +1,16 @@
 package com.coach.flame.jpa.entity
 
+import com.coach.flame.domain.ClientDto
+import com.coach.flame.domain.ClientStatusDto
+import com.coach.flame.domain.CoachDto
+import com.coach.flame.domain.MeasureTypeDto
 import com.coach.flame.jpa.converter.MeasureConfigConverter
+import com.coach.flame.jpa.entity.ClientMeasureWeight.Companion.toClientMeasureWeight
+import com.coach.flame.jpa.entity.ClientType.Companion.toClientType
+import com.coach.flame.jpa.entity.Coach.Companion.toCoach
+import com.coach.flame.jpa.entity.CountryConfig.Companion.toCountryConfig
+import com.coach.flame.jpa.entity.GenderConfig.Companion.toGenderConfig
+import com.coach.flame.jpa.entity.User.Companion.toUser
 import org.hibernate.annotations.Type
 import org.springframework.data.jpa.domain.AbstractPersistable
 import java.time.LocalDate
@@ -56,7 +66,8 @@ class Client(
     @JoinColumn(name = "clientTypeFk", referencedColumnName = "id")
     val clientType: ClientType,
 
-    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH])
+    @JoinColumn(name = "clientFk", referencedColumnName = "id")
     val clientMeasureWeight: MutableList<ClientMeasureWeight> = mutableListOf(),
 
     @OneToMany(mappedBy = "client", fetch = FetchType.EAGER)
@@ -72,4 +83,71 @@ class Client(
 
     @Column(nullable = false, columnDefinition = "DATE")
     val registrationDate: LocalDate,
-) : AbstractPersistable<Long>()
+) : AbstractPersistable<Long>() {
+
+    fun toDto(coachDto: CoachDto?): ClientDto {
+
+        val listOfWeightsTimeline = this.clientMeasureWeight
+            .map { it.toDto() }
+
+        return ClientDto(
+            id = this.id,
+            identifier = this.uuid,
+            firstName = this.firstName,
+            lastName = this.lastName,
+            birthday = this.birthday,
+            phoneCode = this.phoneCode,
+            phoneNumber = this.phoneNumber,
+            country = this.country?.toDto(),
+            gender = this.gender?.toDto(),
+            customerType = this.clientType.toDto(),
+            loginInfo = this.user.toDto(),
+            registrationDate = this.registrationDate,
+            weight = this.weight,
+            height = this.height,
+            measureType = MeasureTypeDto.valueOf(this.measureConfig.name),
+            clientStatus = ClientStatusDto.valueOf(this.clientStatus.name),
+            coach = coachDto,
+            weightMeasureTimeline = listOfWeightsTimeline.toMutableList()
+        )
+
+    }
+
+    fun toDto(): ClientDto {
+        return toDto(null)
+    }
+
+    companion object {
+        fun ClientDto.toClient(): Client {
+            requireNotNull(loginInfo) { "loginInfo can not be null" }
+            requireNotNull(clientStatus) { "clientStatus can not be null" }
+
+            val listOfWeightsTimeline = weightMeasureTimeline
+                .map { it.toClientMeasureWeight() }
+
+            val client = Client(
+                uuid = identifier,
+                firstName = firstName,
+                lastName = lastName,
+                birthday = birthday,
+                phoneCode = phoneCode,
+                phoneNumber = phoneNumber,
+                country = country?.toCountryConfig(),
+                gender = gender?.toGenderConfig(),
+                weight = weight,
+                height = height,
+                clientMeasureWeight = listOfWeightsTimeline.toMutableList(),
+                measureConfig = MeasureConfig.valueOf(measureType.name),
+                user = loginInfo!!.toUser(),
+                clientType = customerType.toClientType(),
+                clientStatus = ClientStatus.valueOf(clientStatus!!.name),
+                registrationDate = registrationDate,
+                coach = coach?.toCoach()
+            )
+
+            client.id = id
+            return client
+        }
+    }
+
+}

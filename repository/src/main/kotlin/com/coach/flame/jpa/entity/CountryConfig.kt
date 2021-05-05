@@ -1,5 +1,6 @@
 package com.coach.flame.jpa.entity
 
+import com.coach.flame.domain.CountryDto
 import org.springframework.data.jpa.domain.AbstractPersistable
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -20,4 +21,21 @@ class CountryConfig(
     override fun configKey(): String {
         return countryCode
     }
+
+    fun toDto(): CountryDto {
+        return CountryDto(
+            id = this.id,
+            countryCode = this.countryCode,
+            externalValue = this.externalValue
+        )
+    }
+
+    companion object {
+        fun CountryDto.toCountryConfig(): CountryConfig {
+            val countryConfig = CountryConfig(countryCode, externalValue)
+            countryConfig.id = id
+            return countryConfig
+        }
+    }
+
 }

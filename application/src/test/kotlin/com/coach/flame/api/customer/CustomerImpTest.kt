@@ -12,12 +12,11 @@ import com.coach.flame.api.customer.response.CustomerResponseMaker
 import com.coach.flame.api.customer.response.CustomerResponseMaker.Companion.CustomerResponse
 import com.coach.flame.customer.CustomerService
 import com.coach.flame.domain.ClientDto
-import com.coach.flame.domain.ClientDtoMaker
-import com.coach.flame.domain.ClientDtoMaker.Companion.ClientDto
+import com.coach.flame.domain.maker.ClientDtoMaker
+import com.coach.flame.domain.maker.ClientDtoMaker.Companion.ClientDto
 import com.coach.flame.domain.LoginInfoDto
-import com.coach.flame.domain.LoginInfoDtoMaker
-import com.coach.flame.domain.LoginInfoDtoMaker.Companion.LoginInfoDto
-import com.coach.flame.exception.RestException
+import com.coach.flame.domain.maker.LoginInfoDtoMaker
+import com.coach.flame.domain.maker.LoginInfoDtoMaker.Companion.LoginInfoDto
 import com.coach.flame.exception.RestInvalidRequestException
 import com.natpryce.makeiteasy.MakeItEasy.*
 import com.natpryce.makeiteasy.Maker

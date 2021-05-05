@@ -443,7 +443,6 @@
         <module>utilities</module>
         <module>customer-logic</module>
         <module>domain</module>
-        <module>converters</module>
         <module>configs-logic</module>
     </modules>
 

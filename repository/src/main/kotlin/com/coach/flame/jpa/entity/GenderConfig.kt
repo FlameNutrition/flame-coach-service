@@ -1,5 +1,9 @@
 package com.coach.flame.jpa.entity
 
+import com.coach.flame.domain.CountryDto
+import com.coach.flame.domain.GenderDto
+import com.coach.flame.domain.LoginInfoDto
+import com.coach.flame.jpa.entity.UserSession.Companion.toUserSession
 import org.springframework.data.jpa.domain.AbstractPersistable
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -16,7 +20,24 @@ class GenderConfig(
     val externalValue: String,
 
     ) : AbstractPersistable<Long>(), ConfigKey {
+
     override fun configKey(): String {
         return genderCode
+    }
+
+    fun toDto(): GenderDto {
+        return GenderDto(
+            id = this.id,
+            genderCode = this.genderCode,
+            externalValue = this.externalValue
+        )
+    }
+
+    companion object {
+        fun GenderDto.toGenderConfig(): GenderConfig {
+            val genderConfig = GenderConfig(genderCode, externalValue)
+            genderConfig.id = id
+            return genderConfig
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.coach.flame.jpa.entity
 
+import com.coach.flame.domain.LoginInfoDto
 import org.hibernate.annotations.Type
 import org.springframework.data.jpa.domain.AbstractPersistable
 import java.time.LocalDateTime
@@ -22,4 +23,16 @@ class UserSession(
 
     @OneToOne(mappedBy = "userSession")
     val user: User? = null,
-) : AbstractPersistable<Long>()
+) : AbstractPersistable<Long>() {
+
+    companion object {
+        fun LoginInfoDto.toUserSession(): UserSession {
+            requireNotNull(token) { "token can not be null" }
+            requireNotNull(expirationDate) { "expirationDate can not be null" }
+            val userSession = UserSession(token!!, expirationDate!!)
+            userSession.id = sessionId
+            return userSession
+        }
+    }
+
+}

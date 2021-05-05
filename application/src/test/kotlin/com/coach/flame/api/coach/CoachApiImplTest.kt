@@ -6,6 +6,7 @@ import com.coach.flame.configs.ConfigsService
 import com.coach.flame.customer.CustomerService
 import com.coach.flame.customer.coach.CoachService
 import com.coach.flame.domain.*
+import com.coach.flame.domain.maker.*
 import com.coach.flame.exception.RestInvalidRequestException
 import com.natpryce.makeiteasy.MakeItEasy.with
 import io.mockk.clearAllMocks
