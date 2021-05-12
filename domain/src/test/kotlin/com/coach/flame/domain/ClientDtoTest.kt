@@ -17,8 +17,7 @@ class ClientDtoTest {
 
         then(dto.toString())
             .contains("ClientDto(")
-            .doesNotContain("id=")
-            .doesNotContain("100")
+            .doesNotContain("id=100")
 
     }
 

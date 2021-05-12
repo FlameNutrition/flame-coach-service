@@ -3,7 +3,8 @@ package com.coach.flame.customer.client
 import com.coach.flame.customer.CustomerNotFoundException
 import com.coach.flame.domain.ClientStatusDto
 import com.coach.flame.domain.maker.CoachDtoBuilder
-import com.coach.flame.jpa.entity.*
+import com.coach.flame.jpa.entity.Client
+import com.coach.flame.jpa.entity.ClientStatus
 import com.coach.flame.jpa.entity.maker.ClientBuilder
 import com.coach.flame.jpa.entity.maker.ClientMaker
 import com.coach.flame.jpa.entity.maker.CoachBuilder

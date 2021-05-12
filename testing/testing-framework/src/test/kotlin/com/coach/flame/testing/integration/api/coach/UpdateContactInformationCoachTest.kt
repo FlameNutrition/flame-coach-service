@@ -1,6 +1,6 @@
 package com.coach.flame.testing.integration.api.coach
 
-import com.coach.flame.jpa.entity.*
+import com.coach.flame.jpa.entity.Coach
 import com.coach.flame.jpa.entity.maker.*
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest

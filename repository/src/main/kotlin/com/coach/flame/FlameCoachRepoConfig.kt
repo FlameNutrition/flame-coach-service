@@ -3,9 +3,9 @@ package com.coach.flame
 import com.coach.flame.jpa.entity.ClientType
 import com.coach.flame.jpa.entity.CountryConfig
 import com.coach.flame.jpa.entity.GenderConfig
-import com.coach.flame.jpa.repository.configs.CustomerTypeRepository
 import com.coach.flame.jpa.repository.cache.ConfigCache
 import com.coach.flame.jpa.repository.configs.CountryConfigRepository
+import com.coach.flame.jpa.repository.configs.CustomerTypeRepository
 import com.coach.flame.jpa.repository.configs.GenderConfigRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.SpringBootConfiguration

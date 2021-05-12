@@ -4,7 +4,7 @@ import com.coach.flame.api.client.request.EnrollmentRequest
 import com.coach.flame.api.client.request.EnrollmentRequestBuilder
 import com.coach.flame.api.client.request.EnrollmentRequestMaker
 import com.coach.flame.customer.client.ClientEnrollmentProcess
-import com.coach.flame.domain.*
+import com.coach.flame.domain.ClientStatusDto
 import com.coach.flame.domain.maker.ClientDtoBuilder
 import com.coach.flame.domain.maker.ClientDtoMaker
 import com.coach.flame.domain.maker.CoachDtoBuilder

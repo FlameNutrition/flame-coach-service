@@ -38,7 +38,7 @@
         <maven.compiler.target>14</maven.compiler.target>
 
         <!-- Plugins -->
-        <jacoco-plugin.version>0.8.5</jacoco-plugin.version>
+        <jacoco-plugin.version>0.8.7</jacoco-plugin.version>
 
     </properties>
 
@@ -55,6 +55,12 @@
             <dependency>
                 <groupId>com.coach.flame</groupId>
                 <artifactId>customer-logic</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.coach.flame</groupId>
+                <artifactId>measures-logic</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -444,6 +450,7 @@
         <module>customer-logic</module>
         <module>domain</module>
         <module>configs-logic</module>
+        <module>measures-logic</module>
     </modules>
 
 </project>

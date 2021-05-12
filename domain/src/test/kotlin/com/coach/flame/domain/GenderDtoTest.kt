@@ -17,8 +17,7 @@ class GenderDtoTest {
 
         then(dto.toString())
             .contains("GenderDto(")
-            .doesNotContain("id=")
-            .doesNotContain("100")
+            .doesNotContain("id=100")
 
     }
 

@@ -1,7 +1,8 @@
 package com.coach.flame.testing.component.api.client
 
-import com.coach.flame.failure.domain.ErrorCode
-import com.coach.flame.jpa.entity.*
+import com.coach.flame.jpa.entity.Client
+import com.coach.flame.jpa.entity.GenderConfig
+import com.coach.flame.jpa.entity.MeasureConfig
 import com.coach.flame.jpa.entity.maker.ClientBuilder
 import com.coach.flame.jpa.entity.maker.ClientMaker
 import com.coach.flame.jpa.entity.maker.GenderBuilder

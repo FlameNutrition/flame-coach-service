@@ -33,6 +33,11 @@ class SQLClean {
             if (schema != null) "$schema.$name" else name
     }
 
+    data class SeqData(val name: String, val schema: String? = "public") {
+        val fullyQualifiedTableName =
+            if (schema != null) "$schema.$name" else name
+    }
+
     @Throws(Exception::class)
     fun beforeEach() {
         cleanDatabase(dataSource)
@@ -43,7 +48,9 @@ class SQLClean {
             dataSource.connection.use { connection ->
                 connection.autoCommit = false
                 val tablesToClean = loadTablesToClean(connection)
+                val seqToClean = loadSeqToClean()
                 cleanTablesData(tablesToClean, connection)
+                cleanSequences(seqToClean, connection)
                 connection.commit()
             }
         } catch (e: SQLException) {
@@ -75,9 +82,22 @@ class SQLClean {
             }
         }
 
-        LOGGER.debug("opr='loadTablesToClean', msg='Tables to clean', tatbles={}", tablesToClean)
+        LOGGER.debug("opr='loadTablesToClean', msg='Tables to clean', tables={}", tablesToClean)
 
         return tablesToClean
+    }
+
+    @Throws(SQLException::class)
+    private fun loadSeqToClean(): List<SeqData> {
+
+        val listOfSeqs = listOf(
+            SeqData("Client_Measure_Weight_Seq"),
+            SeqData("hibernate_sequence")
+        )
+
+        LOGGER.debug("opr='loadSeqToClean', msg='Tables to clean', sequences={}")
+
+        return listOfSeqs
     }
 
     @Throws(SQLException::class)
@@ -95,7 +115,23 @@ class SQLClean {
         }
 
         connection.prepareStatement(REFERENTIAL_INTEGRITY_ENABLE_QUERY).execute()
+    }
 
+    @Throws(SQLException::class)
+    private fun cleanSequences(listOfSeqs: List<SeqData>, connection: Connection) {
+        connection.prepareStatement(REFERENTIAL_INTEGRITY_DISABLE_QUERY).execute()
+
+        for (i in listOfSeqs.indices) {
+            val dropStatement = "DROP SEQUENCE IF EXISTS ${listOfSeqs[i].fullyQualifiedTableName}"
+            connection.prepareStatement(dropStatement).execute()
+            LOGGER.debug("opr='cleanSequences', msg='Statement ran', statement={}", dropStatement)
+
+            val createStatement = "CREATE SEQUENCE ${listOfSeqs[i].fullyQualifiedTableName} START WITH 1 INCREMENT BY 1"
+            connection.prepareStatement(createStatement).execute()
+            LOGGER.debug("opr='cleanSequences', msg='Statement ran', statement={}", createStatement)
+        }
+
+        connection.prepareStatement(REFERENTIAL_INTEGRITY_ENABLE_QUERY).execute()
     }
 
 }

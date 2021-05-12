@@ -1,7 +1,7 @@
 package com.coach.flame.jpa.repository
 
 import com.coach.flame.jpa.AbstractHelperTest
-import com.coach.flame.jpa.entity.*
+import com.coach.flame.jpa.entity.ClientStatus
 import com.coach.flame.jpa.entity.maker.ClientMaker
 import com.coach.flame.jpa.entity.maker.ClientTypeMaker
 import com.coach.flame.jpa.entity.maker.CoachMaker

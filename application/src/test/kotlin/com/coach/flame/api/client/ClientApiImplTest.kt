@@ -1,6 +1,9 @@
 package com.coach.flame.api.client
 
-import com.coach.flame.api.client.request.*
+import com.coach.flame.api.client.request.ContactInfoRequestBuilder
+import com.coach.flame.api.client.request.ContactInfoRequestMaker
+import com.coach.flame.api.client.request.PersonalDataRequestBuilder
+import com.coach.flame.api.client.request.PersonalDataRequestMaker
 import com.coach.flame.configs.ConfigsService
 import com.coach.flame.customer.CustomerService
 import com.coach.flame.domain.*

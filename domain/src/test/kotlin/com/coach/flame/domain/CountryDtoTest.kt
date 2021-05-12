@@ -17,8 +17,7 @@ class CountryDtoTest {
 
         then(dto.toString())
             .contains("CountryDto(")
-            .doesNotContain("id=")
-            .doesNotContain("100")
+            .doesNotContain("id=100")
 
     }
 

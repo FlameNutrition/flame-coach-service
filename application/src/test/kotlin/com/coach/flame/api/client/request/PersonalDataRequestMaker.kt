@@ -6,7 +6,6 @@ import com.natpryce.makeiteasy.MakeItEasy.an
 import com.natpryce.makeiteasy.Maker
 import com.natpryce.makeiteasy.Property
 import com.natpryce.makeiteasy.Property.newProperty
-import java.util.*
 
 object PersonalDataRequestBuilder {
 

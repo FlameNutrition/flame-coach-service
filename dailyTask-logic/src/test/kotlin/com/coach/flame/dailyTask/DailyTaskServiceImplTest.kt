@@ -4,7 +4,7 @@ import com.coach.flame.dailyTask.filter.BetweenDatesFilter
 import com.coach.flame.dailyTask.filter.IdentifierFilter
 import com.coach.flame.domain.maker.DailyTaskDtoBuilder
 import com.coach.flame.domain.maker.DailyTaskDtoMaker
-import com.coach.flame.jpa.entity.*
+import com.coach.flame.jpa.entity.DailyTask
 import com.coach.flame.jpa.entity.maker.ClientBuilder
 import com.coach.flame.jpa.entity.maker.CoachBuilder
 import com.coach.flame.jpa.entity.maker.DailyTaskBuilder

@@ -3,8 +3,6 @@ package com.coach.flame.jpa.repository.cache
 import com.coach.flame.jpa.entity.ClientType
 import com.coach.flame.jpa.entity.maker.ClientTypeBuilder
 import com.coach.flame.jpa.entity.maker.ClientTypeMaker
-import com.coach.flame.jpa.repository.cache.CacheLoaderRepository
-import com.coach.flame.jpa.repository.cache.ConfigCache
 import com.natpryce.makeiteasy.MakeItEasy.with
 import io.mockk.clearAllMocks
 import io.mockk.every

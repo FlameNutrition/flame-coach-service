@@ -1,9 +1,9 @@
 package com.coach.flame.jpa.entity
 
-import com.coach.flame.domain.maker.MeasureWeightDtoBuilder
-import com.coach.flame.domain.maker.MeasureWeightDtoMaker
+import com.coach.flame.domain.maker.MeasureDtoBuilder
+import com.coach.flame.domain.maker.MeasureDtoMaker
 import com.coach.flame.jpa.entity.ClientMeasureWeight.Companion.toClientMeasureWeight
-import com.coach.flame.jpa.entity.maker.*
+import com.coach.flame.jpa.entity.maker.ClientMeasureWeightBuilder
 import com.natpryce.makeiteasy.MakeItEasy.with
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
@@ -26,8 +26,8 @@ class ClientMeasureWeightTest {
     @Test
     fun `test convert client measure weight dto to entity all values`() {
 
-        val measureWeightDto = MeasureWeightDtoBuilder.maker()
-            .but(with(MeasureWeightDtoMaker.id, 100L))
+        val measureWeightDto = MeasureDtoBuilder.maker()
+            .but(with(MeasureDtoMaker.id, 100L))
             .make()
 
         val entity = measureWeightDto.toClientMeasureWeight()

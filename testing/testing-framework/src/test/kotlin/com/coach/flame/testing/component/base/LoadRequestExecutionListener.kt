@@ -61,6 +61,7 @@ class LoadRequestExecutionListener : TestExecutionListener {
 
                 MockMvcRequestBuilders.post(loadRequestAnnotation.endpoint)
                     .headers(headers)
+                    .params(parameters)
                     .contentType(MediaType.valueOf(loadRequestAnnotation.contentType))
                     .content(json.toString())
             }

@@ -1,6 +1,7 @@
 package com.coach.flame.jpa.entity
 
-import com.coach.flame.domain.*
+import com.coach.flame.domain.ClientStatusDto
+import com.coach.flame.domain.LoginInfoDto
 import com.coach.flame.domain.maker.*
 import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.jpa.entity.maker.*
@@ -8,7 +9,6 @@ import com.natpryce.makeiteasy.MakeItEasy.with
 import org.assertj.core.api.BDDAssertions.catchThrowable
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
-import java.lang.IllegalArgumentException
 import java.time.LocalDateTime
 import java.util.*
 
@@ -72,8 +72,8 @@ class ClientTest {
                 with(LoginInfoDtoMaker.expirationDate, LocalDateTime.now()))
             .make()
 
-        val measureWeight1 = MeasureWeightDtoBuilder.default()
-        val measureWeight2 = MeasureWeightDtoBuilder.default()
+        val measureWeight1 = MeasureDtoBuilder.default()
+        val measureWeight2 = MeasureDtoBuilder.default()
 
         val clientDto = ClientDtoBuilder.maker()
             .but(with(ClientDtoMaker.loginInfo, loginInfoDto),

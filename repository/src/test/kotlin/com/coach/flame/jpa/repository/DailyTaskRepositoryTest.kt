@@ -1,7 +1,8 @@
 package com.coach.flame.jpa.repository
 
 import com.coach.flame.jpa.AbstractHelperTest
-import com.coach.flame.jpa.entity.*
+import com.coach.flame.jpa.entity.CountryConfig
+import com.coach.flame.jpa.entity.GenderConfig
 import com.coach.flame.jpa.entity.maker.*
 import com.natpryce.makeiteasy.MakeItEasy.with
 import org.assertj.core.api.BDDAssertions.then

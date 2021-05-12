@@ -3,7 +3,7 @@ package com.coach.flame.jpa.entity
 import com.coach.flame.domain.maker.CountryDtoBuilder
 import com.coach.flame.domain.maker.CountryDtoMaker
 import com.coach.flame.jpa.entity.CountryConfig.Companion.toCountryConfig
-import com.coach.flame.jpa.entity.maker.*
+import com.coach.flame.jpa.entity.maker.CountryBuilder
 import com.natpryce.makeiteasy.MakeItEasy.with
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test

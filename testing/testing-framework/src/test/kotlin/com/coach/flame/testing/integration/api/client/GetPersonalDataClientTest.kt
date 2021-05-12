@@ -1,6 +1,6 @@
 package com.coach.flame.testing.integration.api.client
 
-import com.coach.flame.jpa.entity.*
+import com.coach.flame.jpa.entity.Client
 import com.coach.flame.jpa.entity.maker.ClientBuilder
 import com.coach.flame.jpa.entity.maker.ClientMaker
 import com.coach.flame.jpa.entity.maker.ClientTypeBuilder

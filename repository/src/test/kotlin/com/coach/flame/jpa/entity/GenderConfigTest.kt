@@ -3,7 +3,7 @@ package com.coach.flame.jpa.entity
 import com.coach.flame.domain.maker.GenderDtoBuilder
 import com.coach.flame.domain.maker.GenderDtoMaker
 import com.coach.flame.jpa.entity.GenderConfig.Companion.toGenderConfig
-import com.coach.flame.jpa.entity.maker.*
+import com.coach.flame.jpa.entity.maker.GenderBuilder
 import com.natpryce.makeiteasy.MakeItEasy.with
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test

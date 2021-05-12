@@ -1,6 +1,6 @@
 package com.coach.flame.testing.component.api.dailyTask
 
-import com.coach.flame.jpa.entity.*
+import com.coach.flame.jpa.entity.DailyTask
 import com.coach.flame.jpa.entity.maker.ClientBuilder
 import com.coach.flame.jpa.entity.maker.CoachBuilder
 import com.coach.flame.jpa.entity.maker.DailyTaskBuilder

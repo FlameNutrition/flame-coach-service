@@ -1,8 +1,8 @@
 package com.coach.flame.testing.integration.api.customer
 
-import com.coach.flame.jpa.entity.maker.ClientMaker
 import com.coach.flame.jpa.entity.CountryConfig
 import com.coach.flame.jpa.entity.GenderConfig
+import com.coach.flame.jpa.entity.maker.ClientMaker
 import com.coach.flame.jpa.entity.maker.UserMaker
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest

@@ -4,7 +4,6 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.mock.http.client.MockClientHttpResponse
 import org.springframework.mock.web.MockHttpServletResponse
 import java.nio.charset.Charset
 

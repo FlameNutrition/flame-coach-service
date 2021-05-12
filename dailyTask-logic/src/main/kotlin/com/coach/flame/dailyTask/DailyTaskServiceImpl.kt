@@ -2,7 +2,6 @@ package com.coach.flame.dailyTask
 
 import com.coach.flame.dailyTask.filter.Filter
 import com.coach.flame.domain.DailyTaskDto
-import com.coach.flame.failure.domain.ErrorCode
 import com.coach.flame.jpa.entity.DailyTask
 import com.coach.flame.jpa.repository.ClientRepository
 import com.coach.flame.jpa.repository.CoachRepository

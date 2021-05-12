@@ -1,6 +1,5 @@
 package com.coach.flame.jpa.repository.configs
 
-import com.coach.flame.jpa.entity.CountryConfig
 import com.coach.flame.jpa.entity.GenderConfig
 import com.coach.flame.jpa.repository.cache.CacheLoaderRepository
 import org.springframework.data.jpa.repository.JpaRepository

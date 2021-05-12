@@ -1,7 +1,8 @@
 package com.coach.flame.jpa.repository.criteria
 
 import com.coach.flame.jpa.AbstractHelperTest
-import com.coach.flame.jpa.entity.*
+import com.coach.flame.jpa.entity.Client
+import com.coach.flame.jpa.entity.Coach
 import com.coach.flame.jpa.entity.maker.*
 import com.coach.flame.jpa.repository.criteria.DailyTaskCriteria.dailyTaskBetweenDate
 import com.coach.flame.jpa.repository.criteria.DailyTaskCriteria.dailyTaskClient

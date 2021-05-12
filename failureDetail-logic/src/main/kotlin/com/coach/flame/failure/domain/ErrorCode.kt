@@ -29,6 +29,10 @@ enum class ErrorCode(
     CODE_5000(5000, "Configs unexpected problem"),
     CODE_5001(5001, "Config is not present"),
 
+    //Measures
+    CODE_6000(6000, "Measure unexpected problem"),
+    CODE_6001(6001, "Measure not found"),
+
     CODE_9999(9999, "Unexpected problem"),
 
 }

@@ -18,10 +18,8 @@ class LoginInfoDtoTest {
 
         then(dto.toString())
             .contains("LoginInfoDto(")
-            .doesNotContain("userId=")
-            .doesNotContain("sessionId=")
-            .doesNotContain("100")
-            .doesNotContain("200")
+            .doesNotContain("userId=100")
+            .doesNotContain("sessionId=200")
 
     }
 

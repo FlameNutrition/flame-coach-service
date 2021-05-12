@@ -2,7 +2,8 @@ package com.coach.flame.customer.coach
 
 import com.coach.flame.customer.CustomerService
 import com.coach.flame.customer.client.ClientService
-import com.coach.flame.domain.*
+import com.coach.flame.domain.ClientStatusDto
+import com.coach.flame.domain.CustomerTypeDto
 import com.coach.flame.domain.maker.ClientDtoBuilder
 import com.coach.flame.domain.maker.ClientDtoMaker
 import com.coach.flame.domain.maker.CoachDtoBuilder

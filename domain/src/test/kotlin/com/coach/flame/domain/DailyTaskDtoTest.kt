@@ -17,8 +17,7 @@ class DailyTaskDtoTest {
 
         then(dto.toString())
             .contains("DailyTaskDto(")
-            .doesNotContain("id=")
-            .doesNotContain("100")
+            .doesNotContain("id=100")
 
     }
 

@@ -28,7 +28,10 @@ import org.springframework.test.web.servlet.RequestBuilder
     webEnvironment = SpringBootTest.WebEnvironment.MOCK
 )
 @ContextConfiguration(
-    classes = [ComponentTestConfig::class]
+    classes = [
+        ComponentTestConfig::class,
+        MockClientRepository::class
+    ]
 )
 @TestExecutionListeners(
     value = [
@@ -45,8 +48,12 @@ abstract class BaseComponentTest {
     @Autowired
     protected lateinit var clientTypeRepositoryMock: ClientTypeRepository
 
+    @Deprecated("Please use MockClientRepository.kt")
     @Autowired
     protected lateinit var clientRepositoryMock: ClientRepository
+
+    @Autowired
+    protected lateinit var mockClientRepository: MockClientRepository
 
     @Autowired
     protected lateinit var userRepositoryMock: UserRepository

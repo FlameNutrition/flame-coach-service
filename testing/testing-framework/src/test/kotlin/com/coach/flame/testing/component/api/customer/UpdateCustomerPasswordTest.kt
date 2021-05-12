@@ -1,6 +1,6 @@
 package com.coach.flame.testing.component.api.customer
 
-import com.coach.flame.jpa.entity.*
+import com.coach.flame.jpa.entity.User
 import com.coach.flame.jpa.entity.maker.UserBuilder
 import com.coach.flame.jpa.entity.maker.UserMaker
 import com.coach.flame.testing.component.base.BaseComponentTest
@@ -18,8 +18,6 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.web.bind.annotation.RequestMethod
-import java.sql.SQLException
-import java.time.LocalDateTime
 
 class UpdateCustomerPasswordTest : BaseComponentTest() {
 

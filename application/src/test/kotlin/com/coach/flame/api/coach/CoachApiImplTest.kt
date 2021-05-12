@@ -5,7 +5,10 @@ import com.coach.flame.api.coach.request.ContactInfoRequestMaker
 import com.coach.flame.configs.ConfigsService
 import com.coach.flame.customer.CustomerService
 import com.coach.flame.customer.coach.CoachService
-import com.coach.flame.domain.*
+import com.coach.flame.domain.ClientStatusDto
+import com.coach.flame.domain.CoachDto
+import com.coach.flame.domain.CountryDto
+import com.coach.flame.domain.CustomerTypeDto
 import com.coach.flame.domain.maker.*
 import com.coach.flame.exception.RestInvalidRequestException
 import com.natpryce.makeiteasy.MakeItEasy.with

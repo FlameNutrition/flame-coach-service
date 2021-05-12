@@ -17,8 +17,7 @@ class CoachDtoTest {
 
         then(dto.toString())
             .contains("CoachDto(")
-            .doesNotContain("id=")
-            .doesNotContain("100")
+            .doesNotContain("id=100")
 
     }
 

@@ -1,8 +1,8 @@
 package com.coach.flame.api.coach
 
 import com.coach.flame.api.coach.request.ContactInfoRequest
-import com.coach.flame.api.coach.response.ContactInfoResponse
 import com.coach.flame.api.coach.response.CoachResponse
+import com.coach.flame.api.coach.response.ContactInfoResponse
 import java.util.*
 
 interface CoachApi {

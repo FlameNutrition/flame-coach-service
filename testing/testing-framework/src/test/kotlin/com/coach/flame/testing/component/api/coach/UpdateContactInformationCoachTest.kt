@@ -1,6 +1,6 @@
 package com.coach.flame.testing.component.api.coach
 
-import com.coach.flame.jpa.entity.*
+import com.coach.flame.jpa.entity.Coach
 import com.coach.flame.jpa.entity.maker.CoachBuilder
 import com.coach.flame.jpa.entity.maker.CoachMaker
 import com.coach.flame.jpa.entity.maker.CountryBuilder
@@ -8,7 +8,6 @@ import com.coach.flame.jpa.entity.maker.CountryMaker
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
-import com.natpryce.makeiteasy.MakeItEasy
 import com.natpryce.makeiteasy.MakeItEasy.with
 import io.mockk.every
 import io.mockk.slot

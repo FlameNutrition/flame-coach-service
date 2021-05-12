@@ -4,7 +4,6 @@ import com.coach.flame.jpa.entity.Client
 import com.coach.flame.jpa.entity.Client_
 import com.coach.flame.jpa.entity.DailyTask
 import com.coach.flame.jpa.entity.DailyTask_
-import com.coach.flame.jpa.repository.criteria.DailyTaskCriteria
 import io.mockk.every
 import io.mockk.mockk
 import org.assertj.core.api.BDDAssertions.then

@@ -1,9 +1,9 @@
 package com.coach.flame.jpa.entity
 
-import com.coach.flame.domain.*
+import com.coach.flame.domain.CustomerTypeDto
 import com.coach.flame.jpa.entity.ClientType.Companion.toClientType
-import com.coach.flame.jpa.entity.maker.*
-import com.natpryce.makeiteasy.MakeItEasy
+import com.coach.flame.jpa.entity.maker.ClientTypeBuilder
+import com.coach.flame.jpa.entity.maker.ClientTypeMaker
 import com.natpryce.makeiteasy.MakeItEasy.with
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test

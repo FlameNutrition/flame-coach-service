@@ -51,6 +51,7 @@ class LoadRequestExecutionListener : TestExecutionListener {
             builder.queryParam(param, value)
         }
 
+
         val request: RequestEntity<*> = when (loadRequestAnnotation.httpMethod) {
             RequestMethod.POST -> {
 
@@ -62,7 +63,7 @@ class LoadRequestExecutionListener : TestExecutionListener {
                     JsonBuilder.getJsonFromFile(loadRequestAnnotation.pathOfRequest)
                 }
 
-                RequestEntity.post(URI.create("http://localhost:${loadRequestAnnotation.port}/${loadRequestAnnotation.endpoint}"))
+                RequestEntity.post(URI.create(builder.toUriString()))
                     .headers(headers)
                     .contentType(MediaType.valueOf(loadRequestAnnotation.contentType))
                     .body(json.toString())

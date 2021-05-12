@@ -12,9 +12,7 @@ import com.coach.flame.customer.CustomerService
 import com.coach.flame.customer.coach.CoachService
 import com.coach.flame.domain.CoachDto
 import com.coach.flame.domain.CustomerTypeDto
-import com.coach.flame.exception.RestException
 import com.coach.flame.exception.RestInvalidRequestException
-import com.coach.flame.failure.domain.ErrorCode
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.*
