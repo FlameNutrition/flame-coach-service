@@ -1,5 +1,5 @@
 package com.coach.flame.api.customer.response
 
-class UpdatePasswordResponse(
+data class UpdatePasswordResponse(
     val result: Boolean,
 )
