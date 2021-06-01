@@ -30,6 +30,7 @@ class ClientType(
     companion object {
         fun CustomerTypeDto.toClientType(): ClientType {
             val clientType = ClientType(name)
+            //FIXME: This should be reviews otherwise database never can change the ids
             clientType.id = when {
                 (CustomerTypeDto.COACH == this) -> 1
                 (CustomerTypeDto.CLIENT == this) -> 2

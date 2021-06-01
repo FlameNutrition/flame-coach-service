@@ -42,16 +42,6 @@ class DailyTaskImpl(
 
     @LoggingRequest
     @LoggingResponse
-    @PostMapping("/create/tasks")
-    @ResponseBody
-    override fun createDailyTasks(@RequestBody(required = true) dailyTasks: List<DailyTaskRequest>): DailyTaskResponse {
-
-        throw RestException(ErrorCode.CODE_1000, "This is not supported yet", UnsupportedOperationException())
-
-    }
-
-    @LoggingRequest
-    @LoggingResponse
     @PostMapping("/create/task")
     @ResponseBody
     override fun createDailyTask(
@@ -66,10 +56,6 @@ class DailyTaskImpl(
             requireNotNull(dailyTask.taskDescription) { "Missing taskDescription param" }
             requireNotNull(dailyTask.date) { "Missing date param" }
 
-            if (dailyTask.toDate !== null) {
-                throw UnsupportedOperationException("Multiple daily tasks is not supported")
-            }
-
             val dailyTaskDto = DailyTaskDto(
                 identifier = UUID.randomUUID(),
                 name = dailyTask.taskName,
@@ -82,11 +68,13 @@ class DailyTaskImpl(
                 client = null
             )
 
-            val createdDailyTask = dailyTaskService.createDailyTask(dailyTaskDto)
+            val dailyTasksList = if (dailyTask.toDate !== null) {
+                dailyTaskService.createDailyTask(dailyTaskDto, stringToDate(dailyTask.toDate))
+            } else {
+                setOf(dailyTaskService.createDailyTask(dailyTaskDto))
+            }
 
-            return DailyTaskResponse(
-                dailyTasks = setOf(converter(createdDailyTask))
-            )
+            return DailyTaskResponse(dailyTasks = dailyTasksList.map { converter(it) }.toSet())
         } catch (ex: Exception) {
             when (ex) {
                 is IllegalArgumentException -> {

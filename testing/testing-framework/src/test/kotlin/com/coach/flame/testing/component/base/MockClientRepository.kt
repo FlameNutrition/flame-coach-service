@@ -21,7 +21,6 @@ class MockClientRepository {
         mockFindByUuid(uuid, client)
     }
 
-
     fun findByUuidThrowsException(uuid: UUID) {
         mockFindByUuid(uuid, null)
     }

@@ -13,13 +13,10 @@ import com.coach.flame.jpa.repository.ClientRepository
 import com.coach.flame.jpa.repository.CoachRepository
 import com.coach.flame.jpa.repository.DailyTaskRepository
 import com.natpryce.makeiteasy.MakeItEasy.with
-import io.mockk.clearAllMocks
-import io.mockk.every
+import io.mockk.*
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import io.mockk.mockk
-import io.mockk.slot
 import org.assertj.core.api.BDDAssertions.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
@@ -285,6 +282,34 @@ class DailyTaskServiceImplTest {
         then(dailyTask.coachIdentifier).isEqualTo(postDailyTask.createdBy.uuid)
         then(dailyTask.clientIdentifier).isEqualTo(postDailyTask.client.uuid)
 
+    }
+
+    @Test
+    fun `create multiple daily tasks`() {
+
+        val dailyTask = slot<DailyTask>()
+
+        // given
+        val dailyTaskDto = DailyTaskDtoBuilder.default()
+        val coach = CoachBuilder.default()
+        val client = ClientBuilder.default()
+        every { clientRepository.findByUuid(dailyTaskDto.clientIdentifier!!) } returns client
+        every { coachRepository.findByUuid(dailyTaskDto.coachIdentifier!!) } returns coach
+        every { dailyTaskRepository.save(capture(dailyTask)) } answers { dailyTask.captured }
+
+        // when
+        val dailyTasks = dailyTaskServiceImpl.createDailyTask(dailyTaskDto, dailyTaskDto.date.plusDays(2))
+
+        then(dailyTasks).hasSize(3)
+
+        then(dailyTasks.find { it.date == dailyTaskDto.date }).isNotNull
+        then(dailyTasks.find { it.date == dailyTaskDto.date.plusDays(1) }).isNotNull
+        then(dailyTasks.find { it.date == dailyTaskDto.date.plusDays(2) }).isNotNull
+
+
+        verify(exactly = 3) { clientRepository.findByUuid(dailyTaskDto.clientIdentifier!!) }
+        verify(exactly = 3) { coachRepository.findByUuid(dailyTaskDto.coachIdentifier!!) }
+        verify(exactly = 3) { dailyTaskRepository.save(any()) }
     }
 
 }

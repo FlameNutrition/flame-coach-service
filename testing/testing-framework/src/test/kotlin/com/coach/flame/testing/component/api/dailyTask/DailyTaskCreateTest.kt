@@ -77,6 +77,51 @@ class DailyTaskCreateTest : BaseComponentTest() {
 
     @Test
     @LoadRequest(
+        pathOfRequest = "requests/component/dailyTask/createMultipleDailyTask.json",
+        endpoint = "/api/dailyTask/create/task",
+        httpMethod = RequestMethod.POST,
+        headers = [
+            "clientIdentifier:3c5845f1-4a90-4396-8610-7261761369ae",
+            "coachIdentifier:b2957c86-e493-4f9a-a277-2e24b77f0ffe"
+        ]
+    )
+    fun `test create multiple daily tasks`() {
+
+        // given
+        val dailyTaskSlot = slot<DailyTask>()
+        val clientUUID = UUID.fromString("3c5845f1-4a90-4396-8610-7261761369ae")
+        val coachUUID = UUID.fromString("b2957c86-e493-4f9a-a277-2e24b77f0ffe")
+        val coach = CoachBuilder.default()
+        val client = ClientBuilder.default()
+
+        every { coachRepositoryMock.findByUuid(coachUUID) } returns coach
+        every { clientRepositoryMock.findByUuid(clientUUID) } returns client
+        every { dailyTaskRepositoryMock.save(capture(dailyTaskSlot)) } answers { dailyTaskSlot.captured }
+
+        // when
+        val mvnResponse = mockMvc.perform(request!!)
+            .andDo { MockMvcResultHandlers.print() }
+            .andDo { MockMvcResultHandlers.log() }
+            .andReturn()
+
+        // then
+        then(mvnResponse.response).isNotNull
+        then(mvnResponse.response.status).isEqualTo(HttpStatus.OK.value())
+        then(mvnResponse.response.contentType).isEqualTo(MediaType.APPLICATION_JSON_VALUE)
+
+        val jsonResponse = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
+
+        then(jsonResponse.getAsJsonArray("dailyTasks")).hasSize(16)
+
+        then(jsonResponse.getAsJsonArray("dailyTasks")
+            .find { it.asJsonObject.getAsJsonPrimitive("date").asString.equals("2020-12-05") }).isNotNull
+        then(jsonResponse.getAsJsonArray("dailyTasks")
+            .find { it.asJsonObject.getAsJsonPrimitive("date").asString.equals("2020-12-20") }).isNotNull
+
+    }
+
+    @Test
+    @LoadRequest(
         pathOfRequest = "requests/component/dailyTask/createNewDailyTask.json",
         endpoint = "/api/dailyTask/create/task",
         httpMethod = RequestMethod.POST,

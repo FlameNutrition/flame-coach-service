@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 import java.util.*
 
 @Service
@@ -74,6 +75,26 @@ class DailyTaskServiceImpl(
             .map { it.toDto() }
             .toSet()
 
+    }
+
+    @Transactional
+    override fun createDailyTask(dailyTask: DailyTaskDto, toDttm: LocalDate): Set<DailyTaskDto> {
+
+        val dailyTaskList = mutableSetOf<DailyTaskDto>()
+
+        var nextDttm = dailyTask.date
+        var nextDailyTask = dailyTask
+
+        do {
+            dailyTaskList.add(createDailyTask(nextDailyTask))
+
+            nextDttm = nextDttm.plusDays(1)
+            nextDailyTask = dailyTask
+                .copy(identifier = UUID.randomUUID(),
+                    date = nextDttm)
+        } while (nextDttm != toDttm.plusDays(1))
+
+        return dailyTaskList
     }
 
     @Transactional

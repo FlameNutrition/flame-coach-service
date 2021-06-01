@@ -1,5 +1,6 @@
 {
   "taskName": "Drink Water",
   "taskDescription": "Drink a 1L of water",
-  "date": "2020-12-05"
+  "date": "2020-12-05",
+  "toDate": "2020-12-20"
 }

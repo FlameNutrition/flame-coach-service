@@ -8,8 +8,6 @@ import java.util.*
 //TODO: Write documentation
 interface DailyTaskAPI {
 
-    fun createDailyTasks(dailyTasks: List<DailyTaskRequest>): DailyTaskResponse
-
     fun createDailyTask(clientIdentifier: UUID, coachIdentifier: UUID, dailyTask: DailyTaskRequest): DailyTaskResponse
 
     fun getDailyTasksByClient(clientIdentifier: UUID): DailyTaskResponse

@@ -5,12 +5,9 @@ import com.coach.flame.dailyTask.DailyTaskService
 import com.coach.flame.date.stringToDate
 import com.coach.flame.domain.DailyTaskDto
 import com.coach.flame.domain.maker.DailyTaskDtoBuilder
-import com.coach.flame.domain.maker.DailyTaskDtoMaker
 import com.coach.flame.exception.RestException
 import com.coach.flame.exception.RestInvalidRequestException
-import com.natpryce.makeiteasy.MakeItEasy.an
 import com.natpryce.makeiteasy.MakeItEasy.with
-import com.natpryce.makeiteasy.Maker
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -21,7 +18,6 @@ import io.mockk.slot
 import org.assertj.core.api.BDDAssertions.catchThrowable
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
@@ -40,36 +36,12 @@ class DailyTaskImplTest {
     @InjectMockKs
     private lateinit var dailyTaskImpl: DailyTaskImpl
 
-    private lateinit var dailyTaskDtoMaker: Maker<DailyTaskDto>
-    private lateinit var dailyTaskRequestMaker: Maker<DailyTaskRequest>
-
-    @BeforeEach
-    fun setUp() {
-        dailyTaskDtoMaker = an(DailyTaskDtoMaker.DailyTaskDto)
-        dailyTaskRequestMaker = an(DailyTaskRequestMaker.DailyTaskRequest)
-    }
-
     @AfterEach
     fun cleanUp() {
         clearAllMocks()
     }
 
     // region Daily Task [Create]
-
-    @Test
-    fun `test create multiple Daily Task`() {
-
-        // given
-        val listOfTasks = listOf(dailyTaskRequestMaker.make(), dailyTaskRequestMaker.make())
-
-        // when
-        val thrown = catchThrowable { dailyTaskImpl.createDailyTasks(listOfTasks) }
-
-        //then
-        then(thrown)
-            .isInstanceOf(RestException::class.java)
-            .hasMessage("This is not supported yet")
-    }
 
     @ParameterizedTest
     @MethodSource("dailyTaskCheckMandatoryParams")
@@ -82,10 +54,10 @@ class DailyTaskImplTest {
     ) {
 
         // given
-        val task = dailyTaskRequestMaker
-            .but(with(DailyTaskRequestMaker.name, taskName))
-            .but(with(DailyTaskRequestMaker.description, taskDescription))
-            .but(with(DailyTaskRequestMaker.date, date))
+        val task = DailyTaskRequestBuilder.maker()
+            .but(with(DailyTaskRequestMaker.name, taskName),
+                with(DailyTaskRequestMaker.description, taskDescription),
+                with(DailyTaskRequestMaker.date, date))
             .make()
 
         // when
@@ -106,7 +78,7 @@ class DailyTaskImplTest {
     ) {
 
         // given
-        val task = dailyTaskRequestMaker
+        val task = DailyTaskRequestBuilder.maker()
             .but(with(DailyTaskRequestMaker.date, date))
             .make()
 
@@ -123,7 +95,7 @@ class DailyTaskImplTest {
     fun `test create Daily Task when business throw an exception`() {
 
         // given
-        val task = dailyTaskRequestMaker.make()
+        val task = DailyTaskRequestBuilder.default()
         every { dailyTaskService.createDailyTask(any()) } throws RuntimeException("OHH NOOOO!")
 
         // when
@@ -142,7 +114,7 @@ class DailyTaskImplTest {
         val taskDto = slot<DailyTaskDto>()
         val coachToken = UUID.randomUUID()
         val clientToken = UUID.randomUUID()
-        val task = dailyTaskRequestMaker.make()
+        val task = DailyTaskRequestBuilder.default()
         every { dailyTaskService.createDailyTask(capture(taskDto)) } answers { taskDto.captured }
 
         // when
@@ -165,6 +137,34 @@ class DailyTaskImplTest {
         then(dailyTask.taskDescription).isEqualTo(taskDto.captured.description)
         then(dailyTask.date).isEqualTo(taskDto.captured.date.toString())
         then(dailyTask.ticked).isFalse
+
+    }
+
+    @Test
+    fun `test create multiple Daily Task`() {
+
+        // given
+        val taskDto = slot<DailyTaskDto>()
+        val coachToken = UUID.randomUUID()
+        val clientToken = UUID.randomUUID()
+        val listOfTasks = setOf(DailyTaskDtoBuilder.default(),
+            DailyTaskDtoBuilder.default(),
+            DailyTaskDtoBuilder.default(),
+            DailyTaskDtoBuilder.default(),
+            DailyTaskDtoBuilder.default())
+        val task = DailyTaskRequestBuilder.maker()
+            .but(with(DailyTaskRequestMaker.date, "2021-06-10"),
+                with(DailyTaskRequestMaker.toDate, "2021-06-25"))
+            .make()
+        every {
+            dailyTaskService.createDailyTask(capture(taskDto),
+                eq(LocalDate.parse("2021-06-25")))
+        } returns listOfTasks
+
+        // when
+        val response = dailyTaskImpl.createDailyTask(clientToken, coachToken, task)
+
+        then(response.dailyTasks).hasSize(5)
 
     }
 
@@ -193,8 +193,8 @@ class DailyTaskImplTest {
 
         // given
         val clientUUID = UUID.randomUUID()
-        val task1 = dailyTaskDtoMaker.make()
-        val task2 = dailyTaskDtoMaker.make()
+        val task1 = DailyTaskDtoBuilder.default()
+        val task2 = DailyTaskDtoBuilder.default()
         every { dailyTaskService.getDailyTasksByClient(clientUUID) } returns setOf(task1, task2)
 
         // when
