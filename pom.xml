@@ -39,6 +39,7 @@
 
         <!-- Plugins -->
         <jacoco-plugin.version>0.8.7</jacoco-plugin.version>
+        <flyway-plugin.version>7.9.1</flyway-plugin.version>
 
     </properties>
 
@@ -295,6 +296,12 @@
     <build>
         <pluginManagement>
             <plugins>
+
+                <plugin>
+                    <groupId>org.flywaydb</groupId>
+                    <artifactId>flyway-maven-plugin</artifactId>
+                    <version>${flyway-plugin.version}</version>
+                </plugin>
 
                 <plugin>
                     <groupId>org.springframework.boot</groupId>

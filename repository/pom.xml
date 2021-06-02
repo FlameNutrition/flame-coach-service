@@ -231,6 +231,16 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <configuration>
+                    <configFiles>
+                        <configFile>${project.parent.basedir}/flyway.conf</configFile>
+                    </configFiles>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
