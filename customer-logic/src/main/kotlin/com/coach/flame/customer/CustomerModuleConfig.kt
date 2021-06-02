@@ -1,41 +1,37 @@
 package com.coach.flame.customer
 
 import com.coach.flame.FlameCoachRepoConfig
+import com.coach.flame.customer.props.PropsCredentials
 import com.coach.flame.customer.security.HashPassword
 import com.coach.flame.customer.security.Salt
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Import
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan
+import org.springframework.context.annotation.*
 
 @Configuration
 @ComponentScan(value = [
     "com.coach.flame.customer",
     "com.coach.flame.customer.coach",
-    "com.coach.flame.customer.client"])
+    "com.coach.flame.customer.client",])
 @Import(value = [FlameCoachRepoConfig::class])
+@PropertySources(
+    PropertySource("classpath:application-credentials.properties")
+)
+@ConfigurationPropertiesScan("com.coach.flame.customer.props")
 class CustomerModuleConfig(
-    @Value(value = "\${flamecoach.security.salt.length}")
-    private val saltLength: Int,
-
-    @Value(value = "\${flamecoach.security.hashing.algorithm}")
-    private val algorithm: String,
-
-    @Value(value = "\${flamecoach.security.hashing.iterations}")
-    private val iterations: Int,
-
-    @Value(value = "\${flamecoach.security.hashing.lengthKey}")
-    private val lengthKey: Int,
+    private val propsCredentials: PropsCredentials
 ) {
 
     @Bean(name = ["saltTool"])
     fun getSalt(): Salt {
-        return Salt(saltLength)
+        return Salt(propsCredentials.saltLength)
     }
 
     @Bean(name = ["hashPasswordTool"])
     fun getHashPassword(): HashPassword {
-        return HashPassword(algorithm, iterations, lengthKey)
+        return HashPassword(
+            algorithm = propsCredentials.algorithm,
+            iterations = propsCredentials.iterations,
+            lengthKey = propsCredentials.lengthKey)
     }
+
 }
