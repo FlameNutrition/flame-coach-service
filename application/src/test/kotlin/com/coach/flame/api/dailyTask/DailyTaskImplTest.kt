@@ -2,7 +2,7 @@ package com.coach.flame.api.dailyTask
 
 import com.coach.flame.api.dailyTask.request.*
 import com.coach.flame.dailyTask.DailyTaskService
-import com.coach.flame.date.stringToDate
+import com.coach.flame.date.DateHelper
 import com.coach.flame.domain.DailyTaskDto
 import com.coach.flame.domain.maker.DailyTaskDtoBuilder
 import com.coach.flame.exception.RestException
@@ -124,7 +124,7 @@ class DailyTaskImplTest {
         then(taskDto.captured.identifier).isNotNull
         then(taskDto.captured.name).isEqualTo(task.taskName)
         then(taskDto.captured.description).isEqualTo(task.taskDescription)
-        then(taskDto.captured.date).isEqualTo(stringToDate(task.date!!))
+        then(taskDto.captured.date).isEqualTo(DateHelper.toDate(task.date!!))
         then(taskDto.captured.ticked).isFalse
         then(taskDto.captured.clientIdentifier).isEqualTo(clientToken)
         then(taskDto.captured.coachIdentifier).isEqualTo(coachToken)

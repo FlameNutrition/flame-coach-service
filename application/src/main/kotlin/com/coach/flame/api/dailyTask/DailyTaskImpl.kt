@@ -10,7 +10,7 @@ import com.coach.flame.aspect.LoggingResponse
 import com.coach.flame.dailyTask.DailyTaskService
 import com.coach.flame.dailyTask.filter.BetweenDatesFilter
 import com.coach.flame.dailyTask.filter.IdentifierFilter
-import com.coach.flame.date.stringToDate
+import com.coach.flame.date.DateHelper.toDate
 import com.coach.flame.domain.DailyTaskDto
 import com.coach.flame.exception.RestException
 import com.coach.flame.exception.RestInvalidRequestException
@@ -60,7 +60,7 @@ class DailyTaskImpl(
                 identifier = UUID.randomUUID(),
                 name = dailyTask.taskName,
                 description = dailyTask.taskDescription,
-                date = stringToDate(dailyTask.date),
+                date = toDate(dailyTask.date),
                 ticked = false,
                 clientIdentifier = clientIdentifier,
                 coachIdentifier = coachIdentifier,
@@ -69,7 +69,7 @@ class DailyTaskImpl(
             )
 
             val dailyTasksList = if (dailyTask.toDate !== null) {
-                dailyTaskService.createDailyTask(dailyTaskDto, stringToDate(dailyTask.toDate))
+                dailyTaskService.createDailyTask(dailyTaskDto, toDate(dailyTask.toDate))
             } else {
                 setOf(dailyTaskService.createDailyTask(dailyTaskDto))
             }
@@ -127,7 +127,7 @@ class DailyTaskImpl(
                                 IdentifierFilter(UUID.fromString(it.values.first()))
                             }
                             DailyTaskFilter.Filter.BETWEEN_DATES -> {
-                                BetweenDatesFilter(stringToDate(it.values.first()), stringToDate(it.values.last()))
+                                BetweenDatesFilter(toDate(it.values.first()), toDate(it.values.last()))
                             }
                         }
                     } catch (ex: IllegalArgumentException) {
@@ -177,7 +177,7 @@ class DailyTaskImpl(
                 identifier = taskUUID,
                 name = request.taskName,
                 description = request.taskDescription,
-                date = stringToDate(request.date),
+                date = toDate(request.date),
                 ticked = request.ticked,
                 clientIdentifier = null,
                 coachIdentifier = null,

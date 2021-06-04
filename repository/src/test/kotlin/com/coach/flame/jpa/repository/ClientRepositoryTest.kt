@@ -17,10 +17,8 @@ class ClientRepositoryTest : AbstractHelperTest() {
     @Test
     fun `test create client and check cascade entities`() {
 
-        getClientTypeRepository().saveAndFlush(clientTypeMaker.make())
-
         val clientToTest = ClientBuilder.maker()
-            .but(with(ClientMaker.clientType, getClientTypeRepository().getByType("CLIENT")),
+            .but(with(ClientMaker.clientType, clientType),
                 with(ClientMaker.user, userMaker.make())
             ).make()
 
@@ -45,10 +43,8 @@ class ClientRepositoryTest : AbstractHelperTest() {
     @Test
     fun `test update client and check client measure weights data`() {
 
-        getClientTypeRepository().saveAndFlush(clientTypeMaker.make())
-
         val clientToTest = ClientBuilder.maker()
-            .but(with(ClientMaker.clientType, getClientTypeRepository().getByType("CLIENT")),
+            .but(with(ClientMaker.clientType, clientType),
                 with(ClientMaker.user, userMaker.make())
             ).make()
 
@@ -78,11 +74,6 @@ class ClientRepositoryTest : AbstractHelperTest() {
 
     @Test
     fun `test get clients with coach`() {
-
-        val coachType = getClientTypeRepository()
-            .saveAndFlush(clientTypeMaker.but(with(ClientTypeMaker.type, "COACH")).make())
-        val clientType = getClientTypeRepository()
-            .saveAndFlush(clientTypeMaker.but(with(ClientTypeMaker.type, "CLIENT")).make())
 
         val coach0 = getCoachRepository()
             .saveAndFlush(coachMaker.but(with(CoachMaker.clientType, coachType)).make())
@@ -140,11 +131,6 @@ class ClientRepositoryTest : AbstractHelperTest() {
     @Test
     fun `test get clients for coach`() {
 
-        val coachType = getClientTypeRepository()
-            .saveAndFlush(clientTypeMaker.but(with(ClientTypeMaker.type, "COACH")).make())
-        val clientType = getClientTypeRepository()
-            .saveAndFlush(clientTypeMaker.but(with(ClientTypeMaker.type, "CLIENT")).make())
-
         val coach0 = getCoachRepository()
             .saveAndFlush(coachMaker.but(with(CoachMaker.clientType, coachType)).make())
         val coach1 = getCoachRepository()
@@ -196,8 +182,6 @@ class ClientRepositoryTest : AbstractHelperTest() {
     @Test
     fun `test create client with default values`() {
 
-        val clientType = getClientTypeRepository().saveAndFlush(ClientTypeBuilder.default())
-
         val clientToTest = ClientBuilder.maker()
             .but(with(ClientMaker.clientType, clientType)).make()
 
@@ -217,8 +201,6 @@ class ClientRepositoryTest : AbstractHelperTest() {
 
     @Test
     fun `test create client with default values set up`() {
-
-        val clientType = getClientTypeRepository().saveAndFlush(ClientTypeBuilder.default())
 
         val clientToTest = ClientBuilder.maker()
             .but(with(ClientMaker.clientType, clientType),

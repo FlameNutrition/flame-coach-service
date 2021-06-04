@@ -52,7 +52,7 @@ class EditWeightClientTest : BaseComponentTest() {
             .make()
 
         mockClientRepository.findByUuid(uuid, client)
-        mockClientRepository.captureSaveAndFlush()
+        mockClientRepository.saveAndFlush()
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -106,7 +106,7 @@ class EditWeightClientTest : BaseComponentTest() {
             .make()
 
         mockClientRepository.findByUuid(uuid, client)
-        val clientCaptured = mockClientRepository.captureSaveAndFlush()
+        val clientCaptured = mockClientRepository.saveAndFlush()
 
         // when
         val mvnResponse = mockMvc.perform(request!!)

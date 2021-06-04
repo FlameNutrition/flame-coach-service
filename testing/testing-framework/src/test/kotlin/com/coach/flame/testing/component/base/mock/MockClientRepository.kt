@@ -1,4 +1,4 @@
-package com.coach.flame.testing.component.base
+package com.coach.flame.testing.component.base.mock
 
 import com.coach.flame.jpa.entity.Client
 import com.coach.flame.jpa.entity.ClientMeasureWeight.Companion.toClientMeasureWeight
@@ -25,7 +25,7 @@ class MockClientRepository {
         mockFindByUuid(uuid, null)
     }
 
-    fun captureSaveAndFlush(): CapturingSlot<Client> {
+    fun saveAndFlush(): CapturingSlot<Client> {
         val clientCaptured = slot<Client>()
         val identifierMeasures = AtomicLong(1)
 

@@ -8,6 +8,7 @@ import io.mockk.mockk
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
+import org.springframework.mail.javamail.JavaMailSender
 
 /**
  * Use this test configuration to declare beans or overrides
@@ -40,10 +41,18 @@ class ComponentTestConfig {
     fun coachRepository() = mockk<CoachRepository>(relaxed = false)
 
     @Primary
+    @Bean(name = ["registrationInviteRepositoryMock"])
+    fun registrationInviteRepository() = mockk<RegistrationInviteRepository>(relaxed = false)
+
+    @Primary
     @Bean(name = ["countryConfigCacheMock"])
     fun countryConfigCache() = mockk<ConfigCache<CountryConfig>>(relaxed = false)
 
     @Primary
     @Bean(name = ["genderConfigCacheMock"])
     fun genderConfigCache() = mockk<ConfigCache<GenderConfig>>(relaxed = false)
+
+    @Primary
+    @Bean(name = ["emailSender"])
+    fun emailSender() = mockk<JavaMailSender>(relaxed = false)
 }

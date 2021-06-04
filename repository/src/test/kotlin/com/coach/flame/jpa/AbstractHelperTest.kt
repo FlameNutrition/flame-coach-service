@@ -3,8 +3,11 @@ package com.coach.flame.jpa
 import com.coach.flame.jpa.entity.*
 import com.coach.flame.jpa.entity.maker.*
 import com.coach.flame.jpa.repository.*
+import com.natpryce.makeiteasy.MakeItEasy
 import com.natpryce.makeiteasy.MakeItEasy.an
+import com.natpryce.makeiteasy.MakeItEasy.with
 import com.natpryce.makeiteasy.Maker
+import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContext
 import javax.persistence.EntityManager
@@ -26,6 +29,9 @@ abstract class AbstractHelperTest {
     protected val dailyTaskMaker: Maker<DailyTask> = an(DailyTaskMaker.DailyTask)
     protected val coachMaker: Maker<Coach> = an(CoachMaker.Coach)
 
+    protected lateinit var clientType: ClientType
+    protected lateinit var coachType: ClientType
+
     @Autowired
     private lateinit var clientTypeRepository: ClientTypeRepository
 
@@ -40,6 +46,19 @@ abstract class AbstractHelperTest {
 
     @Autowired
     private lateinit var coachRepository: CoachRepository
+
+    @Autowired
+    private lateinit var registrationInviteRepository: RegistrationInviteRepository
+
+    @BeforeEach
+    internal open fun setUp() {
+        coachType = clientTypeRepository.saveAndFlush(clientTypeMaker
+            .but(with(ClientTypeMaker.type, "COACH"))
+            .make())
+        clientType = clientTypeRepository.saveAndFlush(clientTypeMaker
+            .but(with(ClientTypeMaker.type, "CLIENT"))
+            .make())
+    }
 
     fun getClientTypeRepository(): ClientTypeRepository {
         return clientTypeRepository
@@ -59,6 +78,10 @@ abstract class AbstractHelperTest {
 
     fun getCoachRepository(): CoachRepository {
         return coachRepository
+    }
+
+    fun getRegistrationInviteRepository(): RegistrationInviteRepository {
+        return registrationInviteRepository
     }
 
 }

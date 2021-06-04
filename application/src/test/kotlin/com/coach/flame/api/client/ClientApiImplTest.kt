@@ -6,6 +6,7 @@ import com.coach.flame.api.client.request.PersonalDataRequestBuilder
 import com.coach.flame.api.client.request.PersonalDataRequestMaker
 import com.coach.flame.configs.ConfigsService
 import com.coach.flame.customer.CustomerService
+import com.coach.flame.customer.email.EmailCustomerService
 import com.coach.flame.domain.*
 import com.coach.flame.domain.maker.*
 import com.coach.flame.exception.RestInvalidRequestException
@@ -32,6 +33,9 @@ class ClientApiImplTest {
 
     @MockK
     private lateinit var configsService: ConfigsService
+
+    @MockK
+    private lateinit var emailCustomerService: EmailCustomerService
 
     @InjectMockKs
     private lateinit var classToTest: ClientApiImpl
@@ -263,6 +267,50 @@ class ClientApiImplTest {
         verify(exactly = 0) { configsService.getCountry(any()) }
 
         then(response.country).isNull()
+
+    }
+
+    @Test
+    fun `test send client registration invite`() {
+
+        val coachUUID = UUID.randomUUID()
+        val coachDto = CoachDtoBuilder.maker()
+            .but(with(CoachDtoMaker.identifier, coachUUID))
+            .make()
+        val registrationInviteDto = RegistrationEmailDtoBuilder.maker()
+            .but(with(RegistrationEmailDtoMaker.sender, coachDto),
+                with(RegistrationEmailDtoMaker.registrationLink, "http://localhost:8080"),
+                with(RegistrationEmailDtoMaker.registrationKey, "MY_KEY"))
+            .make()
+
+        every { customerService.getCustomer(coachUUID, CustomerTypeDto.COACH) } returns coachDto
+        every { emailCustomerService.sendRegistrationLink(coachDto, "client@test.com") } returns registrationInviteDto
+
+        val response = classToTest.registrationInvite(coachUUID, "client@test.com")
+
+        then(response.coachIdentifier).isEqualTo(coachUUID)
+        then(response.registrationKey).isEqualTo("MY_KEY")
+        then(response.registrationLink).isEqualTo("http://localhost:8080")
+
+    }
+
+    @Test
+    fun `test send client registration invite without mandatory parameters`() {
+
+        val exception0 = catchThrowable { classToTest.registrationInvite(null, "client@test.com") }
+        then(exception0)
+            .isInstanceOf(RestInvalidRequestException::class.java)
+            .hasMessageContaining("missing required parameter: coachIdentifier")
+
+        val exception1 = catchThrowable { classToTest.registrationInvite(UUID.randomUUID(), null) }
+        then(exception1)
+            .isInstanceOf(RestInvalidRequestException::class.java)
+            .hasMessageContaining("missing required parameter: clientEmail")
+
+        val exception2 = catchThrowable { classToTest.registrationInvite(UUID.randomUUID(), " ") }
+        then(exception2)
+            .isInstanceOf(RestInvalidRequestException::class.java)
+            .hasMessageContaining("empty/blank required parameter: clientEmail")
 
     }
 }

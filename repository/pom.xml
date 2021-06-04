@@ -202,6 +202,9 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <configuration>
                     <excludes>
+                        <exclude>**/flame/FlameCoachDatabaseGenerator.*</exclude>
+                        <exclude>**/flame/FlameCoachDatabaseGeneratorKt.*</exclude>
+
                         <exclude>**/flame/jpa/FlameCoachRepoConfig.*</exclude>
                         <exclude>**/flame/jpa/entity/*_.*</exclude>
 
@@ -210,12 +213,7 @@
 
                         <!-- Repositories -->
                         <exclude>**/flame/jpa/repository/cache/CacheLoaderRepository.*</exclude>
-                        <exclude>**/flame/jpa/repository/ClientRepository.*</exclude>
-                        <exclude>**/flame/jpa/repository/ClientTypeRepository.*</exclude>
-                        <exclude>**/flame/jpa/repository/CoachRepository.*</exclude>
-                        <exclude>**/flame/jpa/repository/DailyTaskRepository.*</exclude>
-                        <exclude>**/flame/jpa/repository/UserRepository.*</exclude>
-                        <exclude>**/flame/jpa/repository/UserSessionRepository.*</exclude>
+                        <exclude>**/flame/jpa/repository/*Repository.*</exclude>
                     </excludes>
                 </configuration>
             </plugin>

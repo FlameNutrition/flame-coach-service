@@ -25,6 +25,11 @@
 
         <dependency>
             <groupId>com.coach.flame</groupId>
+            <artifactId>utilities</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.coach.flame</groupId>
             <artifactId>failureDetail-logic</artifactId>
         </dependency>
 
@@ -46,6 +51,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
         <dependency>
@@ -141,6 +151,9 @@
                         <!-- Configs -->
                         <exclude>**/customer/CustomerModuleConfig.*</exclude>
 
+                        <!-- Props -->
+                        <exclude>**/customer/props/*</exclude>
+
                         <!-- Exceptions -->
                         <exclude>**/customer/CustomerNotFoundException.*</exclude>
                         <exclude>**/customer/CustomerRegisterDuplicateException.*</exclude>
@@ -151,6 +164,7 @@
                         <exclude>**/customer/CustomerException.*</exclude>
                         <exclude>**/customer/SecurityException.*</exclude>
                         <exclude>**/customer/EnrollmentProcessException.*</exclude>
+                        <exclude>**/customer/MailException.*</exclude>
                     </excludes>
                 </configuration>
             </plugin>

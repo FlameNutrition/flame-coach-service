@@ -36,6 +36,11 @@ class CustomerException : BusinessException {
 }
 
 @Status(httpStatus = HttpStatus.INTERNAL_SERVER_ERROR)
+class MailException : BusinessException {
+    constructor(message: String, ex: Exception) : super(ErrorCode.CODE_7000, message, ex)
+}
+
+@Status(httpStatus = HttpStatus.INTERNAL_SERVER_ERROR)
 class SecurityException : BusinessException {
     constructor(message: String, ex: Exception) : super(ErrorCode.CODE_9999, message, ex)
     constructor(message: String) : super(ErrorCode.CODE_9999, message)

@@ -50,7 +50,7 @@ class DeleteWeightClientTest : BaseComponentTest() {
             .make()
 
         mockClientRepository.findByUuid(uuid, client)
-        mockClientRepository.captureSaveAndFlush()
+        mockClientRepository.saveAndFlush()
 
         // when
         val mvnResponse = mockMvc.perform(request!!)

@@ -7,6 +7,10 @@ import com.coach.flame.jpa.entity.*
 import com.coach.flame.jpa.entity.maker.*
 import com.coach.flame.jpa.repository.*
 import com.coach.flame.jpa.repository.cache.ConfigCache
+import com.coach.flame.testing.component.base.mock.MockClientRepository
+import com.coach.flame.testing.component.base.mock.MockCoachRepository
+import com.coach.flame.testing.component.base.mock.MockJavaMailSender
+import com.coach.flame.testing.component.base.mock.MockRegistrationInviteRepository
 import com.google.gson.JsonObject
 import com.natpryce.makeiteasy.MakeItEasy.an
 import com.natpryce.makeiteasy.Maker
@@ -30,7 +34,10 @@ import org.springframework.test.web.servlet.RequestBuilder
 @ContextConfiguration(
     classes = [
         ComponentTestConfig::class,
-        MockClientRepository::class
+        MockClientRepository::class,
+        MockCoachRepository::class,
+        MockRegistrationInviteRepository::class,
+        MockJavaMailSender::class
     ]
 )
 @TestExecutionListeners(
@@ -65,6 +72,10 @@ abstract class BaseComponentTest {
     protected lateinit var dailyTaskRepositoryMock: DailyTaskRepository
 
     @Autowired
+    protected lateinit var mockCoachRepository: MockCoachRepository
+
+    @Deprecated("Please use MockCoachRepository.kt")
+    @Autowired
     protected lateinit var coachRepositoryMock: CoachRepository
 
     @Autowired
@@ -72,6 +83,12 @@ abstract class BaseComponentTest {
 
     @Autowired
     protected lateinit var genderConfigCacheMock: ConfigCache<GenderConfig>
+
+    @Autowired
+    protected lateinit var mockRegistrationInviteRepository: MockRegistrationInviteRepository
+
+    @Autowired
+    protected lateinit var mockJavaMailSender: MockJavaMailSender
 
     @Autowired
     protected lateinit var saltTool: Salt

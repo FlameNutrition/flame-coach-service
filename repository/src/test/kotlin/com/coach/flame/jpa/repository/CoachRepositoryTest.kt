@@ -18,11 +18,6 @@ class CoachRepositoryTest : AbstractHelperTest() {
     @Test
     fun `test get coach`() {
 
-        val coachType = getClientTypeRepository()
-            .saveAndFlush(clientTypeMaker.but(with(ClientTypeMaker.type, "COACH")).make())
-        val clientType = getClientTypeRepository()
-            .saveAndFlush(clientTypeMaker.but(with(ClientTypeMaker.type, "CLIENT")).make())
-
         val coach0 = getCoachRepository()
             .saveAndFlush(coachMaker.but(with(CoachMaker.clientType, coachType)).make())
 

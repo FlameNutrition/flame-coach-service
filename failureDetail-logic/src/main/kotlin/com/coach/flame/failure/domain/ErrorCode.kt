@@ -33,6 +33,9 @@ enum class ErrorCode(
     CODE_6000(6000, "Measure unexpected problem"),
     CODE_6001(6001, "Measure not found"),
 
+    //Mail
+    CODE_7000(7000, "Email unexpected problem"),
+
     CODE_9999(9999, "Unexpected problem"),
 
 }

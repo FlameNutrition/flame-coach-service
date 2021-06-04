@@ -24,13 +24,9 @@ class DailyTaskRepositoryCriteriaTest : AbstractHelperTest() {
     private lateinit var coach0: Coach
 
     @BeforeEach
-    fun setUp() {
-        val clientType = getClientTypeRepository().saveAndFlush(ClientTypeBuilder.default())
-        val coachType = getClientTypeRepository().saveAndFlush(ClientTypeBuilder.maker()
-            .but(
-                with(ClientTypeMaker.type, "COACH")
-            ).make())
-
+    override fun setUp() {
+        //FIXME: This should be improved...maybe tests should use @Rules
+        super.setUp()
         client0 = ClientBuilder.maker()
             .but(
                 with(ClientMaker.clientType, clientType),

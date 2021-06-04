@@ -2,6 +2,7 @@ package com.coach.flame.api.client
 
 import com.coach.flame.api.client.request.ContactInfoRequest
 import com.coach.flame.api.client.request.PersonalDataRequest
+import com.coach.flame.api.client.response.ClientInviteResponse
 import com.coach.flame.api.client.response.Config
 import com.coach.flame.api.client.response.ContactInfoResponse
 import com.coach.flame.api.client.response.PersonalDataResponse
@@ -9,13 +10,13 @@ import com.coach.flame.aspect.LoggingRequest
 import com.coach.flame.aspect.LoggingResponse
 import com.coach.flame.configs.ConfigsService
 import com.coach.flame.customer.CustomerService
-import com.coach.flame.domain.ClientDto
-import com.coach.flame.domain.CustomerTypeDto
-import com.coach.flame.domain.MeasureTypeDto
+import com.coach.flame.customer.email.EmailCustomerService
+import com.coach.flame.domain.*
 import com.coach.flame.exception.RestInvalidRequestException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDateTime
 import java.util.*
 
 @RestController
@@ -23,10 +24,39 @@ import java.util.*
 class ClientApiImpl(
     private val customerService: CustomerService,
     private val configsService: ConfigsService,
+    private val emailCustomerService: EmailCustomerService,
 ) : ClientApi {
 
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(ClientApiImpl::class.java)
+    }
+
+    @LoggingRequest
+    @LoggingResponse
+    @PostMapping("/invite")
+    @ResponseBody
+    override fun registrationInvite(
+        @RequestParam("coachIdentifier") coachIdentifier: UUID?,
+        @RequestParam("clientEmail") clientEmail: String?,
+    ): ClientInviteResponse {
+
+        try {
+            requireNotNull(coachIdentifier) { "missing required parameter: coachIdentifier" }
+            requireNotNull(clientEmail) { "missing required parameter: clientEmail" }
+            require(clientEmail.isNotBlank()) { "empty/blank required parameter: clientEmail" }
+
+            val coach = customerService.getCustomer(coachIdentifier, CustomerTypeDto.COACH) as CoachDto
+
+            val registrationInviteDto = emailCustomerService.sendRegistrationLink(coach, clientEmail)
+
+            return ClientInviteResponse(
+                coachIdentifier = registrationInviteDto.sender.identifier,
+                registrationLink = registrationInviteDto.registrationLink,
+                registrationKey = registrationInviteDto.registrationKey)
+        } catch (ex: IllegalArgumentException) {
+            LOGGER.warn("opr='registrationInvite', msg='Invalid request'", ex)
+            throw RestInvalidRequestException(ex.localizedMessage, ex)
+        }
     }
 
     @LoggingRequest
