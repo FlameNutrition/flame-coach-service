@@ -252,7 +252,7 @@ class RegisterCustomerClientTest : BaseComponentTest() {
         every { clientTypeRepositoryMock.getByType("CLIENT") } returns clientTypeMaker.make()
         every { clientRepositoryMock.saveAndFlush(any()) } returns client
 
-        mockRegistrationInviteRepository.existsByRegistrationKeyIs("MTk3MC0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ==",
+        mockRegistrationInviteRepository.existsByRegistrationKeyIs("OTk5OS0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ==",
             false)
 
         // when
