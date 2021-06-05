@@ -150,6 +150,10 @@
                     <excludes>
                         <!-- Configs -->
                         <exclude>**/customer/CustomerModuleConfig.*</exclude>
+                        <exclude>**/customer/CustomerModuleMock.*</exclude>
+
+                        <!-- Stubs -->
+                        <exclude>**/stub/**.*</exclude>
 
                         <!-- Props -->
                         <exclude>**/customer/props/*</exclude>
@@ -165,6 +169,9 @@
                         <exclude>**/customer/SecurityException.*</exclude>
                         <exclude>**/customer/EnrollmentProcessException.*</exclude>
                         <exclude>**/customer/MailException.*</exclude>
+                        <exclude>**/customer/CustomerRegisterWrongRegistrationKey.*</exclude>
+                        <exclude>**/customer/CustomerRegisterExpirationDate.*</exclude>
+                        <exclude>**/customer/CustomerRegisterInvalidEmail.*</exclude>
                     </excludes>
                 </configuration>
             </plugin>

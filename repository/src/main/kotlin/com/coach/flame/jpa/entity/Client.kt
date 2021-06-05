@@ -1,9 +1,6 @@
 package com.coach.flame.jpa.entity
 
-import com.coach.flame.domain.ClientDto
-import com.coach.flame.domain.ClientStatusDto
-import com.coach.flame.domain.CoachDto
-import com.coach.flame.domain.MeasureTypeDto
+import com.coach.flame.domain.*
 import com.coach.flame.jpa.converter.MeasureConfigConverter
 import com.coach.flame.jpa.entity.ClientMeasureWeight.Companion.toClientMeasureWeight
 import com.coach.flame.jpa.entity.ClientType.Companion.toClientType
@@ -108,7 +105,8 @@ class Client(
             measureType = MeasureTypeDto.valueOf(this.measureConfig.name),
             clientStatus = ClientStatusDto.valueOf(this.clientStatus.name),
             coach = coachDto,
-            weightMeasureTimeline = listOfWeightsTimeline.toMutableList()
+            weightMeasureTimeline = listOfWeightsTimeline.toMutableList(),
+            registrationKey = null
         )
 
     }

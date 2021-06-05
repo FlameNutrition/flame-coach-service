@@ -6,7 +6,7 @@ import com.coach.flame.api.client.request.PersonalDataRequestBuilder
 import com.coach.flame.api.client.request.PersonalDataRequestMaker
 import com.coach.flame.configs.ConfigsService
 import com.coach.flame.customer.CustomerService
-import com.coach.flame.customer.email.EmailCustomerService
+import com.coach.flame.customer.register.RegistrationCustomerService
 import com.coach.flame.domain.*
 import com.coach.flame.domain.maker.*
 import com.coach.flame.exception.RestInvalidRequestException
@@ -35,7 +35,7 @@ class ClientApiImplTest {
     private lateinit var configsService: ConfigsService
 
     @MockK
-    private lateinit var emailCustomerService: EmailCustomerService
+    private lateinit var registrationCustomerService: RegistrationCustomerService
 
     @InjectMockKs
     private lateinit var classToTest: ClientApiImpl
@@ -284,7 +284,7 @@ class ClientApiImplTest {
             .make()
 
         every { customerService.getCustomer(coachUUID, CustomerTypeDto.COACH) } returns coachDto
-        every { emailCustomerService.sendRegistrationLink(coachDto, "client@test.com") } returns registrationInviteDto
+        every { registrationCustomerService.sendRegistrationLink(coachDto, "client@test.com") } returns registrationInviteDto
 
         val response = classToTest.registrationInvite(coachUUID, "client@test.com")
 

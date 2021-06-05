@@ -1,6 +1,7 @@
 package com.coach.flame.testing.component.base.mock
 
 import com.coach.flame.jpa.entity.RegistrationInvite
+import com.coach.flame.jpa.entity.maker.RegistrationInviteBuilder
 import com.coach.flame.jpa.repository.RegistrationInviteRepository
 import io.mockk.CapturingSlot
 import io.mockk.every
@@ -24,6 +25,23 @@ class MockRegistrationInviteRepository {
         }
 
         return captured
+    }
+
+    fun findByRegistrationKeyIs(key: String, response: RegistrationInvite) {
+        every {
+            registrationInviteRepository.findByRegistrationKeyIs(key)
+        } answers {
+            response
+        }
+    }
+
+    fun existsByRegistrationKeyIs(key: String, response: Boolean) {
+
+        every {
+            registrationInviteRepository.existsByRegistrationKeyIs(key)
+        } answers {
+            response
+        }
     }
 
 }

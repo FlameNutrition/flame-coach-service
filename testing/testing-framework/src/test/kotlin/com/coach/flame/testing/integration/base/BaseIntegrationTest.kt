@@ -67,6 +67,9 @@ abstract class BaseIntegrationTest {
     protected lateinit var coachRepository: CoachRepository
 
     @Autowired
+    protected lateinit var registrationInviteRepository: RegistrationInviteRepository
+
+    @Autowired
     protected lateinit var countryConfigRepository: CountryConfigRepository
 
     @Autowired

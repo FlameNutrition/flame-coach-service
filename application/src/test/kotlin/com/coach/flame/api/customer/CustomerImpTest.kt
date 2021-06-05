@@ -113,7 +113,9 @@ class CustomerImpTest {
     fun `register new customer with illegal state`() {
 
         // given
-        val userRequest = customerRequestMaker.but(with(type, "INVALID")).make()
+        val userRequest = customerRequestMaker.but(
+            with(CustomerRequestMaker.registrationKey, "KEY"),
+            with(type, "INVALID")).make()
         every { customerRequestConverter.convert(userRequest) } throws IllegalArgumentException("Invalid parameter request: type")
 
         // when
@@ -129,7 +131,9 @@ class CustomerImpTest {
     fun `register new customer with unexpected error`() {
 
         // given
-        val userRequest = customerRequestMaker.make()
+        val userRequest = customerRequestMaker.but(
+            with(CustomerRequestMaker.registrationKey, "KEY")
+        ).make()
         val clientDto = clientDtoMaker.make()
         every { customerRequestConverter.convert(userRequest) } returns clientDto
         every { customerService.registerCustomer(clientDto) } throws RuntimeException("Something wrong happened")
@@ -147,7 +151,8 @@ class CustomerImpTest {
     fun `register new customer successfully`() {
 
         // given
-        val customerRequest = customerRequestMaker.make()
+        val customerRequest = customerRequestMaker.but(with(CustomerRequestMaker.registrationKey, "KEY"))
+            .make()
         val preClientDto = clientDtoMaker
             .but(with(ClientDtoMaker.loginInfo, null as LoginInfoDto?))
             .make()
@@ -279,7 +284,7 @@ class CustomerImpTest {
                 Arguments.of("lastname"),
                 Arguments.of("email"),
                 Arguments.of("password"),
-                Arguments.of("type")
+                Arguments.of("type"),
             )
         }
 

@@ -10,13 +10,15 @@ import com.coach.flame.aspect.LoggingRequest
 import com.coach.flame.aspect.LoggingResponse
 import com.coach.flame.configs.ConfigsService
 import com.coach.flame.customer.CustomerService
-import com.coach.flame.customer.email.EmailCustomerService
-import com.coach.flame.domain.*
+import com.coach.flame.customer.register.RegistrationCustomerService
+import com.coach.flame.domain.ClientDto
+import com.coach.flame.domain.CoachDto
+import com.coach.flame.domain.CustomerTypeDto
+import com.coach.flame.domain.MeasureTypeDto
 import com.coach.flame.exception.RestInvalidRequestException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.*
-import java.time.LocalDateTime
 import java.util.*
 
 @RestController
@@ -24,7 +26,7 @@ import java.util.*
 class ClientApiImpl(
     private val customerService: CustomerService,
     private val configsService: ConfigsService,
-    private val emailCustomerService: EmailCustomerService,
+    private val registrationCustomerService: RegistrationCustomerService,
 ) : ClientApi {
 
     companion object {
@@ -47,7 +49,7 @@ class ClientApiImpl(
 
             val coach = customerService.getCustomer(coachIdentifier, CustomerTypeDto.COACH) as CoachDto
 
-            val registrationInviteDto = emailCustomerService.sendRegistrationLink(coach, clientEmail)
+            val registrationInviteDto = registrationCustomerService.sendRegistrationLink(coach, clientEmail)
 
             return ClientInviteResponse(
                 coachIdentifier = registrationInviteDto.sender.identifier,

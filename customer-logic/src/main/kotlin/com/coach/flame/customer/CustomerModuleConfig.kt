@@ -5,6 +5,7 @@ import com.coach.flame.customer.props.PropsCredentials
 import com.coach.flame.customer.props.PropsEmailSender
 import com.coach.flame.customer.security.HashPassword
 import com.coach.flame.customer.security.Salt
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.context.annotation.*
 import org.springframework.mail.javamail.JavaMailSender
@@ -17,7 +18,10 @@ import java.util.*
     "com.coach.flame.customer.coach",
     "com.coach.flame.customer.client",
 ])
-@Import(value = [FlameCoachRepoConfig::class])
+@Import(value = [
+    CustomerModuleMock::class,
+    FlameCoachRepoConfig::class
+])
 @PropertySources(value = [
     PropertySource("classpath:application-credentials.properties"),
     PropertySource("classpath:application-email.properties"),
@@ -43,6 +47,7 @@ class CustomerModuleConfig(
     }
 
     @Bean(name = ["emailSender"])
+    @ConditionalOnProperty(name = ["flamecoach.mock.service"], havingValue = "false")
     fun getEmailSender(): JavaMailSender {
         return JavaMailSenderImpl().apply {
             host = propsEmailSender.host

@@ -1,5 +1,6 @@
 package com.coach.flame.customer
 
+import com.coach.flame.customer.register.RegistrationCustomerService
 import com.coach.flame.customer.security.HashPassword
 import com.coach.flame.customer.security.Salt
 import com.coach.flame.domain.*
@@ -44,6 +45,9 @@ class CustomerServiceImplTest {
 
     @MockK
     private lateinit var userSessionRepository: UserSessionRepository
+
+    @MockK
+    private lateinit var registrationCustomerService: RegistrationCustomerService
 
     @MockK
     private lateinit var countryConfigCache: ConfigCache<CountryConfig>
@@ -165,6 +169,8 @@ class CustomerServiceImplTest {
         every { hashPasswordTool.generate(preClientDto.loginInfo!!.password, "MY_SALT") } returns "HASH_PASSWORD"
         every { clientTypeRepository.getByType("CLIENT") } returns ClientTypeBuilder.default()
         every { clientRepository.saveAndFlush(capture(clientCaptorSlot)) } answers { clientCaptorSlot.captured }
+        every { registrationCustomerService.checkRegistrationLink(any()) } returns true
+        every { registrationCustomerService.updateRegistration(any()) } returns mockk()
 
         // when
         val postClientDto = classToTest.registerCustomer(preClientDto) as ClientDto
@@ -239,6 +245,7 @@ class CustomerServiceImplTest {
         every { hashPasswordTool.generate(clientDto.loginInfo!!.password, "MY_SALT") } returns "HASH_PASSWORD"
         every { clientTypeRepository.getByType(any()) } returns entityClient.clientType
         every { clientRepository.saveAndFlush(any()) } throws DataIntegrityViolationException("SQL ERROR!")
+        every { registrationCustomerService.checkRegistrationLink(any()) } returns true
 
         // when
         val exception = catchThrowable { classToTest.registerCustomer(clientDto) }
@@ -247,6 +254,8 @@ class CustomerServiceImplTest {
         then(exception)
             .isInstanceOf(CustomerRegisterDuplicateException::class.java)
             .hasMessageContaining("The following customer already exists")
+
+        verify(exactly = 0) { registrationCustomerService.updateRegistration(any()) }
 
     }
 
@@ -262,11 +271,13 @@ class CustomerServiceImplTest {
         every { hashPasswordTool.generate(clientDto.loginInfo!!.password, "MY_SALT") } returns "HASH_PASSWORD"
         every { clientTypeRepository.getByType(any()) } returns entityClient.clientType
         every { clientRepository.saveAndFlush(any()) } throws RuntimeException("Something wrong happened!")
+        every { registrationCustomerService.checkRegistrationLink(any()) } returns true
 
         // when
         val exception = catchThrowable { classToTest.registerCustomer(clientDto) }
 
         // then
+        verify(exactly = 0) { registrationCustomerService.updateRegistration(any()) }
         then(exception)
             .isInstanceOf(RuntimeException::class.java)
             .hasMessageContaining("Something wrong happened!")

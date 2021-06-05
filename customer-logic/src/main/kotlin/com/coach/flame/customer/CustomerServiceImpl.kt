@@ -1,5 +1,6 @@
 package com.coach.flame.customer
 
+import com.coach.flame.customer.register.RegistrationCustomerService
 import com.coach.flame.customer.security.HashPassword
 import com.coach.flame.customer.security.Salt
 import com.coach.flame.domain.*
@@ -22,6 +23,7 @@ class CustomerServiceImpl(
     private val clientTypeRepository: ClientTypeRepository,
     private val userSessionRepository: UserSessionRepository,
     private val userRepository: UserRepository,
+    private val registrationCustomerService: RegistrationCustomerService,
     private val countryConfigCache: ConfigCache<CountryConfig>,
     private val genderConfigCache: ConfigCache<GenderConfig>,
     private val hashPasswordTool: HashPassword,
@@ -126,6 +128,11 @@ class CustomerServiceImpl(
 
             when (customer.customerType) {
                 CustomerTypeDto.CLIENT -> {
+
+                    if (registrationCustomerService.checkRegistrationLink(customer as ClientDto)) {
+                        LOGGER.info("opr='registerCustomer', msg='Client with valid registration key'")
+                    }
+
                     val entity = Client(
                         uuid = customer.identifier,
                         firstName = customer.firstName,
@@ -135,8 +142,13 @@ class CustomerServiceImpl(
                         clientStatus = ClientStatus.AVAILABLE,
                         registrationDate = customer.registrationDate
                     )
-                    val client = clientRepository.saveAndFlush(entity)
-                    return client.toDto()
+                    val client = clientRepository.saveAndFlush(entity).toDto().apply {
+                        registrationKey = customer.registrationKey
+                    }
+
+                    registrationCustomerService.updateRegistration(client)
+
+                    return client
                 }
                 CustomerTypeDto.COACH -> {
                     val entity = Coach(

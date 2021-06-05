@@ -31,6 +31,7 @@ class ClientDtoMaker {
         val height: Property<ClientDto, Float> = newProperty()
         val measureType: Property<ClientDto, MeasureTypeDto> = newProperty()
         val listOfWeights: Property<ClientDto, MutableList<MeasureDto>> = newProperty()
+        val registrationKey: Property<ClientDto, String?> = newProperty()
 
         val ClientDto: Instantiator<ClientDto> = Instantiator {
             ClientDto(
@@ -51,7 +52,8 @@ class ClientDtoMaker {
                 weight = it.valueOf(weight, 0.0f),
                 height = it.valueOf(height, 0.0f),
                 measureType = it.valueOf(measureType, MeasureTypeDto.KG_CM),
-                weightMeasureTimeline = it.valueOf(listOfWeights, mutableListOf())
+                weightMeasureTimeline = it.valueOf(listOfWeights, mutableListOf()),
+                registrationKey = it.valueOf(registrationKey, null as String?)
             )
         }
     }

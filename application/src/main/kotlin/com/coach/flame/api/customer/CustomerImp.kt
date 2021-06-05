@@ -41,9 +41,9 @@ class CustomerImp(
             requireNotNull(customer.password) { "missing required parameter: password" }
             requireNotNull(customer.type) { "missing required parameter: type" }
 
-            val clientDomain = customerRequestConverter.convert(customer)
+            val customerDomain = customerRequestConverter.convert(customer)
 
-            val clientPersisted = customerService.registerCustomer(clientDomain)
+            val clientPersisted = customerService.registerCustomer(customerDomain)
 
             return customerResponseConverter.convert(clientPersisted)
 

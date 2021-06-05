@@ -1,5 +1,6 @@
 package com.coach.flame.api.customer.request
 
+import com.coach.flame.domain.ClientDto
 import com.coach.flame.domain.CustomerTypeDto
 import com.natpryce.makeiteasy.MakeItEasy
 import com.natpryce.makeiteasy.MakeItEasy.with
@@ -39,14 +40,15 @@ class CustomerRequestConverterTest {
     }
 
     @Test
-    fun `convert request successfully`() {
+    fun `convert request successfully for ClientDto`() {
 
         // given
         val userRequest = customerRequestMaker
+            .but(with(CustomerRequestMaker.registrationKey, "KEY"))
             .make()
 
         // when
-        val client = classToTest.convert(userRequest)
+        val client = classToTest.convert(userRequest) as ClientDto
 
         //then
         then(client.loginInfo).isNotNull
@@ -55,6 +57,7 @@ class CustomerRequestConverterTest {
         then(client.lastName).isEqualTo(userRequest.lastname)
         then(client.loginInfo!!.username).isEqualTo(userRequest.email)
         then(client.loginInfo!!.password).isEqualTo(userRequest.password)
+        then(client.registrationKey).isEqualTo("KEY")
 
     }
 

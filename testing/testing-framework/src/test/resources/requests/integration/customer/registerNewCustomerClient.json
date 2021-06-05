@@ -4,5 +4,6 @@
   "email": "test@gmail.com",
   "password": "test",
   "type": "CLIENT",
-  "policy": true
+  "policy": true,
+  "registrationKey": "OTk5OS0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ=="
 }

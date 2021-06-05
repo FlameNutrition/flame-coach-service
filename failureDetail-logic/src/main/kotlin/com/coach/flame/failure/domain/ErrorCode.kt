@@ -14,6 +14,9 @@ enum class ErrorCode(
     CODE_2002(2002, "Customer registration duplicated"),
     CODE_2003(2003, "Customer username or password invalid"),
     CODE_2004(2004, "Customer invalid type"),
+    CODE_2005(2005, "Customer wrong registration key"),
+    CODE_2006(2006, "Customer registration expiration date"),
+    CODE_2007(2007, "Customer registration invalid email"),
 
     //Enrollment Process
     CODE_3000(3000, "Enrollment process unexpected problem"),

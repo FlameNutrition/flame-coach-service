@@ -18,6 +18,24 @@ class CustomerRegisterDuplicateException : BusinessException {
 }
 
 @Status(httpStatus = HttpStatus.BAD_REQUEST)
+class CustomerRegisterWrongRegistrationKey : BusinessException {
+    constructor(message: String, ex: Exception) : super(ErrorCode.CODE_2005, message, ex)
+    constructor(message: String) : super(ErrorCode.CODE_2005, message)
+}
+
+@Status(httpStatus = HttpStatus.BAD_REQUEST)
+class CustomerRegisterExpirationDate : BusinessException {
+    constructor(message: String, ex: Exception) : super(ErrorCode.CODE_2006, message, ex)
+    constructor(message: String) : super(ErrorCode.CODE_2006, message)
+}
+
+@Status(httpStatus = HttpStatus.BAD_REQUEST)
+class CustomerRegisterInvalidEmail : BusinessException {
+    constructor(message: String, ex: Exception) : super(ErrorCode.CODE_2007, message, ex)
+    constructor(message: String) : super(ErrorCode.CODE_2007, message)
+}
+
+@Status(httpStatus = HttpStatus.BAD_REQUEST)
 class CustomerUsernameOrPasswordException : BusinessException {
     constructor(message: String, ex: Exception) : super(ErrorCode.CODE_2003, message, ex)
     constructor(message: String) : super(ErrorCode.CODE_2003, message)

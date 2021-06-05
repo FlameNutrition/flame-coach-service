@@ -16,6 +16,7 @@ class CustomerRequestMaker {
         val password: Property<CustomerRequest, String?> = newProperty()
         val type: Property<CustomerRequest, String?> = newProperty()
         val policy: Property<CustomerRequest, Boolean?> = newProperty()
+        val registrationKey: Property<CustomerRequest, String?> = newProperty()
 
         val CustomerRequest: Instantiator<CustomerRequest> = Instantiator {
             CustomerRequest(
@@ -24,7 +25,8 @@ class CustomerRequestMaker {
                 email = it.valueOf(email, fake.internet().emailAddress()),
                 password = it.valueOf(password, fake.internet().password()),
                 type = it.valueOf(type, "CLIENT"),
-                policy = it.valueOf(policy, null as Boolean?)
+                policy = it.valueOf(policy, null as Boolean?),
+                registrationKey = it.valueOf(registrationKey, null as String?)
             )
         }
     }

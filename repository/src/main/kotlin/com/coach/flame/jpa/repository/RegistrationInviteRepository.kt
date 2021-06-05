@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface RegistrationInviteRepository : JpaRepository<RegistrationInvite, Long>{
 
-    fun findByRegistrationKeyIs(registrationKey: String): RegistrationInvite
+    fun findByRegistrationKeyIs(registrationKey: String): RegistrationInvite?
+
+    fun existsByRegistrationKeyIs(registrationKey: String): Boolean
 
 }

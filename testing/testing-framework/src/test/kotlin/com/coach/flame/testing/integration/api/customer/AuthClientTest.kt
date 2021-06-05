@@ -2,8 +2,7 @@ package com.coach.flame.testing.integration.api.customer
 
 import com.coach.flame.jpa.entity.CountryConfig
 import com.coach.flame.jpa.entity.GenderConfig
-import com.coach.flame.jpa.entity.maker.ClientMaker
-import com.coach.flame.jpa.entity.maker.UserMaker
+import com.coach.flame.jpa.entity.maker.*
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
 import com.coach.flame.testing.integration.base.BaseIntegrationTest
@@ -15,6 +14,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.RequestMethod
+import java.util.*
 
 class AuthClientTest : BaseIntegrationTest() {
 
@@ -30,7 +30,27 @@ class AuthClientTest : BaseIntegrationTest() {
     fun `register new client`() {
 
         // when
-        clientTypeRepository.saveAndFlush(clientTypeMaker.make())
+        clientTypeRepository
+            .saveAndFlush(ClientTypeBuilder.maker().but(with(ClientTypeMaker.type, "CLIENT")).make())
+        val coachType = clientTypeRepository
+            .saveAndFlush(ClientTypeBuilder.maker().but(with(ClientTypeMaker.type, "COACH")).make())
+
+        val coach = coachRepository.saveAndFlush(CoachBuilder.maker().but(with(CoachMaker.uuid,
+            UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")),
+            with(CoachMaker.clientType, coachType),
+            with(CoachMaker.user, userMaker
+                .but(with(UserMaker.userSession, userSessionMaker
+                    .but(with(UserSessionMaker.token, UUID.randomUUID()))
+                    .make()))
+                .make()))
+            .make())
+
+        registrationInviteRepository.saveAndFlush(RegistrationInviteBuilder.maker()
+            .but(with(RegistrationInviteMaker.coachProp, coach),
+                with(RegistrationInviteMaker.registrationKeyProp, "OTk5OS0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ=="))
+            .make())
+
+
         val response = restTemplate.exchange(request!!, String::class.java)
 
         // then

@@ -6,6 +6,7 @@ data class CustomerRequest(
     val email: String?,
     val password: String?,
     val type: String?,
+    val registrationKey: String?,
     val policy: Boolean?,
 ) {
 
@@ -14,6 +15,7 @@ data class CustomerRequest(
                 "firstname=$firstname, " +
                 "lastname=$lastname, " +
                 "email=$email, " +
+                "registrationKey=$registrationKey, " +
                 "password=******, " +
                 "type=$type, " +
                 "policy=$policy" +

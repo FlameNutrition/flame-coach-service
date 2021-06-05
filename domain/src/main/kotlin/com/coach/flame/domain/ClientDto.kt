@@ -23,7 +23,8 @@ data class ClientDto(
     //FIXME: Can we remove the "?"...the client status in database is not nullable
     val clientStatus: ClientStatusDto?,
     val coach: CoachDto?,
-    val weightMeasureTimeline : MutableList<MeasureDto> = mutableListOf()
+    val weightMeasureTimeline: MutableList<MeasureDto> = mutableListOf(),
+    var registrationKey: String?,
 ) : Customer {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -57,6 +58,7 @@ data class ClientDto(
                 "height=$height, " +
                 "measureType=$measureType, " +
                 "clientStatus=$clientStatus, " +
+                "registrationKey=$registrationKey, " +
                 "coach=$coach, " +
                 "weightMeasureTimeline=$weightMeasureTimeline" +
                 ")"

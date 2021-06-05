@@ -1,9 +1,14 @@
-package com.coach.flame.customer.email
+package com.coach.flame.customer.register
 
 
 import com.coach.flame.base64.Base64
+import com.coach.flame.customer.CustomerRegisterExpirationDate
+import com.coach.flame.customer.CustomerRegisterInvalidEmail
+import com.coach.flame.customer.CustomerRegisterWrongRegistrationKey
+import com.coach.flame.customer.email.EmailService
 import com.coach.flame.customer.props.PropsApplication
 import com.coach.flame.date.DateHelper
+import com.coach.flame.domain.ClientDto
 import com.coach.flame.domain.CoachDto
 import com.coach.flame.domain.RegistrationInviteDto
 import com.coach.flame.jpa.entity.Coach.Companion.toCoach
@@ -11,20 +16,19 @@ import com.coach.flame.jpa.entity.RegistrationInvite
 import com.coach.flame.jpa.repository.RegistrationInviteRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Service
-class EmailCustomerServiceImpl(
+class RegistrationCustomerServiceImpl(
     private val emailService: EmailService,
     private val registrationInviteRepository: RegistrationInviteRepository,
     private val propsApplication: PropsApplication,
-) : EmailCustomerService {
+) : RegistrationCustomerService {
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(EmailCustomerServiceImpl::class.java)
+        private val LOGGER: Logger = LoggerFactory.getLogger(RegistrationCustomerServiceImpl::class.java)
 
         private const val SUBJECT: String = "Flame Coach registration link"
         private const val MESSAGE_TEMPLATE: String = "Hello, " +
@@ -64,5 +68,56 @@ class EmailCustomerServiceImpl(
         return registrationInviteDto
 
     }
+
+    @Transactional(readOnly = true)
+    override fun checkRegistrationLink(clientDto: ClientDto): Boolean {
+
+        requireNotNull(clientDto.registrationKey) { "registrationKey can not be null" }
+        requireNotNull(clientDto.loginInfo) { "loginInfo can not be null" }
+
+        val registrationKeyDecoded = Base64.decode(clientDto.registrationKey!!)
+
+        val keyExists = registrationInviteRepository.existsByRegistrationKeyIs(clientDto.registrationKey!!)
+
+        if (!keyExists) {
+            throw CustomerRegisterWrongRegistrationKey("Registration key invalid")
+        }
+
+        val keySplit = registrationKeyDecoded.split("_")
+
+        val expirationDate = LocalDateTime.parse(keySplit[0])
+
+        if (LocalDateTime.now().isAfter(expirationDate)) {
+            throw CustomerRegisterExpirationDate("Registration key expired")
+        }
+
+        if (!clientDto.loginInfo?.username.equals(keySplit[1])) {
+            throw CustomerRegisterInvalidEmail("Invalid email, use the email received the registration link")
+        }
+
+        return true
+
+    }
+
+    @Transactional
+    override fun updateRegistration(clientDto: ClientDto): RegistrationInviteDto {
+
+        requireNotNull(clientDto.registrationKey) { "registrationKey can not be null" }
+        requireNotNull(clientDto.loginInfo) { "loginInfo can not be null" }
+
+        val link = propsApplication.registrationLink +
+                "?registrationKey=${clientDto.registrationKey}&email=${clientDto.loginInfo!!.username}"
+
+        val registrationInvite = registrationInviteRepository.findByRegistrationKeyIs(clientDto.registrationKey!!)
+            ?: throw CustomerRegisterWrongRegistrationKey("Could not found any registration invite")
+
+        registrationInvite.apply {
+            acceptedDttm = LocalDateTime.now()
+        }
+
+        return registrationInviteRepository.save(registrationInvite).toDto(link)
+
+    }
+
 
 }
