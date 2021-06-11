@@ -1,13 +1,9 @@
 package com.coach.flame.customer.client
 
-import com.coach.flame.customer.CustomerService
 import com.coach.flame.customer.EnrollmentProcessException
 import com.coach.flame.domain.ClientStatusDto
-import com.coach.flame.domain.CoachDto
-import com.coach.flame.domain.CustomerTypeDto
 import com.coach.flame.domain.maker.ClientDtoBuilder
 import com.coach.flame.domain.maker.ClientDtoMaker
-import com.coach.flame.domain.maker.CoachDtoBuilder
 import com.natpryce.makeiteasy.MakeItEasy.with
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -25,11 +21,8 @@ import java.util.*
 @ExtendWith(MockKExtension::class)
 class ClientEnrollmentProcessImplTest {
 
-    @MockK
+    @MockK(relaxed = true)
     private lateinit var clientService: ClientService
-
-    @MockK
-    private lateinit var customerService: CustomerService
 
     @InjectMockKs
     private lateinit var classToTest: ClientEnrollmentProcessImpl
@@ -42,37 +35,25 @@ class ClientEnrollmentProcessImplTest {
     @Test
     fun `test init the enrollment process for a client`() {
 
-        val uuidClient = UUID.randomUUID()
         val uuidCoach = UUID.randomUUID()
-        val clientDto = ClientDtoBuilder.maker()
-            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.PENDING))
-            .make()
+        val clientDto = ClientDtoBuilder.makerWithLoginInfo().make()
 
-        every {
-            customerService.getCustomer(uuidClient,
-                CustomerTypeDto.CLIENT)
-        } returns clientDto.copy(clientStatus = ClientStatusDto.AVAILABLE)
-        every { clientService.updateClientStatus(uuidClient, ClientStatusDto.PENDING) } returns clientDto
-        every { clientService.linkCoach(uuidClient, uuidCoach) } returns clientDto
+        classToTest.init(clientDto, uuidCoach)
 
-        val result = classToTest.init(uuidClient, uuidCoach)
-
-        then(result.clientStatus).isEqualTo(ClientStatusDto.PENDING)
+        verify { clientService.updateClientStatus(clientDto.identifier, ClientStatusDto.PENDING) }
+        verify { clientService.linkCoach(clientDto.identifier, uuidCoach) }
 
     }
 
     @Test
     fun `test init the enrollment process for a client but client already has a coach`() {
 
-        val uuidClient = UUID.randomUUID()
         val uuidCoach = UUID.randomUUID()
-        val clientDto = ClientDtoBuilder.maker()
-            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.PENDING))
+        val clientDto = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.ACCEPTED))
             .make()
 
-        every { customerService.getCustomer(uuidClient, CustomerTypeDto.CLIENT) } returns clientDto
-
-        val result = catchThrowable { classToTest.init(uuidClient, uuidCoach) }
+        val result = catchThrowable { classToTest.init(clientDto, uuidCoach) }
 
         // then
         verify(exactly = 0) { clientService.updateClientStatus(any(), any()) }
@@ -87,37 +68,29 @@ class ClientEnrollmentProcessImplTest {
     @Test
     fun `test finish the enrollment process for a client`() {
 
-        val uuidClient = UUID.randomUUID()
-        val clientDto = ClientDtoBuilder.maker()
-            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.ACCEPTED))
+        val clientDto = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.PENDING))
             .make()
 
-        every {
-            customerService.getCustomer(uuidClient,
-                CustomerTypeDto.CLIENT)
-        } returns clientDto.copy(clientStatus = ClientStatusDto.PENDING)
-        every { clientService.updateClientStatus(uuidClient, ClientStatusDto.ACCEPTED) } returns clientDto
+        classToTest.finish(clientDto, true)
 
-        val result = classToTest.finish(uuidClient, true)
-
-        then(result.clientStatus).isEqualTo(ClientStatusDto.ACCEPTED)
+        verify { clientService.updateClientStatus(clientDto.identifier, ClientStatusDto.ACCEPTED) }
+        verify(exactly = 0) { clientService.unlinkCoach(clientDto.identifier) }
 
     }
 
     @Test
     fun `test finish the enrollment process for a client until call the init process`() {
 
-        val uuidClient = UUID.randomUUID()
-        val clientDto = ClientDtoBuilder.maker()
+        val clientDto = ClientDtoBuilder.makerWithLoginInfo()
             .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.AVAILABLE))
             .make()
 
-        every { customerService.getCustomer(uuidClient, CustomerTypeDto.CLIENT) } returns clientDto
-
-        val result = catchThrowable { classToTest.finish(uuidClient, true) }
+        val result = catchThrowable { classToTest.finish(clientDto, true) }
 
         // then
         verify(exactly = 0) { clientService.updateClientStatus(any(), any()) }
+        verify(exactly = 0) { clientService.unlinkCoach(clientDto.identifier) }
         then(result)
             .isInstanceOf(EnrollmentProcessException::class.java)
             .hasMessageContaining("Client didn't start the enrollment process or already has a coach assigned.")
@@ -127,56 +100,29 @@ class ClientEnrollmentProcessImplTest {
     @Test
     fun `test finish the enrollment process for a client when client denial coach`() {
 
-        val uuidClient = UUID.randomUUID()
-        val clientDto = ClientDtoBuilder.maker()
-            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.PENDING),
-                with(ClientDtoMaker.coach, null as CoachDto?))
+        val clientDto = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.PENDING))
             .make()
 
-        every { clientService.unlinkCoach(uuidClient) } returns clientDto
+        classToTest.finish(clientDto, false)
 
-        val result = classToTest.finish(uuidClient, false)
-
-        verify(exactly = 0) { clientService.updateClientStatus(any(), any()) }
-        then(result.clientStatus).isEqualTo(ClientStatusDto.PENDING)
-        then(result.coach).isNull()
+        verify(exactly = 0) { clientService.updateClientStatus(clientDto.identifier, ClientStatusDto.ACCEPTED) }
+        verify(exactly = 1) { clientService.unlinkCoach(clientDto.identifier) }
 
     }
 
     @Test
     fun `test break the enrollment between client and coach`() {
 
-        val uuidClient = UUID.randomUUID()
-        val clientDto = ClientDtoBuilder.maker()
-            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.AVAILABLE),
-                with(ClientDtoMaker.coach, null as CoachDto?))
+        val clientDto = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.ACCEPTED))
             .make()
 
-        every { clientService.unlinkCoach(uuidClient) } returns clientDto
+        every { clientService.unlinkCoach(clientDto.identifier) } returns clientDto
 
-        val result = classToTest.`break`(uuidClient)
+        classToTest.`break`(clientDto)
 
-        then(result.clientStatus).isEqualTo(ClientStatusDto.AVAILABLE)
-        then(result.coach).isNull()
-
-    }
-
-    @Test
-    fun `test get status the enrollment`() {
-
-        val uuidClient = UUID.randomUUID()
-
-        val clientDto = ClientDtoBuilder.maker()
-            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.ACCEPTED),
-                with(ClientDtoMaker.coach, CoachDtoBuilder.default()))
-            .make()
-
-        every { customerService.getCustomer(uuidClient, CustomerTypeDto.CLIENT) } returns clientDto
-
-        val result = classToTest.status(uuidClient)
-
-        then(result.clientStatus).isEqualTo(ClientStatusDto.ACCEPTED)
-        then(result.coach).isNotNull
+        verify(exactly = 1) { clientService.unlinkCoach(clientDto.identifier) }
 
     }
 

@@ -1,6 +1,8 @@
 package com.coach.flame.jpa.entity
 
-import com.coach.flame.domain.maker.*
+import com.coach.flame.domain.maker.CoachDtoBuilder
+import com.coach.flame.domain.maker.RegistrationInviteDtoBuilder
+import com.coach.flame.domain.maker.RegistrationInviteDtoMaker
 import com.coach.flame.jpa.entity.RegistrationInvite.Companion.toRegistrationInvite
 import com.coach.flame.jpa.entity.maker.CoachBuilder
 import com.coach.flame.jpa.entity.maker.RegistrationInviteBuilder
@@ -9,7 +11,6 @@ import com.natpryce.makeiteasy.MakeItEasy.with
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
-import java.util.*
 
 class RegistrationInviteTest {
 
@@ -46,14 +47,14 @@ class RegistrationInviteTest {
         val sendDttm = LocalDateTime.now()
         val acceptedDttm = LocalDateTime.now()
 
-        val registrationInvite = RegistrationEmailDtoBuilder.maker()
-            .but(with(RegistrationEmailDtoMaker.id, 200L),
-                with(RegistrationEmailDtoMaker.sender, CoachDtoBuilder.makerWithLoginInfo().make()),
-                with(RegistrationEmailDtoMaker.sendTo, "test@gmail.com"),
-                with(RegistrationEmailDtoMaker.registrationKey, "HELLO_KEY"),
-                with(RegistrationEmailDtoMaker.registrationLink, "http://localhost"),
-                with(RegistrationEmailDtoMaker.sendDttm, sendDttm),
-                with(RegistrationEmailDtoMaker.acceptedDttm, acceptedDttm))
+        val registrationInvite = RegistrationInviteDtoBuilder.maker()
+            .but(with(RegistrationInviteDtoMaker.id, 200L),
+                with(RegistrationInviteDtoMaker.sender, CoachDtoBuilder.makerWithLoginInfo().make()),
+                with(RegistrationInviteDtoMaker.sendTo, "test@gmail.com"),
+                with(RegistrationInviteDtoMaker.registrationKey, "HELLO_KEY"),
+                with(RegistrationInviteDtoMaker.registrationLink, "http://localhost"),
+                with(RegistrationInviteDtoMaker.sendDttm, sendDttm),
+                with(RegistrationInviteDtoMaker.acceptedDttm, acceptedDttm))
             .make()
 
         val entity = registrationInvite.toRegistrationInvite()

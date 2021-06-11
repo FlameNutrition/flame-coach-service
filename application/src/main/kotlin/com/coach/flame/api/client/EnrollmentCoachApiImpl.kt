@@ -5,8 +5,11 @@ import com.coach.flame.api.client.response.Coach
 import com.coach.flame.api.client.response.EnrollmentResponse
 import com.coach.flame.aspect.LoggingRequest
 import com.coach.flame.aspect.LoggingResponse
+import com.coach.flame.customer.CustomerService
 import com.coach.flame.customer.client.ClientEnrollmentProcess
+import com.coach.flame.customer.client.ClientEnrollmentProcessImpl
 import com.coach.flame.domain.ClientDto
+import com.coach.flame.domain.CustomerTypeDto
 import com.coach.flame.exception.RestInvalidRequestException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -17,6 +20,7 @@ import java.util.*
 @RequestMapping("/api/client/enrollment")
 class EnrollmentCoachApiImpl(
     private val enrollmentProcess: ClientEnrollmentProcess,
+    private val customerService: CustomerService
 ) : EnrollmentCoachApi {
 
     companion object {
@@ -45,9 +49,11 @@ class EnrollmentCoachApiImpl(
             requireNotNull(enrollmentRequest.coach) { "missing required parameter: coach" }
             requireNotNull(enrollmentRequest.client) { "missing required parameter: client" }
 
-            val client = enrollmentProcess.init(enrollmentRequest.client, enrollmentRequest.coach)
+            val client = customerService.getCustomer(enrollmentRequest.client, CustomerTypeDto.CLIENT) as ClientDto
 
-            return converter(client)
+            val clientUpdated = enrollmentProcess.init(client, enrollmentRequest.coach)
+
+            return converter(clientUpdated)
         } catch (ex: IllegalArgumentException) {
             LOGGER.warn("opr='init', msg='Invalid request'", ex)
             throw RestInvalidRequestException(ex.localizedMessage, ex)
@@ -63,8 +69,11 @@ class EnrollmentCoachApiImpl(
             requireNotNull(enrollmentRequest.client) { "missing required parameter: client" }
             requireNotNull(enrollmentRequest.accept) { "missing required parameter: accept" }
 
-            val client = enrollmentProcess.finish(enrollmentRequest.client, enrollmentRequest.accept)
-            return converter(client)
+            val client = customerService.getCustomer(enrollmentRequest.client, CustomerTypeDto.CLIENT) as ClientDto
+
+            val clientUpdated = enrollmentProcess.finish(client, enrollmentRequest.accept)
+
+            return converter(clientUpdated)
         } catch (ex: IllegalArgumentException) {
             LOGGER.warn("opr='finish', msg='Invalid request'", ex)
             throw RestInvalidRequestException(ex.localizedMessage, ex)
@@ -79,8 +88,11 @@ class EnrollmentCoachApiImpl(
         try {
             requireNotNull(enrollmentRequest.client) { "missing required parameter: client" }
 
-            val client = enrollmentProcess.`break`(enrollmentRequest.client)
-            return converter(client)
+            val client = customerService.getCustomer(enrollmentRequest.client, CustomerTypeDto.CLIENT) as ClientDto
+
+            val clientUpdated = enrollmentProcess.`break`(client)
+
+            return converter(clientUpdated)
         } catch (ex: IllegalArgumentException) {
             LOGGER.warn("opr='break', msg='Invalid request'", ex)
             throw RestInvalidRequestException(ex.localizedMessage, ex)
@@ -92,7 +104,7 @@ class EnrollmentCoachApiImpl(
     @GetMapping("/status")
     @ResponseBody
     override fun status(@RequestHeader(required = true) clientUUID: UUID): EnrollmentResponse {
-        val client = enrollmentProcess.status(clientUUID)
+        val client = customerService.getCustomer(clientUUID, CustomerTypeDto.CLIENT) as ClientDto
         return converter(client)
     }
 }

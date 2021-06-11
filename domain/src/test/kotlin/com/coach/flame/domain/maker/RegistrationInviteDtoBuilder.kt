@@ -4,9 +4,9 @@ import com.coach.flame.domain.RegistrationInviteDto
 import com.natpryce.makeiteasy.MakeItEasy.an
 import com.natpryce.makeiteasy.Maker
 
-object RegistrationEmailDtoBuilder {
+object RegistrationInviteDtoBuilder {
 
-    private val MAKER: Maker<RegistrationInviteDto> = an(RegistrationEmailDtoMaker.RegistrationInviteDto)
+    private val MAKER: Maker<RegistrationInviteDto> = an(RegistrationInviteDtoMaker.RegistrationInviteDto)
 
     fun maker(): Maker<RegistrationInviteDto> {
         return MAKER

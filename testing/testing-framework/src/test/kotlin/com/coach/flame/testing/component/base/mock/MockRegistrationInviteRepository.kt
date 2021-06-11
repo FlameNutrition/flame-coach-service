@@ -27,20 +27,20 @@ class MockRegistrationInviteRepository {
         return captured
     }
 
-    fun findByRegistrationKeyIs(key: String, response: RegistrationInvite) {
+    fun findByRegistrationKeyIs(key: String, answer: RegistrationInvite) {
         every {
             registrationInviteRepository.findByRegistrationKeyIs(key)
         } answers {
-            response
+            answer
         }
     }
 
-    fun existsByRegistrationKeyIs(key: String, response: Boolean) {
+    fun existsByRegistrationKeyIs(key: String, answer: Boolean) {
 
         every {
             registrationInviteRepository.existsByRegistrationKeyIs(key)
         } answers {
-            response
+            answer
         }
     }
 

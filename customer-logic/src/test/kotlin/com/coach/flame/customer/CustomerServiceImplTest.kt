@@ -1,5 +1,6 @@
 package com.coach.flame.customer
 
+import com.coach.flame.customer.client.ClientEnrollmentProcess
 import com.coach.flame.customer.register.RegistrationCustomerService
 import com.coach.flame.customer.security.HashPassword
 import com.coach.flame.customer.security.Salt
@@ -48,6 +49,9 @@ class CustomerServiceImplTest {
 
     @MockK
     private lateinit var registrationCustomerService: RegistrationCustomerService
+
+    @MockK
+    private lateinit var clientEnrollmentProcess: ClientEnrollmentProcess
 
     @MockK
     private lateinit var countryConfigCache: ConfigCache<CountryConfig>
@@ -163,6 +167,10 @@ class CustomerServiceImplTest {
                     with(LoginInfoDtoMaker.keyDecrypt, "MY_SALT"))
                 .make()))
             .make()
+        val registrationCoachSender = CoachDtoBuilder.makerWithLoginInfo().make()
+        val registrationInvite = RegistrationInviteDtoBuilder.maker()
+            .but(with(RegistrationInviteDtoMaker.sender, registrationCoachSender))
+            .make()
 
         val clientCaptorSlot = slot<Client>()
         every { saltTool.generate() } returns "MY_SALT"
@@ -170,7 +178,14 @@ class CustomerServiceImplTest {
         every { clientTypeRepository.getByType("CLIENT") } returns ClientTypeBuilder.default()
         every { clientRepository.saveAndFlush(capture(clientCaptorSlot)) } answers { clientCaptorSlot.captured }
         every { registrationCustomerService.checkRegistrationLink(any()) } returns true
-        every { registrationCustomerService.updateRegistration(any()) } returns mockk()
+        every { registrationCustomerService.updateRegistration(any()) } returns registrationInvite
+        every { clientEnrollmentProcess.init(any(), any()) } answers {
+            clientCaptorSlot.captured.toDto()
+                .copy(
+                    clientStatus = ClientStatusDto.PENDING,
+                    coach = registrationCoachSender
+                )
+        }
 
         // when
         val postClientDto = classToTest.registerCustomer(preClientDto) as ClientDto
@@ -178,11 +193,14 @@ class CustomerServiceImplTest {
         // then
         verify(exactly = 1) { clientRepository.saveAndFlush(any()) }
         verify(exactly = 0) { coachRepository.saveAndFlush(any()) }
+        verify { clientEnrollmentProcess.init(postClientDto, registrationInvite.sender.identifier) }
         then(clientCaptorSlot.isCaptured).isTrue
         then(postClientDto.loginInfo).isNotNull
+        then(postClientDto.coach).isNotNull
         then(postClientDto.firstName).isEqualTo(clientCaptorSlot.captured.firstName)
         then(postClientDto.lastName).isEqualTo(clientCaptorSlot.captured.lastName)
         then(postClientDto.customerType).isEqualTo(CustomerTypeDto.CLIENT)
+        then(postClientDto.clientStatus).isEqualTo(ClientStatusDto.PENDING)
         then(postClientDto.loginInfo!!.username).isEqualTo(clientCaptorSlot.captured.user.email)
         then(postClientDto.loginInfo!!.password).isEqualTo(clientCaptorSlot.captured.user.password)
         then(postClientDto.loginInfo!!.keyDecrypt).isEqualTo(clientCaptorSlot.captured.user.keyDecrypt)

@@ -1,7 +1,5 @@
 package com.coach.flame.testing.component.base.mock
 
-import com.coach.flame.jpa.entity.Client
-import com.coach.flame.jpa.entity.ClientMeasureWeight.Companion.toClientMeasureWeight
 import com.coach.flame.jpa.entity.Coach
 import com.coach.flame.jpa.repository.CoachRepository
 import io.mockk.CapturingSlot
@@ -10,7 +8,6 @@ import io.mockk.slot
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.TestComponent
 import java.util.*
-import java.util.concurrent.atomic.AtomicLong
 
 @TestComponent
 class MockCoachRepository {

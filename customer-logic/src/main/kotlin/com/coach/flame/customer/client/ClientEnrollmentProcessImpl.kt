@@ -1,10 +1,8 @@
 package com.coach.flame.customer.client
 
-import com.coach.flame.customer.CustomerService
 import com.coach.flame.customer.EnrollmentProcessException
 import com.coach.flame.domain.ClientDto
 import com.coach.flame.domain.ClientStatusDto
-import com.coach.flame.domain.CustomerTypeDto
 import com.coach.flame.failure.domain.ErrorCode
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -15,7 +13,6 @@ import java.util.*
 @Component
 class ClientEnrollmentProcessImpl(
     private val clientService: ClientService,
-    private val customerService: CustomerService,
 ) : ClientEnrollmentProcess {
 
     companion object {
@@ -23,15 +20,13 @@ class ClientEnrollmentProcessImpl(
     }
 
     @Transactional
-    override fun init(client: UUID, coach: UUID): ClientDto {
+    override fun init(client: ClientDto, coach: UUID): ClientDto {
 
         LOGGER.info("opr='init', msg='Init the client enrollment process'")
 
-        val dbClient = customerService.getCustomer(client, CustomerTypeDto.CLIENT) as ClientDto
-
-        if (ClientStatusDto.AVAILABLE == dbClient.clientStatus) {
-            clientService.updateClientStatus(client, ClientStatusDto.PENDING)
-            val clientDto = clientService.linkCoach(client, coach)
+        if (ClientStatusDto.AVAILABLE == client.clientStatus) {
+            clientService.updateClientStatus(client.identifier, ClientStatusDto.PENDING)
+            val clientDto = clientService.linkCoach(client.identifier, coach)
 
             LOGGER.info("opr='init', msg='Client enrollment process status.', client={}, coach={}, status={}",
                 clientDto.identifier, clientDto.coach?.identifier, clientDto.clientStatus)
@@ -43,15 +38,14 @@ class ClientEnrollmentProcessImpl(
 
     }
 
-    override fun finish(client: UUID, accept: Boolean): ClientDto {
+    override fun finish(client: ClientDto, accept: Boolean): ClientDto {
 
         LOGGER.info("opr='finish', msg='Finish the client enrollment process', accept={}", accept)
 
         if (accept) {
-            val dbClient = customerService.getCustomer(client, CustomerTypeDto.CLIENT) as ClientDto
 
-            if (ClientStatusDto.PENDING == dbClient.clientStatus) {
-                val clientDto = clientService.updateClientStatus(client, ClientStatusDto.ACCEPTED)
+            if (ClientStatusDto.PENDING == client.clientStatus) {
+                val clientDto = clientService.updateClientStatus(client.identifier, ClientStatusDto.ACCEPTED)
 
                 LOGGER.info("opr='finish', msg='Client enrollment process status.', client={}, status={}",
                     clientDto.identifier, clientDto.clientStatus)
@@ -62,21 +56,14 @@ class ClientEnrollmentProcessImpl(
             throw EnrollmentProcessException(ErrorCode.CODE_3002,
                 "Client didn't start the enrollment process or already has a coach assigned.")
         } else {
-            return clientService.unlinkCoach(client)
+            return clientService.unlinkCoach(client.identifier)
         }
     }
 
-    override fun `break`(client: UUID): ClientDto {
+    override fun `break`(client: ClientDto): ClientDto {
 
         LOGGER.info("opr='break', msg='Break the link between the client and coach'")
-        return clientService.unlinkCoach(client)
-
-    }
-
-    override fun status(client: UUID): ClientDto {
-
-        LOGGER.info("opr='status', msg='Get enrollment status', client={}", client)
-        return customerService.getCustomer(client, CustomerTypeDto.CLIENT) as ClientDto
+        return clientService.unlinkCoach(client.identifier)
 
     }
 

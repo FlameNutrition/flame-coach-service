@@ -277,10 +277,10 @@ class ClientApiImplTest {
         val coachDto = CoachDtoBuilder.maker()
             .but(with(CoachDtoMaker.identifier, coachUUID))
             .make()
-        val registrationInviteDto = RegistrationEmailDtoBuilder.maker()
-            .but(with(RegistrationEmailDtoMaker.sender, coachDto),
-                with(RegistrationEmailDtoMaker.registrationLink, "http://localhost:8080"),
-                with(RegistrationEmailDtoMaker.registrationKey, "MY_KEY"))
+        val registrationInviteDto = RegistrationInviteDtoBuilder.maker()
+            .but(with(RegistrationInviteDtoMaker.sender, coachDto),
+                with(RegistrationInviteDtoMaker.registrationLink, "http://localhost:8080"),
+                with(RegistrationInviteDtoMaker.registrationKey, "MY_KEY"))
             .make()
 
         every { customerService.getCustomer(coachUUID, CustomerTypeDto.COACH) } returns coachDto

@@ -17,12 +17,24 @@ class MockClientRepository {
     @Autowired
     private lateinit var clientRepositoryMock: ClientRepository
 
-    fun findByUuid(uuid: UUID, client: Client) {
-        mockFindByUuid(uuid, client)
+    fun findByUuid(uuid: UUID, answer: Client) {
+        mockFindByUuid(uuid, answer)
     }
 
     fun findByUuidThrowsException(uuid: UUID) {
         mockFindByUuid(uuid, null)
+    }
+
+    fun save(): CapturingSlot<Client> {
+        val clientCaptured = slot<Client>()
+
+        every {
+            clientRepositoryMock.save(capture(clientCaptured))
+        } answers {
+            clientCaptured.captured
+        }
+
+        return clientCaptured
     }
 
     fun saveAndFlush(): CapturingSlot<Client> {

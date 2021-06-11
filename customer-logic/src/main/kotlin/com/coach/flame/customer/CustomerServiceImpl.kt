@@ -1,5 +1,6 @@
 package com.coach.flame.customer
 
+import com.coach.flame.customer.client.ClientEnrollmentProcess
 import com.coach.flame.customer.register.RegistrationCustomerService
 import com.coach.flame.customer.security.HashPassword
 import com.coach.flame.customer.security.Salt
@@ -24,6 +25,7 @@ class CustomerServiceImpl(
     private val userSessionRepository: UserSessionRepository,
     private val userRepository: UserRepository,
     private val registrationCustomerService: RegistrationCustomerService,
+    private val clientEnrollmentProcess: ClientEnrollmentProcess,
     private val countryConfigCache: ConfigCache<CountryConfig>,
     private val genderConfigCache: ConfigCache<GenderConfig>,
     private val hashPasswordTool: HashPassword,
@@ -142,11 +144,14 @@ class CustomerServiceImpl(
                         clientStatus = ClientStatus.AVAILABLE,
                         registrationDate = customer.registrationDate
                     )
-                    val client = clientRepository.saveAndFlush(entity).toDto().apply {
+                    var client = clientRepository.saveAndFlush(entity).toDto().apply {
                         registrationKey = customer.registrationKey
                     }
 
-                    registrationCustomerService.updateRegistration(client)
+                    val registrationInvite = registrationCustomerService.updateRegistration(client)
+
+                    //Start the enrollment client process
+                    client = clientEnrollmentProcess.init(client, registrationInvite.sender.identifier);
 
                     return client
                 }

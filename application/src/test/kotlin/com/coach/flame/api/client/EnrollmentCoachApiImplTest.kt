@@ -3,8 +3,10 @@ package com.coach.flame.api.client
 import com.coach.flame.api.client.request.EnrollmentRequest
 import com.coach.flame.api.client.request.EnrollmentRequestBuilder
 import com.coach.flame.api.client.request.EnrollmentRequestMaker
+import com.coach.flame.customer.CustomerService
 import com.coach.flame.customer.client.ClientEnrollmentProcess
 import com.coach.flame.domain.ClientStatusDto
+import com.coach.flame.domain.CustomerTypeDto
 import com.coach.flame.domain.maker.ClientDtoBuilder
 import com.coach.flame.domain.maker.ClientDtoMaker
 import com.coach.flame.domain.maker.CoachDtoBuilder
@@ -16,6 +18,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.verify
 import org.assertj.core.api.BDDAssertions.catchThrowable
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.AfterEach
@@ -30,6 +33,9 @@ import java.util.stream.Stream
 @Suppress("unused")
 @ExtendWith(MockKExtension::class)
 class EnrollmentCoachApiImplTest {
+
+    @MockK
+    private lateinit var customerService: CustomerService
 
     @MockK
     private lateinit var enrollmentProcess: ClientEnrollmentProcess
@@ -58,7 +64,11 @@ class EnrollmentCoachApiImplTest {
             .make()
 
         every {
-            enrollmentProcess.init(enrollmentProcessRequest.client!!, enrollmentProcessRequest.coach!!)
+            customerService.getCustomer(enrollmentProcessRequest.client!!, CustomerTypeDto.CLIENT)
+        } returns clientDto
+        every {
+            enrollmentProcess.init(clientDto.copy(clientStatus = ClientStatusDto.AVAILABLE),
+                enrollmentProcessRequest.coach!!)
         } returns clientDto
 
         val response = classToTest.init(enrollmentProcessRequest)
@@ -105,10 +115,15 @@ class EnrollmentCoachApiImplTest {
             .make()
 
         every {
-            enrollmentProcess.finish(enrollmentProcessRequest.client!!, true)
+            customerService.getCustomer(enrollmentProcessRequest.client!!, CustomerTypeDto.CLIENT)
+        } returns clientDto
+        every {
+            enrollmentProcess.finish(clientDto.copy(clientStatus = ClientStatusDto.PENDING), true)
         } returns clientDto
 
         val response = classToTest.finish(enrollmentProcessRequest)
+
+        verify { customerService.getCustomer(enrollmentProcessRequest.client!!, CustomerTypeDto.CLIENT) }
 
         then(response.client).isEqualTo(enrollmentProcessRequest.client)
         then(response.coach?.identifier).isEqualTo(clientDto.coach!!.identifier)
@@ -151,10 +166,15 @@ class EnrollmentCoachApiImplTest {
             .make()
 
         every {
-            enrollmentProcess.`break`(enrollmentProcessRequest.client!!)
+            customerService.getCustomer(enrollmentProcessRequest.client!!, CustomerTypeDto.CLIENT)
+        } returns clientDto
+        every {
+            enrollmentProcess.`break`(clientDto.copy(clientStatus = ClientStatusDto.ACCEPTED))
         } returns clientDto
 
         val response = classToTest.`break`(enrollmentProcessRequest)
+
+        verify { customerService.getCustomer(enrollmentProcessRequest.client!!, CustomerTypeDto.CLIENT) }
 
         then(response.client).isEqualTo(enrollmentProcessRequest.client)
         then(response.coach).isNull()
@@ -183,22 +203,13 @@ class EnrollmentCoachApiImplTest {
     fun `test get status enrollment client`() {
 
         val clientUUID = UUID.randomUUID()
-        val coachDto = CoachDtoBuilder.default()
-        val clientDto = ClientDtoBuilder.maker()
-            .but(with(ClientDtoMaker.identifier, clientUUID),
-                with(ClientDtoMaker.coach, coachDto),
-                with(ClientDtoMaker.clientStatus, ClientStatusDto.ACCEPTED))
-            .make()
+        val clientDto = ClientDtoBuilder.default()
 
-        every { enrollmentProcess.status(clientUUID) } returns clientDto
+        every { customerService.getCustomer(clientUUID, CustomerTypeDto.CLIENT) } returns clientDto
 
-        val response = classToTest.status(clientUUID)
+        val result = classToTest.status(clientUUID)
 
-        then(response.client).isEqualTo(clientUUID)
-        then(response.status).isEqualTo("ACCEPTED")
-        then(response.coach?.identifier).isEqualTo(coachDto.identifier)
-        then(response.coach?.firstName).isEqualTo(coachDto.firstName)
-        then(response.coach?.lastName).isEqualTo(coachDto.lastName)
+        then(result.status).isEqualTo("AVAILABLE")
 
     }
 

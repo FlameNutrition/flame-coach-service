@@ -8,7 +8,7 @@ import com.natpryce.makeiteasy.Property
 import com.natpryce.makeiteasy.Property.newProperty
 import java.time.LocalDateTime
 
-class RegistrationEmailDtoMaker {
+class RegistrationInviteDtoMaker {
 
     companion object {
 

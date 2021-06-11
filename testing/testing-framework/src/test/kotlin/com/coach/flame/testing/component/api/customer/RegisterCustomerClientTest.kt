@@ -47,14 +47,21 @@ class RegisterCustomerClientTest : BaseComponentTest() {
                 with(ClientMaker.lastname, "Bento"),
                 with(ClientMaker.user, user))
             .make()
+        val registrationInvite = RegistrationInviteBuilder.default()
+
         every { clientTypeRepositoryMock.getByType("CLIENT") } returns clientTypeMaker.make()
         every { clientRepositoryMock.saveAndFlush(any()) } returns client
 
+        mockRegistrationInviteRepository.save()
         mockRegistrationInviteRepository.existsByRegistrationKeyIs("OTk5OS0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ==",
             true)
         mockRegistrationInviteRepository.findByRegistrationKeyIs("OTk5OS0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ==",
-            RegistrationInviteBuilder.default())
-        mockRegistrationInviteRepository.save()
+            registrationInvite)
+
+        mockClientRepository.findByUuid(client.uuid, client)
+        mockClientRepository.save()
+
+        mockCoachRepository.findByUuid(registrationInvite.coach!!.uuid, registrationInvite.coach!!)
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
