@@ -28,11 +28,14 @@ interface ClientRepository : JpaRepository<Client, Long> {
 
     fun findByUuid(uuid: UUID): Client?
 
+    fun findByUserEmailIs(email: String): Client?
+
     @Query("select c from Client c " +
             "where c.coach.uuid = :uuid and c.clientStatus in ('ACCEPTED', 'PENDING')")
     fun findClientsWithCoach(@Param("uuid") uuidCoach: UUID): List<Client>
 
     @Query(value = queryFindClientsWithoutCoach, nativeQuery = true)
     fun findClientsForCoach(@Param("uuid") uuidCoach: String): List<Client>
+
 
 }

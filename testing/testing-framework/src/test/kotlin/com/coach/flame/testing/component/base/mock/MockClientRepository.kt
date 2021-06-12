@@ -18,11 +18,21 @@ class MockClientRepository {
     private lateinit var clientRepositoryMock: ClientRepository
 
     fun findByUuid(uuid: UUID, answer: Client) {
-        mockFindByUuid(uuid, answer)
+        every {
+            clientRepositoryMock.findByUuid(uuid)
+        } returns (answer)
+    }
+
+    fun findByUserEmailIs(email: String, answer: Client?) {
+        every {
+            clientRepositoryMock.findByUserEmailIs(email)
+        } returns (answer)
     }
 
     fun findByUuidThrowsException(uuid: UUID) {
-        mockFindByUuid(uuid, null)
+        every {
+            clientRepositoryMock.findByUuid(uuid)
+        } returns (null)
     }
 
     fun save(): CapturingSlot<Client> {
@@ -57,9 +67,4 @@ class MockClientRepository {
 
         return clientCaptured
     }
-
-    private fun mockFindByUuid(uuid: UUID, client: Client?) {
-        every { clientRepositoryMock.findByUuid(uuid) } returns (client)
-    }
-
 }

@@ -1,7 +1,6 @@
 package com.coach.flame.testing.component.api.client
 
-import com.coach.flame.jpa.entity.maker.CoachBuilder
-import com.coach.flame.jpa.entity.maker.CoachMaker
+import com.coach.flame.jpa.entity.maker.*
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
@@ -31,10 +30,12 @@ class RegistrationInviteTest : BaseComponentTest() {
 
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
-
-        mockCoachRepository.findByUuid(uuid, CoachBuilder.maker()
+        val coach = CoachBuilder.maker()
             .but(with(CoachMaker.uuid, uuid))
-            .make())
+            .make()
+
+        mockCoachRepository.findByUuid(uuid, coach)
+        mockClientRepository.findByUserEmailIs("test@gmail.com", null)
         mockJavaMailSender.sendEmail()
         mockRegistrationInviteRepository.save()
 
@@ -59,6 +60,49 @@ class RegistrationInviteTest : BaseComponentTest() {
             )
         )
         then(jsonResponse.getAsJsonPrimitive("registrationKey").asString).isNotNull
+        then(jsonResponse.getAsJsonPrimitive("registrationInvite").asBoolean).isTrue
+
+    }
+
+    @Test
+    @LoadRequest(
+        endpoint = "/api/client/invite",
+        httpMethod = RequestMethod.POST,
+        parameters = ["coachIdentifier:e59343bc-6563-4488-a77e-112e886c57ae", "clientEmail:test@gmail.com"]
+    )
+    fun `test send enrollment init invite to client`() {
+
+        // given
+        val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
+        val client = ClientBuilder.maker()
+            .but(with(ClientMaker.user, UserBuilder.maker()
+                .but(with(UserMaker.email, "test@gmail.com"))
+                .make()))
+            .make()
+        val coach = CoachBuilder.maker()
+            .but(with(CoachMaker.uuid, uuid))
+            .make()
+
+        mockCoachRepository.findByUuid(uuid, coach)
+        mockClientRepository.findByUserEmailIs("test@gmail.com", client)
+        mockClientRepository.findByUuid(client.uuid, client)
+        mockClientRepository.save()
+
+        // when
+        val mvnResponse = mockMvc.perform(request!!)
+            .andDo { MockMvcResultHandlers.print() }
+            .andDo { MockMvcResultHandlers.log() }
+            .andReturn()
+
+        // then
+        then(mvnResponse.response).isNotNull
+        then(mvnResponse.response.status).isEqualTo(HttpStatus.OK.value())
+        then(mvnResponse.response.contentType).isEqualTo(MediaType.APPLICATION_JSON_VALUE)
+        val jsonResponse = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
+
+        then(jsonResponse.getAsJsonPrimitive("coachIdentifier").asString).isEqualTo("e59343bc-6563-4488-a77e-112e886c57ae")
+        then(jsonResponse.getAsJsonPrimitive("registrationInvite").asBoolean).isFalse
+        then(jsonResponse.getAsJsonPrimitive("clientStatus").asString).isEqualTo("PENDING")
 
     }
 
@@ -72,10 +116,12 @@ class RegistrationInviteTest : BaseComponentTest() {
 
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
-
-        mockCoachRepository.findByUuid(uuid, CoachBuilder.maker()
+        val coach = CoachBuilder.maker()
             .but(with(CoachMaker.uuid, uuid))
-            .make())
+            .make()
+
+        mockCoachRepository.findByUuid(uuid, coach)
+        mockClientRepository.findByUserEmailIs("test@gmail.com", null)
         mockJavaMailSender.sendEmail(RuntimeException("EMAIL PROBLEM!"))
         mockRegistrationInviteRepository.save()
 

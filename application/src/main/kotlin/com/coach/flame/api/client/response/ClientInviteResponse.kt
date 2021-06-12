@@ -4,6 +4,8 @@ import java.util.*
 
 data class ClientInviteResponse(
     val coachIdentifier: UUID,
-    val registrationLink: String,
-    val registrationKey: String,
+    val registrationInvite: Boolean = false,
+    val registrationLink: String?,
+    val registrationKey: String?,
+    val clientStatus: String?
 )

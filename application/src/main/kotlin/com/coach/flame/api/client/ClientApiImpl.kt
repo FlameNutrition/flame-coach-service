@@ -10,6 +10,7 @@ import com.coach.flame.aspect.LoggingRequest
 import com.coach.flame.aspect.LoggingResponse
 import com.coach.flame.configs.ConfigsService
 import com.coach.flame.customer.CustomerService
+import com.coach.flame.customer.client.InviteComponent
 import com.coach.flame.customer.register.RegistrationCustomerService
 import com.coach.flame.domain.ClientDto
 import com.coach.flame.domain.CoachDto
@@ -26,7 +27,7 @@ import java.util.*
 class ClientApiImpl(
     private val customerService: CustomerService,
     private val configsService: ConfigsService,
-    private val registrationCustomerService: RegistrationCustomerService,
+    private val inviteComponent: InviteComponent,
 ) : ClientApi {
 
     companion object {
@@ -49,12 +50,14 @@ class ClientApiImpl(
 
             val coach = customerService.getCustomer(coachIdentifier, CustomerTypeDto.COACH) as CoachDto
 
-            val registrationInviteDto = registrationCustomerService.sendRegistrationLink(coach, clientEmail)
+            val inviteInfoDto = inviteComponent.send(coach, clientEmail)
 
             return ClientInviteResponse(
-                coachIdentifier = registrationInviteDto.sender.identifier,
-                registrationLink = registrationInviteDto.registrationLink,
-                registrationKey = registrationInviteDto.registrationKey)
+                coachIdentifier = inviteInfoDto.sender,
+                registrationLink = inviteInfoDto.registrationLink,
+                registrationKey = inviteInfoDto.registrationKey,
+                clientStatus = inviteInfoDto.clientStatus?.name,
+                registrationInvite = inviteInfoDto.isRegistrationInvite)
         } catch (ex: IllegalArgumentException) {
             LOGGER.warn("opr='registrationInvite', msg='Invalid request'", ex)
             throw RestInvalidRequestException(ex.localizedMessage, ex)

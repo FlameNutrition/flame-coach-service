@@ -6,6 +6,7 @@ import com.coach.flame.api.client.request.PersonalDataRequestBuilder
 import com.coach.flame.api.client.request.PersonalDataRequestMaker
 import com.coach.flame.configs.ConfigsService
 import com.coach.flame.customer.CustomerService
+import com.coach.flame.customer.client.InviteComponent
 import com.coach.flame.customer.register.RegistrationCustomerService
 import com.coach.flame.domain.*
 import com.coach.flame.domain.maker.*
@@ -35,7 +36,7 @@ class ClientApiImplTest {
     private lateinit var configsService: ConfigsService
 
     @MockK
-    private lateinit var registrationCustomerService: RegistrationCustomerService
+    private lateinit var inviteComponent: InviteComponent
 
     @InjectMockKs
     private lateinit var classToTest: ClientApiImpl
@@ -277,20 +278,24 @@ class ClientApiImplTest {
         val coachDto = CoachDtoBuilder.maker()
             .but(with(CoachDtoMaker.identifier, coachUUID))
             .make()
-        val registrationInviteDto = RegistrationInviteDtoBuilder.maker()
-            .but(with(RegistrationInviteDtoMaker.sender, coachDto),
-                with(RegistrationInviteDtoMaker.registrationLink, "http://localhost:8080"),
-                with(RegistrationInviteDtoMaker.registrationKey, "MY_KEY"))
+        val inviteInfoDto = InviteInfoDtoBuilder.maker()
+            .but(with(InviteInfoDtoMaker.isRegistrationInvite, false),
+                with(InviteInfoDtoMaker.registrationLink, "http://localhost:8080"),
+                with(InviteInfoDtoMaker.registrationKey, "MY_KEY"),
+                with(InviteInfoDtoMaker.sender, coachUUID),
+                with(InviteInfoDtoMaker.clientStatus, ClientStatusDto.PENDING))
             .make()
 
         every { customerService.getCustomer(coachUUID, CustomerTypeDto.COACH) } returns coachDto
-        every { registrationCustomerService.sendRegistrationLink(coachDto, "client@test.com") } returns registrationInviteDto
+        every { inviteComponent.send(coachDto, "client@test.com") } returns inviteInfoDto
 
         val response = classToTest.registrationInvite(coachUUID, "client@test.com")
 
         then(response.coachIdentifier).isEqualTo(coachUUID)
         then(response.registrationKey).isEqualTo("MY_KEY")
         then(response.registrationLink).isEqualTo("http://localhost:8080")
+        then(response.registrationInvite).isFalse
+        then(response.clientStatus).isEqualTo("PENDING")
 
     }
 
