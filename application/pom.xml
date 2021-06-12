@@ -18,6 +18,11 @@
     <dependencies>
 
         <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.coach.flame</groupId>
             <artifactId>dailyTask-logic</artifactId>
         </dependency>
