@@ -30,7 +30,7 @@ class RegistrationCustomerServiceImpl(
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(RegistrationCustomerServiceImpl::class.java)
 
-        private const val SUBJECT: String = "Flame Coach registration link"
+        private const val SUBJECT: String = "Flame Coach Registration Link"
         private const val MESSAGE_TEMPLATE: String = "Hello, " +
                 "Your coach %s, would like to invite you for the Flame Coach. This is a platform will allow you and " +
                 "your coach to track our progress. Good luck for this adventure.\n\n" +

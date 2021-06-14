@@ -57,7 +57,7 @@ class RegistrationCustomerServiceImplTest {
 
         every {
             emailService.sendEmail(coachDto.loginInfo?.username, "client@test.com",
-                "Flame Coach registration link",
+                "Flame Coach Registration Link",
                 capture(message))
         } returns mockk()
 
