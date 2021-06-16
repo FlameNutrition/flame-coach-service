@@ -130,7 +130,7 @@ class CustomerServiceImplTest {
         //then
         then(thrown)
             .isInstanceOf(CustomerNotFoundException::class.java)
-            .hasMessageContaining("Could not found any client with uuid: $uuid")
+            .hasMessageContaining("Could not find any client with uuid: $uuid.")
         verify(exactly = 1) { clientRepository.findByUuid(uuid) }
 
     }
@@ -148,7 +148,7 @@ class CustomerServiceImplTest {
         //then
         then(thrown)
             .isInstanceOf(CustomerNotFoundException::class.java)
-            .hasMessageContaining("Could not found any coach with uuid: $uuid")
+            .hasMessageContaining("Could not find any coach with uuid: $uuid.")
         verify(exactly = 1) { coachRepository.findByUuid(uuid) }
 
     }

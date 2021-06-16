@@ -32,7 +32,7 @@ class EmailService(
             emailSender.send(mailMessage)
         } catch (ex: Exception) {
             LOGGER.error("opr='sendEmail', msg='Problem trying to send an email'", ex)
-            throw MailException("Something happened trying to send registration link email",
+            throw MailException("Something happened when trying to send the registration link.",
                 ex)
         }
     }

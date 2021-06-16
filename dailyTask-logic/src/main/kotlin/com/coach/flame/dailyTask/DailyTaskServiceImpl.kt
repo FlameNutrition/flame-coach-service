@@ -33,7 +33,7 @@ class DailyTaskServiceImpl(
         val dailyTask = dailyTaskRepository.findById(taskId)
 
         if (dailyTask.isEmpty) {
-            throw DailyTaskNotFoundException("Could not found any daily task with id: $taskId")
+            throw DailyTaskNotFoundException("Could not find any daily task with id: $taskId.")
         }
 
         return dailyTask.get().toDto()
@@ -165,7 +165,7 @@ class DailyTaskServiceImpl(
         LOGGER.info("opr='deleteDailyTask', msg='Deleting the following task', uuid=$uuid")
 
         if (dailyTaskRepository.deleteByUuid(uuid) == 0) {
-            throw DailyTaskMissingDeleteException("Didn't find the following uuid task: $uuid")
+            throw DailyTaskMissingDeleteException("Didn't find the following uuid task: $uuid.")
         }
     }
 

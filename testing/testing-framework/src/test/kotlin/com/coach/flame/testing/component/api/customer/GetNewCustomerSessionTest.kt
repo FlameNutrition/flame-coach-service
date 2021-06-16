@@ -101,7 +101,7 @@ class GetNewCustomerSessionTest : BaseComponentTest() {
 
         thenErrorMessageType(body).endsWith("CustomerUsernameOrPasswordException.html")
         thenErrorMessageTitle(body).isEqualTo("CustomerUsernameOrPasswordException")
-        thenErrorMessageDetail(body).isEqualTo("Username invalid")
+        thenErrorMessageDetail(body).isEqualTo("Username invalid.")
         thenErrorMessageStatus(body).isEqualTo("400")
         thenErrorCode(body).isEqualTo("2003")
         thenErrorMessageInstance(body).isNotEmpty
@@ -142,7 +142,7 @@ class GetNewCustomerSessionTest : BaseComponentTest() {
 
         thenErrorMessageType(body).endsWith("CustomerUsernameOrPasswordException.html")
         thenErrorMessageTitle(body).isEqualTo("CustomerUsernameOrPasswordException")
-        thenErrorMessageDetail(body).isEqualTo("Password invalid")
+        thenErrorMessageDetail(body).isEqualTo("Password invalid.")
         thenErrorMessageStatus(body).isEqualTo("400")
         thenErrorCode(body).isEqualTo("2003")
         thenErrorMessageInstance(body).isNotEmpty
@@ -184,7 +184,7 @@ class GetNewCustomerSessionTest : BaseComponentTest() {
 
         thenErrorMessageType(body).endsWith("InternalServerException.html")
         thenErrorMessageTitle(body).isEqualTo("InternalServerException")
-        thenErrorMessageDetail(body).isEqualTo("This is an internal problem, please contact the admin system")
+        thenErrorMessageDetail(body).isEqualTo("This is an internal problem, please contact the admin system.")
         thenErrorMessageStatus(body).isEqualTo("500")
         thenErrorCode(body).isEqualTo("9999")
         thenErrorMessageInstance(body).isNotEmpty

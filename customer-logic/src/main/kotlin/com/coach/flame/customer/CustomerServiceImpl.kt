@@ -53,7 +53,7 @@ class CustomerServiceImpl(
                 coach.toDto()
 
             }
-            else -> throw CustomerException(ErrorCode.CODE_2004, "$customerType is an invalid customer type")
+            else -> throw CustomerException(ErrorCode.CODE_2004, "$customerType is an invalid customer type.")
         }
     }
 
@@ -99,7 +99,7 @@ class CustomerServiceImpl(
                 return newCoach.toDto()
 
             }
-            else -> throw CustomerException(ErrorCode.CODE_2004, "${customer.customerType} is an invalid customer type")
+            else -> throw CustomerException(ErrorCode.CODE_2004, "${customer.customerType} is an invalid customer type.")
         }
     }
 
@@ -168,12 +168,12 @@ class CustomerServiceImpl(
                     return coach.toDto()
                 }
                 else -> throw CustomerException(ErrorCode.CODE_2004,
-                    "${customer.customerType} is a invalid customer type")
+                    "${customer.customerType} is a invalid customer type.")
             }
 
         } catch (ex: Exception) {
             when (ex) {
-                is DataIntegrityViolationException -> throw CustomerRegisterDuplicateException("The following customer already exists")
+                is DataIntegrityViolationException -> throw CustomerRegisterDuplicateException("The following customer already exists.")
                 else -> throw ex
             }
         }
@@ -235,10 +235,10 @@ class CustomerServiceImpl(
     private fun getUserCheckingUsernameAndPassword(email: String, password: String): User {
 
         val user = userRepository.findUserByEmail(email)
-            ?: throw CustomerUsernameOrPasswordException("Username invalid")
+            ?: throw CustomerUsernameOrPasswordException("Username invalid.")
 
         if (!hashPasswordTool.verify(password, user.password, user.keyDecrypt)) {
-            throw CustomerUsernameOrPasswordException("Password invalid")
+            throw CustomerUsernameOrPasswordException("Password invalid.")
         } else {
             LOGGER.info("opr='checkUsernameAndPassword', msg='Username and password correct'")
         }
@@ -247,10 +247,10 @@ class CustomerServiceImpl(
     }
 
     private fun getClient(identifier: UUID) = clientRepository.findByUuid(identifier)
-        ?: throw CustomerNotFoundException("Could not found any client with uuid: $identifier")
+        ?: throw CustomerNotFoundException("Could not find any client with uuid: $identifier.")
 
     private fun getCoach(identifier: UUID) = coachRepository.findByUuid(identifier)
-        ?: throw CustomerNotFoundException("Could not found any coach with uuid: $identifier")
+        ?: throw CustomerNotFoundException("Could not find any coach with uuid: $identifier.")
 
     private fun getCountryConfigFromCache(country: CountryDto?) =
         country?.let { countryConfigCache.getValue(it.countryCode).get() }

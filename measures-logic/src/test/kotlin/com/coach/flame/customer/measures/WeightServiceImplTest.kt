@@ -198,7 +198,7 @@ class WeightServiceImplTest {
         val result = catchThrowable { classToTest.delete(clientDto, weight0) }
 
         then(result).isInstanceOf(MeasureNotFoundException::class.java)
-            .hasMessageContaining("Did not found any measure with the provided identifier")
+            .hasMessageContaining("Did not find any measure with the provided identifier.")
 
     }
 

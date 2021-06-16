@@ -31,7 +31,7 @@ class DefaultExceptionHandler(
         LOGGER.error("opr=handleRootException, msg='Unexpected error happened. This will be wrapped into InternalServerException'", ex)
 
         val internalException = InternalServerException(ErrorCode.CODE_9999,
-            "This is an internal problem, please contact the admin system",
+            "This is an internal problem, please contact the admin system.",
             ex)
 
         val errorDetail = ErrorDetail.Builder()

@@ -53,7 +53,7 @@ class HashPassword(
             return Base64.getEncoder().encodeToString(securePassword)
 
         } catch (ex: Exception) {
-            throw SecurityException("Something happened when try to encrypt the password", ex)
+            throw SecurityException("Something happened when trying to encrypt the password.", ex)
         } finally {
             spec.clearPassword()
         }

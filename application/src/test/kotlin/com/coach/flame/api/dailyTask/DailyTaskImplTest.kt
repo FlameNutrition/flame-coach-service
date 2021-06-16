@@ -378,7 +378,7 @@ class DailyTaskImplTest {
                 Arguments.of(
                     "2020-04",
                     RestInvalidRequestException::class.java,
-                    "Invalid format date. Date:"
+                    "Invalid date format. Date:"
                 ),
             )
         }

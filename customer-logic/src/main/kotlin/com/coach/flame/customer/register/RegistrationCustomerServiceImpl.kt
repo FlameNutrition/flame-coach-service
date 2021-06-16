@@ -32,9 +32,9 @@ class RegistrationCustomerServiceImpl(
 
         private const val SUBJECT: String = "Flame Coach Registration Link"
         private const val MESSAGE_TEMPLATE: String = "Hello, " +
-                "Your coach %s, would like to invite you for the Flame Coach. This is a platform will allow you and " +
-                "your coach to track our progress. Good luck for this adventure.\n\n" +
-                "Please use the following link to create our account: %s"
+                "Your coach %s would like to invite you for the Flame Coach Application. This is a platform that will allow you and " +
+                "your coach to track your progress. Good luck in this adventure.\n\n" +
+                "Please use the following link to create your account: %s"
     }
 
     @Transactional
@@ -80,7 +80,7 @@ class RegistrationCustomerServiceImpl(
         val keyExists = registrationInviteRepository.existsByRegistrationKeyIs(clientDto.registrationKey!!)
 
         if (!keyExists) {
-            throw CustomerRegisterWrongRegistrationKey("Registration key invalid")
+            throw CustomerRegisterWrongRegistrationKey("Registration key invalid.")
         }
 
         val keySplit = registrationKeyDecoded.split("_")
@@ -88,11 +88,11 @@ class RegistrationCustomerServiceImpl(
         val expirationDate = LocalDateTime.parse(keySplit[0])
 
         if (LocalDateTime.now().isAfter(expirationDate)) {
-            throw CustomerRegisterExpirationDate("Registration key expired")
+            throw CustomerRegisterExpirationDate("Registration key expired.")
         }
 
         if (!clientDto.loginInfo?.username.equals(keySplit[1])) {
-            throw CustomerRegisterInvalidEmail("Invalid email, use the email received the registration link")
+            throw CustomerRegisterInvalidEmail("Invalid email, use the email address that received the registration link.")
         }
 
         return true
@@ -109,7 +109,7 @@ class RegistrationCustomerServiceImpl(
                 "?registrationKey=${clientDto.registrationKey}&email=${clientDto.loginInfo!!.username}"
 
         val registrationInvite = registrationInviteRepository.findByRegistrationKeyIs(clientDto.registrationKey!!)
-            ?: throw CustomerRegisterWrongRegistrationKey("Could not found any registration invite")
+            ?: throw CustomerRegisterWrongRegistrationKey("Could not find any registration key.")
 
         registrationInvite.apply {
             acceptedDttm = LocalDateTime.now()

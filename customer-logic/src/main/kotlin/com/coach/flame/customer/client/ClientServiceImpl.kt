@@ -108,7 +108,7 @@ class ClientServiceImpl(
      */
     private fun getClient(uuid: UUID): Client {
         return clientRepository.findByUuid(uuid)
-            ?: throw CustomerNotFoundException("Could not found any client with uuid: $uuid")
+            ?: throw CustomerNotFoundException("Could not find any client with uuid: $uuid.")
     }
 
     /**
@@ -121,7 +121,7 @@ class ClientServiceImpl(
      */
     private fun getCoach(uuid: UUID): Coach {
         return coachRepository.findByUuid(uuid)
-            ?: throw CustomerNotFoundException("Could not found any coach with uuid: $uuid")
+            ?: throw CustomerNotFoundException("Could not find any coach with uuid: $uuid.")
     }
 
 }

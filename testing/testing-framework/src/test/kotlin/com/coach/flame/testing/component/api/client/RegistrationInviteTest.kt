@@ -140,7 +140,7 @@ class RegistrationInviteTest : BaseComponentTest() {
 
         thenErrorMessageType(body).endsWith("MailException.html")
         thenErrorMessageTitle(body).isEqualTo("MailException")
-        thenErrorMessageDetail(body).isEqualTo("Something happened trying to send registration link email")
+        thenErrorMessageDetail(body).isEqualTo("Something happened when trying to send the registration link.")
         thenErrorMessageStatus(body).isEqualTo("500")
         thenErrorCode(body).isEqualTo("7000")
         thenErrorMessageInstance(body).isNotEmpty

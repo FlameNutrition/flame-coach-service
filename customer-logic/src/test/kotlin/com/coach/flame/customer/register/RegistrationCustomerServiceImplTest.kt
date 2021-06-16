@@ -79,9 +79,9 @@ class RegistrationCustomerServiceImplTest {
 
         then(message.captured).contains(listOf(
             String.format("Hello, " +
-                    "Your coach %s, would like to invite you for the Flame Coach. This is a platform will allow you and " +
-                    "your coach to track our progress. Good luck for this adventure.", coachDto.firstName),
-            "Please use the following link to create our account:",
+                    "Your coach %s would like to invite you for the Flame Coach Application. This is a platform that will allow you and " +
+                    "your coach to track your progress. Good luck in this adventure.", coachDto.firstName),
+            "Please use the following link to create your account:",
             "http://localhost:8080/api?registrationKey=",
             "&email=client@test.com"
         ))
@@ -250,7 +250,7 @@ class RegistrationCustomerServiceImplTest {
 
         then(result)
             .isInstanceOf(CustomerRegisterInvalidEmail::class.java)
-            .hasMessageContaining("Invalid email, use the email received the registration link")
+            .hasMessageContaining("Invalid email, use the email address that received the registration link.")
 
     }
 

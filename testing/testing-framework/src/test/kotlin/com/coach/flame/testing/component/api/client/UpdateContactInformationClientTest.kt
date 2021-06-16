@@ -103,7 +103,7 @@ class UpdateContactInformationClientTest : BaseComponentTest() {
 
         thenErrorMessageType(body).endsWith("InternalServerException.html")
         thenErrorMessageTitle(body).isEqualTo("InternalServerException")
-        thenErrorMessageDetail(body).isEqualTo("This is an internal problem, please contact the admin system")
+        thenErrorMessageDetail(body).isEqualTo("This is an internal problem, please contact the admin system.")
         thenErrorMessageStatus(body).isEqualTo("500")
         thenErrorCode(body).isEqualTo("9999")
         thenErrorMessageInstance(body).isNotEmpty

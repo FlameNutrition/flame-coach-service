@@ -179,7 +179,7 @@ class EditWeightClientTest : BaseComponentTest() {
 
         thenErrorMessageType(body).endsWith("MeasureNotFoundException.html")
         thenErrorMessageTitle(body).isEqualTo("MeasureNotFoundException")
-        thenErrorMessageDetail(body).isEqualTo("Measure is not present in the list")
+        thenErrorMessageDetail(body).isEqualTo("Measure is not present in the list.")
         thenErrorMessageStatus(body).isEqualTo("404")
         thenErrorCode(body).isEqualTo("6001")
         thenErrorMessageInstance(body).isNotEmpty

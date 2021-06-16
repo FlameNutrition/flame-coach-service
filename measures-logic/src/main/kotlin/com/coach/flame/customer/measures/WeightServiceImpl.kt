@@ -96,7 +96,7 @@ internal class WeightServiceImpl(
 
             return newClientDto.copy(weightMeasureTimeline = listOfWeights.toMutableList())
         } catch (ex: NoSuchElementException) {
-            throw MeasureNotFoundException("Measure is not present in the list")
+            throw MeasureNotFoundException("Measure is not present in the list.")
         }
     }
 
@@ -115,10 +115,10 @@ internal class WeightServiceImpl(
                 val listOfWeights = measureConverter(clientDto.measureType, newClientDto.weightMeasureTimeline)
                 return clientDto.copy(weightMeasureTimeline = listOfWeights.toMutableList())
             } else {
-                throw MeasureNotFoundException("Measure is not present in the list")
+                throw MeasureNotFoundException("Measure is not present in the list.")
             }
         } catch (ex: IllegalArgumentException) {
-            throw MeasureNotFoundException("Did not found any measure with the provided identifier")
+            throw MeasureNotFoundException("Did not find any measure with the provided identifier.")
         }
     }
 

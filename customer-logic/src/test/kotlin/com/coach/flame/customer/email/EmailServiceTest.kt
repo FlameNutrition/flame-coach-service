@@ -67,7 +67,7 @@ class EmailServiceTest {
 
         then(result)
             .isInstanceOf(MailException::class.java)
-            .hasMessageContaining("Something happened trying to send registration link email")
+            .hasMessageContaining("Something happened when trying to send the registration link")
     }
 
     @Test

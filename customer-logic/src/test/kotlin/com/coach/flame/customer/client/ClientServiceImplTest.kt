@@ -149,7 +149,7 @@ class ClientServiceImplTest {
 
         then(result)
             .isInstanceOf(CustomerNotFoundException::class.java)
-            .hasMessageContaining("Could not found any client with uuid: $uuid")
+            .hasMessageContaining("Could not find any client with uuid: $uuid.")
         verify(exactly = 1) { clientRepository.findByUuid(uuid) }
         verify(exactly = 0) { clientRepository.save(any()) }
 
@@ -193,7 +193,7 @@ class ClientServiceImplTest {
 
         then(result)
             .isInstanceOf(CustomerNotFoundException::class.java)
-            .hasMessageContaining("Could not found any coach with uuid: $uuidCoach")
+            .hasMessageContaining("Could not find any coach with uuid: $uuidCoach.")
         verify(exactly = 1) { clientRepository.findByUuid(uuidClient) }
         verify(exactly = 1) { coachRepository.findByUuid(uuidCoach) }
         verify(exactly = 0) { clientRepository.save(any()) }
@@ -231,7 +231,7 @@ class ClientServiceImplTest {
 
         then(result)
             .isInstanceOf(CustomerNotFoundException::class.java)
-            .hasMessageContaining("Could not found any client with uuid: $uuidClient")
+            .hasMessageContaining("Could not find any client with uuid: $uuidClient.")
         verify(exactly = 1) { clientRepository.findByUuid(uuidClient) }
         verify(exactly = 0) { clientRepository.save(any()) }
 

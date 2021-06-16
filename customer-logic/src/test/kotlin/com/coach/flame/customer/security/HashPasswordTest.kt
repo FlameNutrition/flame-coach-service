@@ -62,7 +62,7 @@ class HashPasswordTest {
 
         then(exception)
             .isInstanceOf(SecurityException::class.java)
-            .hasMessageContaining("Something happened when try to encrypt the password")
+            .hasMessageContaining("Something happened when trying to encrypt the password.")
     }
 
     @Test

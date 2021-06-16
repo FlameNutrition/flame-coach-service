@@ -147,7 +147,7 @@ class GetWeightClientTest : BaseComponentTest() {
 
         thenErrorMessageType(body).endsWith("CustomerNotFoundException.html")
         thenErrorMessageTitle(body).isEqualTo("CustomerNotFoundException")
-        thenErrorMessageDetail(body).isEqualTo("Could not found any client with uuid: 79275cc8-ed8a-4f8a-b790-ff66f74d758a")
+        thenErrorMessageDetail(body).isEqualTo("Could not find any client with uuid: 79275cc8-ed8a-4f8a-b790-ff66f74d758a.")
         thenErrorMessageStatus(body).isEqualTo("404")
         thenErrorCode(body).isEqualTo("2001")
         thenErrorMessageInstance(body).isNotEmpty

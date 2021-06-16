@@ -23,7 +23,7 @@ object DateHelper {
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
             return LocalDate.parse(date, formatter)
         } catch (ex: DateTimeParseException) {
-            throw IllegalArgumentException("Invalid format date. Date: $date", ex)
+            throw IllegalArgumentException("Invalid date format. Date: $date.", ex)
         }
 
     }

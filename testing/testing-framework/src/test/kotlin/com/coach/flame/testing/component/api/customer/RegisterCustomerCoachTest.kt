@@ -137,7 +137,7 @@ class RegisterCustomerCoachTest : BaseComponentTest() {
 
         thenErrorMessageType(body).endsWith("CustomerRegisterDuplicateException.html")
         thenErrorMessageTitle(body).isEqualTo("CustomerRegisterDuplicateException")
-        thenErrorMessageDetail(body).isEqualTo("The following customer already exists")
+        thenErrorMessageDetail(body).isEqualTo("The following customer already exists.")
         thenErrorMessageStatus(body).isEqualTo("400")
         thenErrorCode(body).isEqualTo("2002")
         thenErrorMessageInstance(body).isNotEmpty
@@ -172,7 +172,7 @@ class RegisterCustomerCoachTest : BaseComponentTest() {
 
         thenErrorMessageType(body).endsWith("InternalServerException.html")
         thenErrorMessageTitle(body).isEqualTo("InternalServerException")
-        thenErrorMessageDetail(body).isEqualTo("This is an internal problem, please contact the admin system")
+        thenErrorMessageDetail(body).isEqualTo("This is an internal problem, please contact the admin system.")
         thenErrorMessageStatus(body).isEqualTo("500")
         thenErrorCode(body).isEqualTo("9999")
         thenErrorMessageInstance(body).isNotEmpty
