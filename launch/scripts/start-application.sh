@@ -9,4 +9,5 @@ java -Dspring.datasource.password=$FLAME_COACH_DB_PASSWORD \
   -Dspring.mail.username=$FLAME_COACH_SMTP_USERNAME \
   -Dspring.mail.password=$FLAME_COACH_SMTP_PASSWORD \
   -Dflamecoach.rest.debug.enable=false \
+  -Dflamecoach.rest.security.password=$FLAME_COACH_SECURITY_AUTH \
   -jar /etc/app/flame-coach.jar > /dev/null 2> /dev/null < /dev/null &

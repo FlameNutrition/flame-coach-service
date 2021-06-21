@@ -32,6 +32,7 @@
 
         <Logger name="com.coach.flame" level="INFO"/>
         <Logger name="org.springframework" level="INFO"/>
+        <Logger name="org.springframework.security" level="DEBUG"/>
     </Loggers>
 
 </Configuration>

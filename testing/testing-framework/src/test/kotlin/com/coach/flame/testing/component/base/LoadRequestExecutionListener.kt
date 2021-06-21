@@ -31,6 +31,10 @@ class LoadRequestExecutionListener : TestExecutionListener {
         requireNotNull(loadRequestAnnotation) { "please apply a @LoadRequest annotation in your test" }
 
         val headers = HttpHeaders()
+
+        //Add authentication default header
+        headers.set(HttpHeaders.AUTHORIZATION, "Basic YWRtaW46YWRtaW4=")
+
         loadRequestAnnotation.headers.forEach {
             val pair = it.split(":")
             val header = pair[0]

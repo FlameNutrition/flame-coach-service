@@ -14,6 +14,11 @@ open class RestException : InternalServerException {
     constructor(errorCode: ErrorCode, message: String, ex: Exception) : super(errorCode, message, ex)
 }
 
+@Status(httpStatus = HttpStatus.UNAUTHORIZED)
+open class RestAuthenticationException : RestException {
+    constructor(message: String, ex: Exception) : super(ErrorCode.CODE_1002, message, ex)
+}
+
 @Status(httpStatus = HttpStatus.BAD_REQUEST)
 open class RestInvalidRequestException : RestException {
     constructor(message: String, ex: Exception) : super(ErrorCode.CODE_1001, message, ex)

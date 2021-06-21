@@ -7,6 +7,7 @@ enum class ErrorCode(
     //Request
     CODE_1000(1000, "Request unexpected problem"),
     CODE_1001(1001, "Invalid request"),
+    CODE_1002(1002, "Authentication failed"),
 
     //Customer
     CODE_2000(2000, "Customer unexpected problem"),

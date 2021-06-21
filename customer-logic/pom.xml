@@ -148,6 +148,10 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <configuration>
                     <excludes>
+                        <!-- Tools -->
+                        <exclude>**/customer/FlameCoachSecureTool.*</exclude>
+                        <exclude>**/customer/FlameCoachSecureToolKt.*</exclude>
+
                         <!-- Configs -->
                         <exclude>**/customer/CustomerModuleConfig.*</exclude>
                         <exclude>**/customer/CustomerModuleMock.*</exclude>

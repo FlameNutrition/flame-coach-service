@@ -64,6 +64,11 @@
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
 
@@ -174,6 +179,7 @@
 
                         <!-- Exceptions -->
                         <exclude>**/flame/exception/RestException.*</exclude>
+                        <exclude>**/flame/exception/RestAuthenticationException.*</exclude>
                         <exclude>**/flame/exception/InternalServerException.*</exclude>
 
                         <!-- FIXME: Review this classes -->
