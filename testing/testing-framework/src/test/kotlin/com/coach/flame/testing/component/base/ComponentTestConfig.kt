@@ -4,11 +4,16 @@ import com.coach.flame.jpa.entity.CountryConfig
 import com.coach.flame.jpa.entity.GenderConfig
 import com.coach.flame.jpa.repository.*
 import com.coach.flame.jpa.repository.cache.ConfigCache
+import com.coach.flame.jpa.repository.operations.CoachRepositoryOperation
+import com.coach.flame.jpa.repository.operations.CoachRepositoryOperationImpl
 import io.mockk.mockk
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
+import org.springframework.context.annotation.Scope
 import org.springframework.mail.javamail.JavaMailSender
+import javax.persistence.EntityManager
 
 /**
  * Use this test configuration to declare beans or overrides
@@ -41,6 +46,10 @@ class ComponentTestConfig {
     fun coachRepository() = mockk<CoachRepository>(relaxed = false)
 
     @Primary
+    @Bean(name = ["coachOperationsMock"])
+    fun coachOperations() = mockk<CoachRepositoryOperation>(relaxed = false)
+
+    @Primary
     @Bean(name = ["registrationInviteRepositoryMock"])
     fun registrationInviteRepository() = mockk<RegistrationInviteRepository>(relaxed = false)
 
@@ -55,4 +64,5 @@ class ComponentTestConfig {
     @Primary
     @Bean(name = ["emailSender"])
     fun emailSender() = mockk<JavaMailSender>(relaxed = false)
+
 }

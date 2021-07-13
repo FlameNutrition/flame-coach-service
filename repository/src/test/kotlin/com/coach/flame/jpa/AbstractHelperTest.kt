@@ -3,7 +3,6 @@ package com.coach.flame.jpa
 import com.coach.flame.jpa.entity.*
 import com.coach.flame.jpa.entity.maker.*
 import com.coach.flame.jpa.repository.*
-import com.natpryce.makeiteasy.MakeItEasy
 import com.natpryce.makeiteasy.MakeItEasy.an
 import com.natpryce.makeiteasy.MakeItEasy.with
 import com.natpryce.makeiteasy.Maker

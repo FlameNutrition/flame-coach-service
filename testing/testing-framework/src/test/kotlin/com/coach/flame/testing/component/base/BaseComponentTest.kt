@@ -7,6 +7,7 @@ import com.coach.flame.jpa.entity.*
 import com.coach.flame.jpa.entity.maker.*
 import com.coach.flame.jpa.repository.*
 import com.coach.flame.jpa.repository.cache.ConfigCache
+import com.coach.flame.jpa.repository.operations.CoachRepositoryOperation
 import com.coach.flame.testing.component.base.mock.MockClientRepository
 import com.coach.flame.testing.component.base.mock.MockCoachRepository
 import com.coach.flame.testing.component.base.mock.MockJavaMailSender
@@ -89,6 +90,9 @@ abstract class BaseComponentTest {
 
     @Autowired
     protected lateinit var mockJavaMailSender: MockJavaMailSender
+
+    @Autowired
+    protected lateinit var coachOperationsMock: CoachRepositoryOperation
 
     @Autowired
     protected lateinit var saltTool: Salt

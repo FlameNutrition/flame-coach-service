@@ -5,6 +5,7 @@ import com.coach.flame.configs.ConfigModuleConfig
 import com.coach.flame.customer.CustomerModuleConfig
 import com.coach.flame.customer.measures.MeasureModuleConfig
 import com.coach.flame.dailyTask.DailyTaskModuleConfig
+import com.coach.flame.metrics.MetricsModuleConfig
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Import
 
@@ -22,6 +23,7 @@ import org.springframework.context.annotation.Import
         DailyTaskModuleConfig::class,
         LoggingServiceConfig::class,
         MeasureModuleConfig::class,
+        MetricsModuleConfig::class,
         FlameCoachWebConfig::class]
 )
 class FlameCoachServiceApplication

@@ -9,12 +9,24 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>failureDetail-logic</artifactId>
-
-    <properties>
-    </properties>
+    <artifactId>metrics-logic</artifactId>
 
     <dependencies>
+
+        <dependency>
+            <groupId>com.coach.flame</groupId>
+            <artifactId>repository</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.coach.flame</groupId>
+            <artifactId>failureDetail-logic</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.coach.flame</groupId>
+            <artifactId>domain</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -22,8 +34,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-kotlin</artifactId>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-reflect</artifactId>
         </dependency>
 
         <dependency>
@@ -34,6 +46,24 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-log4j2</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.coach.flame</groupId>
+            <artifactId>domain</artifactId>
+            <type>test-jar</type>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.mockk</groupId>
+            <artifactId>mockk</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -51,6 +81,25 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.coach.flame</groupId>
+            <artifactId>repository</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.natpryce</groupId>
+            <artifactId>make-it-easy</artifactId>
             <scope>test</scope>
         </dependency>
 
@@ -77,27 +126,12 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <configuration>
                     <excludes>
-                        <exclude>**/failure/exception/**.*</exclude>
-                        <exclude>**/failure/HttpStatus.*</exclude>
-                        <exclude>**/failure/Status.*</exclude>
-
-                        <!-- Exceptions -->
-                        <exclude>**/customer/CustomerNotFoundException.*</exclude>
-                        <exclude>**/customer/CustomerRegisterDuplicateException.*</exclude>
-                        <exclude>**/customer/CustomerRegisterException.*</exclude>
-                        <exclude>**/customer/CustomerUsernameOrPasswordException.*</exclude>
-                        <exclude>**/customer/CustomerRetrieveException.*</exclude>
-                        <exclude>**/customer/CustomerNewSessionException.*</exclude>
-                        <exclude>**/customer/CustomerException.*</exclude>
-                        <exclude>**/customer/SecurityException.*</exclude>
-                        <exclude>**/customer/EnrollmentProcessException.*</exclude>
-                        <exclude>**/customer/MailException.*</exclude>
-                        <exclude>**/customer/CustomerRegisterWrongRegistrationKey.*</exclude>
-                        <exclude>**/customer/CustomerRegisterExpirationDate.*</exclude>
-                        <exclude>**/customer/CustomerRegisterInvalidEmail.*</exclude>
+                        <exclude>**/metrics/*Config.*</exclude>
                     </excludes>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
+
 </project>

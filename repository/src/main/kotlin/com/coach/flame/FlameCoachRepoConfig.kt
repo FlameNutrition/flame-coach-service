@@ -10,17 +10,16 @@ import com.coach.flame.jpa.repository.configs.GenderConfigRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.SpringBootConfiguration
 import org.springframework.boot.autoconfigure.domain.EntityScan
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Import
-import org.springframework.context.annotation.PropertySource
-import org.springframework.context.annotation.PropertySources
+import org.springframework.context.annotation.*
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.transaction.annotation.EnableTransactionManagement
 import java.util.concurrent.TimeUnit
 
 @SpringBootConfiguration
-@EnableJpaRepositories(basePackages = ["com.coach.flame.jpa.repository"],
-    entityManagerFactoryRef = "entityManagerFactory")
+@EnableJpaRepositories(basePackages = [
+    "com.coach.flame.jpa.repository",
+], entityManagerFactoryRef = "entityManagerFactory")
+@ComponentScan("com.coach.flame.jpa.repository.operations")
 @EntityScan(basePackages = ["com.coach.flame.jpa.entity"])
 @EnableTransactionManagement
 @PropertySources(

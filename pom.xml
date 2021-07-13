@@ -94,6 +94,12 @@
 
             <dependency>
                 <groupId>com.coach.flame</groupId>
+                <artifactId>metrics-logic</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.coach.flame</groupId>
                 <artifactId>dailyTask-logic</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -480,6 +486,7 @@
         <module>domain</module>
         <module>configs-logic</module>
         <module>measures-logic</module>
+        <module>metrics-logic</module>
     </modules>
 
 </project>

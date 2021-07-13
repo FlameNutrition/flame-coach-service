@@ -26,6 +26,11 @@
         </dependency>
 
         <dependency>
+            <groupId>com.coach.flame</groupId>
+            <artifactId>failureDetail-logic</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
@@ -204,6 +209,7 @@
                     <excludes>
                         <exclude>**/flame/FlameCoachDatabaseGenerator.*</exclude>
                         <exclude>**/flame/FlameCoachDatabaseGeneratorKt.*</exclude>
+                        <exclude>**/flame/FlameCoachRepoConfigAutomationTesting.*</exclude>
 
                         <exclude>**/flame/jpa/FlameCoachRepoConfig.*</exclude>
                         <exclude>**/flame/jpa/entity/*_.*</exclude>
