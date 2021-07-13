@@ -15,9 +15,9 @@ object APIWrapperException {
      *
      * @param f function to invoke
      *
-     * @exception IllegalArgumentException when request is invalid
-     * @exception IllegalStateException when missing a mandatory parameter
-     * @exception Exception when happen another exception not mentioned above
+     * @throws RestInvalidRequestException when missing a mandatory parameter
+     * @throws RestException when an internal error occurred
+     * @throws Exception when happen another exception not mentioned above
      *
      * @return the result of function
      */

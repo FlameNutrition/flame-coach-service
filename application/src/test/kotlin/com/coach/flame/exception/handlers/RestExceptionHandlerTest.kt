@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.context.request.WebRequest
 
 @ExtendWith(MockKExtension::class)
@@ -38,6 +39,23 @@ class RestExceptionHandlerTest {
 
         // then
         then(responseEntity.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        then(responseEntity.headers.contentType).isEqualTo(MediaType.APPLICATION_PROBLEM_JSON)
+        //FIXME: Add more assertions to check the error details instance
+        then(responseEntity.body).isNotEqualTo(ErrorDetail.Builder().throwable(restException).build())
+
+    }
+
+    @Test
+    fun `test handler for missing parameters exceptions`() {
+
+        // given
+        val restException = MissingServletRequestParameterException("paramTest", "UUID")
+
+        // when
+        val responseEntity = restExceptionHandler.handleMissingParameterException(restException, request)
+
+        // then
+        then(responseEntity.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         then(responseEntity.headers.contentType).isEqualTo(MediaType.APPLICATION_PROBLEM_JSON)
         //FIXME: Add more assertions to check the error details instance
         then(responseEntity.body).isNotEqualTo(ErrorDetail.Builder().throwable(restException).build())
