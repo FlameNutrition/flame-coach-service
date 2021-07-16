@@ -46,7 +46,7 @@ class MetricsGetClientsStatistics : BaseComponentTest() {
         val client3 = ClientBuilder.maker()
             .but(with(ClientMaker.clientStatus, ClientStatus.ACCEPTED))
             .make()
-        val listOfClients = listOf(client1, client2, client3)
+        val listOfClients = mutableListOf(client1, client2, client3)
 
         val coach = CoachBuilder.maker()
             .but(with(CoachMaker.clients, listOfClients),
@@ -55,7 +55,7 @@ class MetricsGetClientsStatistics : BaseComponentTest() {
 
         every {
             coachOperationsMock.getCoach(UUID.fromString("3c5845f1-4a90-4396-8610-7261761369ae"))
-        } returns coach.toDto()
+        } returns coach
 
         // when
         val mvnResponse = mockMvc.perform(request!!)

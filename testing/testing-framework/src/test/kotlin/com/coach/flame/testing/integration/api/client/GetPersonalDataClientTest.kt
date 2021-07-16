@@ -27,10 +27,9 @@ class GetPersonalDataClientTest : BaseIntegrationTest() {
     private lateinit var client0: Client
 
     @BeforeEach
-    fun setup() {
+    override fun setup() {
 
-        val clientType = clientTypeRepository
-            .saveAndFlush(ClientTypeBuilder.maker().but(with(ClientTypeMaker.type, "CLIENT")).make())
+        super.setup()
 
         client0 = clientRepository.saveAndFlush(ClientBuilder.maker()
             .but(with(ClientMaker.uuid, UUID.fromString("34cbaa17-0da9-4469-82ec-b1b2ceba9665")),

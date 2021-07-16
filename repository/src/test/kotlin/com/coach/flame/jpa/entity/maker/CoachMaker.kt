@@ -25,7 +25,7 @@ class CoachMaker {
         val user: Property<Coach, User> = newProperty()
         val clientType: Property<Coach, ClientType> = newProperty()
         val userSession: Property<Coach, UserSession> = newProperty()
-        val clients: Property<Coach, List<Client>> = newProperty()
+        val clients: Property<Coach, MutableList<Client>> = newProperty()
         val registrationDate: Property<Coach, LocalDate> = newProperty()
 
         val Coach: Instantiator<Coach> = Instantiator {
@@ -47,7 +47,7 @@ class CoachMaker {
                 user = it.valueOf(user, userInit),
                 clientType = it.valueOf(clientType, make(a(ClientTypeMaker.ClientType,
                     with(ClientTypeMaker.type, "COACH")))),
-                clients = it.valueOf(clients, listOf()),
+                clients = it.valueOf(clients, mutableListOf()),
                 registrationDate = it.valueOf(registrationDate, LocalDate.now())
             )
         }

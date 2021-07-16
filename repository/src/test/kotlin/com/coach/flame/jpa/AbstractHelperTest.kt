@@ -38,6 +38,9 @@ abstract class AbstractHelperTest {
     private lateinit var clientRepository: ClientRepository
 
     @Autowired
+    private lateinit var appointmentRepository: AppointmentRepository
+
+    @Autowired
     private lateinit var userSessionRepository: UserSessionRepository
 
     @Autowired
@@ -65,6 +68,10 @@ abstract class AbstractHelperTest {
 
     fun getClientRepository(): ClientRepository {
         return clientRepository
+    }
+
+    fun getAppointmentRepository(): AppointmentRepository {
+        return appointmentRepository
     }
 
     fun getUserSessionRepositoryRepository(): UserSessionRepository {

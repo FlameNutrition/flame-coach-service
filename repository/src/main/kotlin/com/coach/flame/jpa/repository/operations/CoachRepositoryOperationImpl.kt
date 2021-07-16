@@ -1,6 +1,5 @@
 package com.coach.flame.jpa.repository.operations
 
-import com.coach.flame.domain.CoachDto
 import com.coach.flame.failure.exception.CustomerNotFoundException
 import com.coach.flame.jpa.entity.Coach
 import org.springframework.stereotype.Component
@@ -15,7 +14,7 @@ class CoachRepositoryOperationImpl(
 ) : CoachRepositoryOperation {
 
     @Transactional(readOnly = true)
-    override fun getCoach(identifier: UUID): CoachDto {
+    override fun getCoach(identifier: UUID): Coach {
 
         val result =
             entityManagerFactory.createQuery("select coach from Coach coach where coach.uuid = :uuid",
@@ -27,7 +26,7 @@ class CoachRepositoryOperationImpl(
             throw CustomerNotFoundException("Could not find any coach with uuid: $identifier.")
         }
 
-        return result.first().toDto()
+        return result.first()
 
     }
 }

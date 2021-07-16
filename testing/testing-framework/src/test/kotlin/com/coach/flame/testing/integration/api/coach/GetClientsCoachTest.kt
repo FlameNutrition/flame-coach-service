@@ -29,11 +29,8 @@ class GetClientsCoachTest : BaseIntegrationTest() {
     private lateinit var coach: Coach
 
     @BeforeEach
-    fun setup() {
-        val clientType = clientTypeRepository
-            .saveAndFlush(clientTypeMaker.but(with(ClientTypeMaker.type, "CLIENT")).make())
-        val coachType = clientTypeRepository
-            .saveAndFlush(clientTypeMaker.but(with(ClientTypeMaker.type, "COACH")).make())
+    override fun setup() {
+        super.setup()
 
         client1 = clientRepository.saveAndFlush(clientMaker.but(with(ClientMaker.uuid, UUID.randomUUID()),
             with(ClientMaker.clientType, clientType))

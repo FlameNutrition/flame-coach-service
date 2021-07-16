@@ -61,7 +61,7 @@ class RegisterCustomerClientTest : BaseComponentTest() {
         mockClientRepository.findByUuid(client.uuid, client)
         mockClientRepository.save()
 
-        mockCoachRepository.findByUuid(registrationInvite.coach!!.uuid, registrationInvite.coach!!)
+        mockCoachRepository.mockFindByUuid(registrationInvite.coach!!.uuid, registrationInvite.coach!!)
 
         // when
         val mvnResponse = mockMvc.perform(request!!)

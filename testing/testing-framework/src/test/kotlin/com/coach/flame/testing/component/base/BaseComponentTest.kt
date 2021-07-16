@@ -8,10 +8,7 @@ import com.coach.flame.jpa.entity.maker.*
 import com.coach.flame.jpa.repository.*
 import com.coach.flame.jpa.repository.cache.ConfigCache
 import com.coach.flame.jpa.repository.operations.CoachRepositoryOperation
-import com.coach.flame.testing.component.base.mock.MockClientRepository
-import com.coach.flame.testing.component.base.mock.MockCoachRepository
-import com.coach.flame.testing.component.base.mock.MockJavaMailSender
-import com.coach.flame.testing.component.base.mock.MockRegistrationInviteRepository
+import com.coach.flame.testing.component.base.mock.*
 import com.google.gson.JsonObject
 import com.natpryce.makeiteasy.MakeItEasy.an
 import com.natpryce.makeiteasy.Maker
@@ -38,7 +35,8 @@ import org.springframework.test.web.servlet.RequestBuilder
         MockClientRepository::class,
         MockCoachRepository::class,
         MockRegistrationInviteRepository::class,
-        MockJavaMailSender::class
+        MockJavaMailSender::class,
+        MockAppointmentsRepository::class
     ]
 )
 @TestExecutionListeners(
@@ -87,6 +85,9 @@ abstract class BaseComponentTest {
 
     @Autowired
     protected lateinit var mockRegistrationInviteRepository: MockRegistrationInviteRepository
+
+    @Autowired
+    protected lateinit var mockAppointmentsRepository: MockAppointmentsRepository
 
     @Autowired
     protected lateinit var mockJavaMailSender: MockJavaMailSender

@@ -70,6 +70,12 @@
 
             <dependency>
                 <groupId>com.coach.flame</groupId>
+                <artifactId>appointment-logic</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.coach.flame</groupId>
                 <artifactId>application</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -487,6 +493,7 @@
         <module>configs-logic</module>
         <module>measures-logic</module>
         <module>metrics-logic</module>
+        <module>appointment-logic</module>
     </modules>
 
 </project>

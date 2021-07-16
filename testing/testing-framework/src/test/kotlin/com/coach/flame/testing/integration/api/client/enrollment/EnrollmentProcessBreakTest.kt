@@ -32,9 +32,10 @@ class EnrollmentProcessBreakTest : BaseIntegrationTest() {
     private var isPopulated: Boolean = false
 
     @BeforeEach
-    fun setup() {
+    override fun setup() {
 
         if (!isPopulated) {
+            super.setup()
 
             val clientType = clientTypeRepository
                 .saveAndFlush(ClientTypeBuilder.maker().but(with(ClientTypeMaker.type, "CLIENT")).make())

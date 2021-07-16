@@ -54,7 +54,7 @@ class CoachRepositoryOperationImplTest {
     }
 
     @Test
-    fun testGetCoachThrowCustomerNotFoundException() {
+    fun `test get coach throw CustomerNotFoundException`() {
 
         val uuid = UUID.randomUUID()
         val query = mockk<TypedQuery<Coach>>()

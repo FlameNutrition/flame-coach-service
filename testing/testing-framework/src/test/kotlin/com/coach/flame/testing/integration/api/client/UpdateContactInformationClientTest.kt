@@ -2,7 +2,10 @@ package com.coach.flame.testing.integration.api.client
 
 import com.coach.flame.jpa.entity.Client
 import com.coach.flame.jpa.entity.ClientStatus
-import com.coach.flame.jpa.entity.maker.*
+import com.coach.flame.jpa.entity.maker.ClientBuilder
+import com.coach.flame.jpa.entity.maker.ClientMaker
+import com.coach.flame.jpa.entity.maker.CountryBuilder
+import com.coach.flame.jpa.entity.maker.CountryMaker
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
 import com.coach.flame.testing.integration.base.BaseIntegrationTest
@@ -25,10 +28,9 @@ class UpdateContactInformationClientTest : BaseIntegrationTest() {
     private lateinit var client0: Client
 
     @BeforeEach
-    fun setup() {
+    override fun setup() {
 
-        val clientType = clientTypeRepository
-            .saveAndFlush(ClientTypeBuilder.maker().but(with(ClientTypeMaker.type, "CLIENT")).make())
+        super.setup()
 
         countryConfigRepository.saveAndFlush(
             CountryBuilder.maker()

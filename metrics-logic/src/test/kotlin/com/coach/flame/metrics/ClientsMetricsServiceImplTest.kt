@@ -1,10 +1,10 @@
 package com.coach.flame.metrics
 
-import com.coach.flame.domain.ClientStatusDto
-import com.coach.flame.domain.maker.ClientDtoBuilder
-import com.coach.flame.domain.maker.ClientDtoMaker
-import com.coach.flame.domain.maker.CoachDtoBuilder
-import com.coach.flame.domain.maker.CoachDtoMaker
+import com.coach.flame.jpa.entity.ClientStatus
+import com.coach.flame.jpa.entity.maker.ClientBuilder
+import com.coach.flame.jpa.entity.maker.ClientMaker
+import com.coach.flame.jpa.entity.maker.CoachBuilder
+import com.coach.flame.jpa.entity.maker.CoachMaker
 import com.coach.flame.jpa.repository.operations.CoachRepositoryOperation
 import com.natpryce.makeiteasy.MakeItEasy.with
 import io.mockk.clearAllMocks
@@ -39,16 +39,16 @@ class ClientsMetricsServiceImplTest {
 
         every {
             coachRepositoryOperation.getCoach(uuid)
-        } returns CoachDtoBuilder.maker()
-            .but(with(CoachDtoMaker.listOfClients, setOf(
-                ClientDtoBuilder.makerWithLoginInfo()
-                    .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.PENDING))
+        } returns CoachBuilder.maker()
+            .but(with(CoachMaker.clients, mutableListOf(
+                ClientBuilder.maker()
+                    .but(with(ClientMaker.clientStatus, ClientStatus.PENDING))
                     .make(),
-                ClientDtoBuilder.makerWithLoginInfo()
-                    .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.PENDING))
+                ClientBuilder.maker()
+                    .but(with(ClientMaker.clientStatus, ClientStatus.PENDING))
                     .make(),
-                ClientDtoBuilder.makerWithLoginInfo()
-                    .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.ACCEPTED))
+                ClientBuilder.maker()
+                    .but(with(ClientMaker.clientStatus, ClientStatus.ACCEPTED))
                     .make()
             )))
             .make()

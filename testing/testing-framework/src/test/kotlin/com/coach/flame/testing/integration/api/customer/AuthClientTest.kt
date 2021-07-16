@@ -30,11 +30,6 @@ class AuthClientTest : BaseIntegrationTest() {
     fun `register new client`() {
 
         // when
-        clientTypeRepository
-            .saveAndFlush(ClientTypeBuilder.maker().but(with(ClientTypeMaker.type, "CLIENT")).make())
-        val coachType = clientTypeRepository
-            .saveAndFlush(ClientTypeBuilder.maker().but(with(ClientTypeMaker.type, "COACH")).make())
-
         val coach = coachRepository.saveAndFlush(CoachBuilder.maker().but(with(CoachMaker.uuid,
             UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")),
             with(CoachMaker.clientType, coachType),
@@ -78,8 +73,6 @@ class AuthClientTest : BaseIntegrationTest() {
     fun `get new client session`() {
 
         // when
-        clientTypeRepository.saveAndFlush(clientTypeMaker.make())
-
         val salt = saltTool.generate()
         val password = hashPasswordTool.generate("12345", salt)
 

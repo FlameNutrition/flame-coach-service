@@ -26,10 +26,9 @@ class UpdatePersonalDataClientTest : BaseIntegrationTest() {
     private lateinit var client0: Client
 
     @BeforeEach
-    fun setup() {
+    override fun setup() {
 
-        val clientType = clientTypeRepository
-            .saveAndFlush(ClientTypeBuilder.maker().but(with(ClientTypeMaker.type, "CLIENT")).make())
+        super.setup()
 
         genderConfigRepository.saveAndFlush(
             GenderBuilder.maker()

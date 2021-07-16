@@ -51,7 +51,7 @@ class Coach(
     val clientType: ClientType,
 
     @OneToMany(mappedBy = "coach")
-    val clients: List<Client> = mutableListOf(),
+    var clients: MutableList<Client> = mutableListOf(),
 
     @Column(nullable = false, columnDefinition = "DATE")
     val registrationDate: LocalDate,

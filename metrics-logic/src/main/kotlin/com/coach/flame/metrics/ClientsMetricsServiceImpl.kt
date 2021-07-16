@@ -13,7 +13,7 @@ class ClientsMetricsServiceImpl(
 
     override fun getClientsMetrics(coachIdentifier: UUID): MetricsDto.Clients {
 
-        val coach = coachOperations.getCoach(coachIdentifier)
+        val coach = coachOperations.getCoach(coachIdentifier).toDto()
 
         val numberOfPending = coach.listOfClients.count { ClientStatusDto.PENDING === it.clientStatus }
         val numberOfAccepted = coach.listOfClients.count { ClientStatusDto.ACCEPTED === it.clientStatus }

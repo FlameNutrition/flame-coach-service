@@ -19,6 +19,11 @@ enum class ErrorCode(
     CODE_2006(2006, "Customer registration expiration date"),
     CODE_2007(2007, "Customer registration invalid email"),
 
+    //Appointment
+    CODE_2100(2100, "Appointment unexpected problem"),
+    CODE_2101(2101, "Appointment not found"),
+    CODE_2102(2102, "Appointment delete failed"),
+
     //Enrollment Process
     CODE_3000(3000, "Enrollment process unexpected problem"),
     CODE_3001(3001, "Client already has a coach assigned"),

@@ -31,16 +31,12 @@ class EnrollmentProcessAcceptedTest : BaseIntegrationTest() {
     private var isPopulated: Boolean = false
 
     @BeforeEach
-    fun setup() {
+    override fun setup() {
 
         if (!isPopulated) {
+            super.setup()
 
             enableDatabaseClean = false
-
-            val clientType = clientTypeRepository
-                .saveAndFlush(ClientTypeBuilder.maker().but(with(ClientTypeMaker.type, "CLIENT")).make())
-            val coachType = clientTypeRepository
-                .saveAndFlush(ClientTypeBuilder.maker().but(with(ClientTypeMaker.type, "COACH")).make())
 
             coach1 = coachRepository.saveAndFlush(CoachBuilder.maker().but(with(CoachMaker.uuid,
                 UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")),

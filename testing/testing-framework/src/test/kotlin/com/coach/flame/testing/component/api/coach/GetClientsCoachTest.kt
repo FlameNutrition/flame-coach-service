@@ -41,7 +41,7 @@ class GetClientsCoachTest : BaseComponentTest() {
             .but(with(ClientMaker.clientStatus, ClientStatus.ACCEPTED))
             .make()
         val coach = coachMaker
-            .but(with(CoachMaker.clients, listOf(client0, client1)),
+            .but(with(CoachMaker.clients, mutableListOf(client0, client1)),
                 with(CoachMaker.uuid, uuid))
             .make()
 

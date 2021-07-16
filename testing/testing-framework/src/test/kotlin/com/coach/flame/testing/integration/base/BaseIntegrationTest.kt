@@ -10,11 +10,13 @@ import com.coach.flame.jpa.repository.cache.ConfigCache
 import com.coach.flame.jpa.repository.configs.CountryConfigRepository
 import com.coach.flame.jpa.repository.configs.GenderConfigRepository
 import com.google.gson.JsonObject
+import com.natpryce.makeiteasy.MakeItEasy
 import com.natpryce.makeiteasy.MakeItEasy.an
 import com.natpryce.makeiteasy.Maker
 import org.assertj.core.api.AbstractStringAssert
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInstance
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -102,6 +104,17 @@ abstract class BaseIntegrationTest {
      * Use this request for integration tests
      */
     var request: RequestEntity<String>? = null
+
+    protected lateinit var clientType: ClientType
+    protected lateinit var coachType: ClientType
+
+    @BeforeEach
+    fun setup() {
+        clientType = clientTypeRepository
+            .saveAndFlush(ClientTypeBuilder.maker().but(MakeItEasy.with(ClientTypeMaker.type, "CLIENT")).make())
+        coachType = clientTypeRepository.saveAndFlush(ClientTypeBuilder.maker()
+            .but(MakeItEasy.with(ClientTypeMaker.type, "COACH")).make())
+    }
 
     @AfterEach
     fun cleanUp() {

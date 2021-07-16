@@ -41,13 +41,8 @@ class DailyTaskDeleteTest : BaseIntegrationTest() {
     private lateinit var dailyTask3: DailyTask
 
     @BeforeEach
-    fun setup() {
-        val clientType = clientTypeRepository.saveAndFlush(ClientTypeBuilder.maker()
-            .but(with(ClientTypeMaker.type, "CLIENT"))
-            .make())
-        val coachType = clientTypeRepository.saveAndFlush(ClientTypeBuilder.maker()
-            .but(with(ClientTypeMaker.type, "COACH"))
-            .make())
+    override fun setup() {
+        super.setup()
 
         coach = coachRepository.saveAndFlush(CoachBuilder.maker()
             .but(with(CoachMaker.clientType, coachType))

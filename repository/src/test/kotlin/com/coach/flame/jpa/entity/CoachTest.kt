@@ -22,7 +22,7 @@ class CoachTest {
         val client1 = ClientBuilder.default()
 
         val coach = CoachBuilder.maker()
-            .but(with(CoachMaker.clients, listOf(client0, client1)))
+            .but(with(CoachMaker.clients, mutableListOf(client0, client1)))
             .make()
 
         val dto = coach.toDto()

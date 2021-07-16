@@ -31,9 +31,10 @@ class EnrollmentProcessDenialTest : BaseIntegrationTest() {
     private var isPopulated: Boolean = false
 
     @BeforeEach
-    fun setup() {
+    override fun setup() {
 
         if (!isPopulated) {
+            super.setup()
 
             enableDatabaseClean = false
 

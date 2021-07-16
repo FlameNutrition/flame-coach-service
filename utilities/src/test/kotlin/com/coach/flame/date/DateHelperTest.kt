@@ -1,12 +1,16 @@
 package com.coach.flame.date
 
-import com.coach.flame.date.DateHelper.toISODate
+import com.coach.flame.date.DateHelper.toAnotherZone
 import com.coach.flame.date.DateHelper.toDate
+import com.coach.flame.date.DateHelper.toISODate
+import com.coach.flame.date.DateHelper.toISODateWithOffset
 import com.coach.flame.date.DateHelper.toUTCDate
+import com.coach.flame.date.DateHelper.toZonedDateTime
 import org.assertj.core.api.BDDAssertions.*
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZonedDateTime
 
 class DateHelperTest {
 
@@ -33,4 +37,56 @@ class DateHelperTest {
         val dateFormatted = toISODate(utcDate)
         then(dateFormatted).isEqualTo("2021-05-10T10:00:01")
     }
+
+    @Test
+    fun `test convert date to string using timezone`() {
+
+        val date = LocalDateTime.parse("2021-05-10T10:00:01")
+
+        then(toAnotherZone(date, ZoneId.of("Europe/London")))
+            .isEqualTo(ZonedDateTime.of(date, ZoneId.of("Europe/London")))
+        then(toAnotherZone(date, ZoneId.of("Asia/Singapore")))
+            .isEqualTo(ZonedDateTime.parse("2021-05-10T17:00:01+08:00"))
+        then(toAnotherZone(date, ZoneId.of("UTC")))
+            .isEqualTo(ZonedDateTime.parse("2021-05-10T09:00:01+00:00"))
+        then(toAnotherZone(date, ZoneId.of("Europe/Berlin")))
+            .isEqualTo(ZonedDateTime.parse("2021-05-10T11:00:01+02:00"))
+
+    }
+
+    @Test
+    fun `test convert date with timezone to another timezone`() {
+
+        val date = ZonedDateTime.parse("2021-05-10T11:00:01+02:00")
+
+        then(toAnotherZone(date, ZoneId.of("Europe/London")))
+            .isEqualTo(ZonedDateTime.parse("2021-05-10T11:00:01+02:00"))
+        then(toAnotherZone(date, ZoneId.of("Asia/Singapore")))
+            .isEqualTo(ZonedDateTime.parse("2021-05-10T17:00:01+08:00"))
+        then(toAnotherZone(date, ZoneId.of("UTC")))
+            .isEqualTo(ZonedDateTime.parse("2021-05-10T09:00:01+00:00"))
+        then(toAnotherZone(date, ZoneId.of("Europe/Berlin")))
+            .isEqualTo(ZonedDateTime.parse("2021-05-10T11:00:01+02:00"))
+
+    }
+
+    @Test
+    fun `test convert date string to timezone date`() {
+
+        val date = "2021-05-10T11:00:01+02:00"
+
+        then(toZonedDateTime(date)).isEqualTo(ZonedDateTime.parse("2021-05-10T11:00:01+02:00"))
+
+    }
+
+    @Test
+    fun `test convert ZonedDateTime to string`() {
+
+        val date = ZonedDateTime.parse("2021-05-10T11:00:01+02:00")
+
+        then(toISODateWithOffset(date)).isEqualTo("2021-05-10T11:00:01+02:00")
+
+    }
+
+
 }

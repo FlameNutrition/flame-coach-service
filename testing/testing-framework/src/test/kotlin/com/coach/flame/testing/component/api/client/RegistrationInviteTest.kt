@@ -34,7 +34,7 @@ class RegistrationInviteTest : BaseComponentTest() {
             .but(with(CoachMaker.uuid, uuid))
             .make()
 
-        mockCoachRepository.findByUuid(uuid, coach)
+        mockCoachRepository.mockFindByUuid(uuid, coach)
         mockClientRepository.findByUserEmailIs("test@gmail.com", null)
         mockJavaMailSender.sendEmail()
         mockRegistrationInviteRepository.save()
@@ -83,7 +83,7 @@ class RegistrationInviteTest : BaseComponentTest() {
             .but(with(CoachMaker.uuid, uuid))
             .make()
 
-        mockCoachRepository.findByUuid(uuid, coach)
+        mockCoachRepository.mockFindByUuid(uuid, coach)
         mockClientRepository.findByUserEmailIs("test@gmail.com", client)
         mockClientRepository.findByUuid(client.uuid, client)
         mockClientRepository.save()
@@ -120,7 +120,7 @@ class RegistrationInviteTest : BaseComponentTest() {
             .but(with(CoachMaker.uuid, uuid))
             .make()
 
-        mockCoachRepository.findByUuid(uuid, coach)
+        mockCoachRepository.mockFindByUuid(uuid, coach)
         mockClientRepository.findByUserEmailIs("test@gmail.com", null)
         mockJavaMailSender.sendEmail(RuntimeException("EMAIL PROBLEM!"))
         mockRegistrationInviteRepository.save()

@@ -23,16 +23,6 @@ class DailyTaskCreateTest : BaseIntegrationTest() {
     private val clientUUID = UUID.fromString("3c5845f1-4a90-4396-8610-7261761369ae")
     private val coachUUID = UUID.fromString("b2957c86-e493-4f9a-a277-2e24b77f0ffe")
 
-    @BeforeEach
-    fun setup() {
-        clientTypeRepository.saveAndFlush(clientTypeMaker
-            .but(with(ClientTypeMaker.type, "CLIENT"))
-            .make())
-        clientTypeRepository.saveAndFlush(clientTypeMaker
-            .but(with(ClientTypeMaker.type, "COACH"))
-            .make())
-    }
-
     @Test
     @LoadRequest(
         pathOfRequest = "requests/integration/dailyTask/createNewDailyTask.json",

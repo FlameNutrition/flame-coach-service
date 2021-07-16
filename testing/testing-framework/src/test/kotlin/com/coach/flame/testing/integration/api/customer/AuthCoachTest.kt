@@ -1,7 +1,6 @@
 package com.coach.flame.testing.integration.api.customer
 
 import com.coach.flame.jpa.entity.maker.ClientMaker
-import com.coach.flame.jpa.entity.maker.ClientTypeMaker
 import com.coach.flame.jpa.entity.maker.UserMaker
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
@@ -29,9 +28,6 @@ class AuthCoachTest : BaseIntegrationTest() {
     fun `register new coach`() {
 
         // when
-        clientTypeRepository.saveAndFlush(clientTypeMaker
-            .but(with(ClientTypeMaker.type, "COACH"))
-            .make())
         val response = restTemplate.exchange(request!!, String::class.java)
 
         // then
@@ -62,10 +58,6 @@ class AuthCoachTest : BaseIntegrationTest() {
         val password = hashPasswordTool.generate("12345", salt)
 
         // when
-        val coachType = clientTypeRepository.saveAndFlush(clientTypeMaker
-            .but(with(ClientTypeMaker.type, "COACH"))
-            .make())
-
         val client = clientMaker
             .but(with(ClientMaker.firstname, "Miguel"),
                 with(ClientMaker.lastname, "Teixeira"),

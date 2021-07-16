@@ -44,6 +44,11 @@
 
         <dependency>
             <groupId>com.coach.flame</groupId>
+            <artifactId>appointment-logic</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.coach.flame</groupId>
             <artifactId>measures-logic</artifactId>
         </dependency>
 

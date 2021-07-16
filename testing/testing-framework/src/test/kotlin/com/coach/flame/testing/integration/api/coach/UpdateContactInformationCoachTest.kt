@@ -24,10 +24,8 @@ class UpdateContactInformationCoachTest : BaseIntegrationTest() {
     private lateinit var coach0: Coach
 
     @BeforeEach
-    fun setup() {
-
-        val clientType = clientTypeRepository
-            .saveAndFlush(ClientTypeBuilder.maker().but(with(ClientTypeMaker.type, "COACH")).make())
+    override fun setup() {
+        super.setup()
 
         countryConfigRepository.saveAndFlush(
             CountryBuilder.maker()
@@ -38,7 +36,7 @@ class UpdateContactInformationCoachTest : BaseIntegrationTest() {
 
         coach0 = coachRepository.saveAndFlush(CoachBuilder.maker()
             .but(with(CoachMaker.uuid, UUID.fromString("34cbaa17-0da9-4469-82ec-b1b2ceba9665")),
-                with(CoachMaker.clientType, clientType))
+                with(CoachMaker.clientType, coachType))
             .make())
     }
 

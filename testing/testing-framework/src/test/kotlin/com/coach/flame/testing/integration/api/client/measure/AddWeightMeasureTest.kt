@@ -27,11 +27,8 @@ class AddWeightMeasureTest : BaseIntegrationTest() {
     private lateinit var client1: Client
 
     @BeforeEach
-    fun setup() {
-
-        val clientType = clientTypeRepository
-            .saveAndFlush(ClientTypeBuilder.maker().but(with(ClientTypeMaker.type, "CLIENT")).make())
-        clientTypeRepository.saveAndFlush(ClientTypeBuilder.maker().but(with(ClientTypeMaker.type, "COACH")).make())
+    override fun setup() {
+        super.setup()
 
         client1 = clientRepository.saveAndFlush(ClientBuilder.maker()
             .but(with(ClientMaker.uuid, UUID.fromString("79275cc8-ed8a-4f8a-b790-ff66f74d758a")),

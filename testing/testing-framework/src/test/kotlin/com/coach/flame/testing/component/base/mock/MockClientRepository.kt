@@ -1,8 +1,12 @@
 package com.coach.flame.testing.component.base.mock
 
+import com.coach.flame.failure.exception.CustomerNotFoundException
 import com.coach.flame.jpa.entity.Client
 import com.coach.flame.jpa.entity.ClientMeasureWeight.Companion.toClientMeasureWeight
+import com.coach.flame.jpa.entity.Coach
 import com.coach.flame.jpa.repository.ClientRepository
+import com.coach.flame.jpa.repository.operations.ClientRepositoryOperation
+import com.coach.flame.jpa.repository.operations.CoachRepositoryOperation
 import io.mockk.CapturingSlot
 import io.mockk.every
 import io.mockk.slot
@@ -16,6 +20,19 @@ class MockClientRepository {
 
     @Autowired
     private lateinit var clientRepositoryMock: ClientRepository
+
+    @Autowired
+    private lateinit var clientOperationsMock: ClientRepositoryOperation
+
+    fun mockFindByUuid(uuid: UUID, client: Client) {
+        every { clientOperationsMock.getClient(uuid) } returns client
+        every { clientRepositoryMock.findByUuid(uuid) } returns client
+    }
+
+    fun mockFindByUuidThrowsException(uuid: UUID) {
+        every { clientOperationsMock.getClient(uuid) } throws CustomerNotFoundException("Could not find any client with uuid: $uuid.")
+        every { clientRepositoryMock.findByUuid(uuid) } throws CustomerNotFoundException("Could not find any client with uuid: $uuid.")
+    }
 
     fun findByUuid(uuid: UUID, answer: Client) {
         every {

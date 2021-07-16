@@ -29,11 +29,9 @@ class GetWeightMeasureTest : BaseIntegrationTest() {
     private lateinit var weight2: ClientMeasureWeight
 
     @BeforeEach
-    fun setup() {
+    override fun setup() {
 
-        val clientType = clientTypeRepository
-            .saveAndFlush(ClientTypeBuilder.maker().but(with(ClientTypeMaker.type, "CLIENT")).make())
-        clientTypeRepository.saveAndFlush(ClientTypeBuilder.maker().but(with(ClientTypeMaker.type, "COACH")).make())
+        super.setup()
 
         weight0 = ClientMeasureWeightBuilder.maker()
             .but(with(ClientMeasureWeightMaker.weight, 70.5f),
