@@ -1,13 +1,12 @@
 create table Appointment
 (
-    id       bigint                  not null,
-    currency varchar(3)              not null,
-    `delete` boolean default 'FALSE' not null,
-    dttm     timestamp               not null,
-    price    float   default '0.0'   not null,
-    clientFk bigint                  not null,
-    coachFk  bigint                  not null,
-    `uuid`   varchar(255)            not null,
+    id       bigint                   not null,
+    currency varchar(3)               not null,
+    `delete` tinyint(1) default 0     not null,
+    dttm     timestamp                not null,
+    price    float      default '0.0' not null,
+    clientFk bigint                   not null,
+    coachFk  bigint                   not null,
     primary key (id)
 ) engine = InnoDB;
 
@@ -16,6 +15,3 @@ alter table Appointment
 
 alter table Appointment
     add constraint FKhpj0vdv7v3pnni5y472g0vyax foreign key (coachFk) references Coach (id);
-
-alter table Appointment
-    add constraint UK_msceqwsfwrlk6o1003e8eqt4n unique (uuid);
