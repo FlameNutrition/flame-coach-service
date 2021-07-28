@@ -27,6 +27,11 @@
 
         <dependency>
             <groupId>com.coach.flame</groupId>
+            <artifactId>utilities</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.coach.flame</groupId>
             <artifactId>failureDetail-logic</artifactId>
         </dependency>
 

@@ -19,6 +19,7 @@ import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import java.time.ZonedDateTime
 import java.util.*
 
 @ExtendWith(MockKExtension::class)
@@ -43,7 +44,8 @@ class AppointmentImplTest {
 
         val appointment1 = AppointmentDtoBuilder.maker()
             .but(with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
-                with(AppointmentDtoMaker.dttmTxt, "2021-07-14T16:52:52.389929"),
+                with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-15T03:52:52.389929-04:00")),
+                with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-15T04:52:52.389929-04:00")),
                 with(AppointmentDtoMaker.client, ClientDtoBuilder.default()),
                 with(AppointmentDtoMaker.price, 200.5f),
                 with(AppointmentDtoMaker.notes, "Simple test"))
@@ -51,7 +53,8 @@ class AppointmentImplTest {
 
         val appointment2 = AppointmentDtoBuilder.maker()
             .but(with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
-                with(AppointmentDtoMaker.dttmTxt, "2021-07-14T16:52:52.389929"),
+                with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-15T03:52:52.389929-04:00")),
+                with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-15T04:52:52.389929-04:00")),
                 with(AppointmentDtoMaker.client, ClientDtoBuilder.default()),
                 with(AppointmentDtoMaker.price, 100.5f),
                 with(AppointmentDtoMaker.notes, "Simple test 2"))
@@ -69,7 +72,8 @@ class AppointmentImplTest {
 
         then(firstAppointment.price).isEqualTo(200.5f)
         then(firstAppointment.notes).isEqualTo("Simple test")
-        then(firstAppointment.date).isEqualTo("2021-07-14T16:52:52.389929")
+        then(firstAppointment.dttmStarts).isEqualTo("2021-07-15T03:52:52.389929-04:00")
+        then(firstAppointment.dttmEnds).isEqualTo("2021-07-15T04:52:52.389929-04:00")
         then(firstAppointment.client).isNotNull
         then(firstAppointment.client?.identifier).isEqualTo(appointment1.client?.identifier.toString())
         then(firstAppointment.client?.firstName).isEqualTo(appointment1.client?.firstName)
@@ -86,7 +90,6 @@ class AppointmentImplTest {
 
         val appointment1 = AppointmentDtoBuilder.maker()
             .but(with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
-                with(AppointmentDtoMaker.dttmTxt, "2021-07-14T16:52:52.389929"),
                 with(AppointmentDtoMaker.client, ClientDtoBuilder.maker()
                     .but(with(ClientDtoMaker.identifier, clientIdentifier1))
                     .make()),
@@ -96,7 +99,6 @@ class AppointmentImplTest {
 
         val appointment2 = AppointmentDtoBuilder.maker()
             .but(with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
-                with(AppointmentDtoMaker.dttmTxt, "2021-07-14T16:52:52.389929"),
                 with(AppointmentDtoMaker.client, ClientDtoBuilder.maker()
                     .but(with(ClientDtoMaker.identifier, clientIdentifier2))
                     .make()),
@@ -117,7 +119,6 @@ class AppointmentImplTest {
 
         then(firstAppointment.price).isEqualTo(200.5f)
         then(firstAppointment.notes).isEqualTo("Simple test")
-        then(firstAppointment.date).isEqualTo("2021-07-14T16:52:52.389929")
         then(firstAppointment.client).isNotNull
         then(firstAppointment.client?.identifier).isEqualTo(appointment1.client?.identifier.toString())
         then(firstAppointment.client?.firstName).isEqualTo(appointment1.client?.firstName)
@@ -141,7 +142,6 @@ class AppointmentImplTest {
 
         val appointment1 = AppointmentDtoBuilder.maker()
             .but(with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
-                with(AppointmentDtoMaker.dttmTxt, "2021-07-14T16:52:52.389929"),
                 with(AppointmentDtoMaker.client, client),
                 with(AppointmentDtoMaker.price, 200.5f),
                 with(AppointmentDtoMaker.notes, "Simple test"))
@@ -149,7 +149,6 @@ class AppointmentImplTest {
 
         val appointment2 = AppointmentDtoBuilder.maker()
             .but(with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
-                with(AppointmentDtoMaker.dttmTxt, "2021-07-14T16:52:52.389929"),
                 with(AppointmentDtoMaker.client, client),
                 with(AppointmentDtoMaker.price, 100.5f),
                 with(AppointmentDtoMaker.notes, "Simple test 2"))
@@ -168,7 +167,6 @@ class AppointmentImplTest {
 
         then(firstAppointment.price).isEqualTo(200.5f)
         then(firstAppointment.notes).isEqualTo("Simple test")
-        then(firstAppointment.date).isEqualTo("2021-07-14T16:52:52.389929")
         then(firstAppointment.client).isNotNull
         then(firstAppointment.client?.identifier).isEqualTo(appointment1.client?.identifier.toString())
         then(firstAppointment.client?.firstName).isEqualTo(appointment1.client?.firstName)
@@ -188,7 +186,8 @@ class AppointmentImplTest {
         val clientIdentifier = UUID.randomUUID()
 
         val request = AppointmentRequest(
-            date = "2021-07-14T16:52:52.389929+08:00",
+            dttmStarts = "2021-07-15T15:52:52.389929+08:00",
+            dttmEnds = "2021-07-15T16:52:52.389929+08:00",
             price = 20.5f,
             notes = "Simple note",
         )
@@ -196,7 +195,8 @@ class AppointmentImplTest {
         val appointment1 = AppointmentDtoBuilder.maker()
             .but(with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
                 with(AppointmentDtoMaker.client, ClientDtoBuilder.default()),
-                with(AppointmentDtoMaker.dttmTxt, "2021-07-14T16:52:52.389929+08:00"),
+                with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-15T15:52:52.389929+08:00")),
+                with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-15T16:52:52.389929+08:00")),
                 with(AppointmentDtoMaker.price, 20.5f),
                 with(AppointmentDtoMaker.notes, "Simple note"))
             .make()
@@ -215,7 +215,8 @@ class AppointmentImplTest {
 
         then(firstAppointment.price).isEqualTo(20.5f)
         then(firstAppointment.notes).isEqualTo("Simple note")
-        then(firstAppointment.date).isEqualTo("2021-07-14T16:52:52.389929+08:00")
+        then(firstAppointment.dttmStarts).isEqualTo("2021-07-15T15:52:52.389929+08:00")
+        then(firstAppointment.dttmEnds).isEqualTo("2021-07-15T16:52:52.389929+08:00")
         then(firstAppointment.client).isNotNull
         then(firstAppointment.client?.identifier).isEqualTo(appointment1.client?.identifier.toString())
         then(firstAppointment.client?.firstName).isEqualTo(appointment1.client?.firstName)
@@ -226,7 +227,8 @@ class AppointmentImplTest {
         then(appointmentSlot.captured.delete).isFalse
         then(appointmentSlot.captured.price).isEqualTo(20.5f)
         then(appointmentSlot.captured.notes).isEqualTo("Simple note")
-        then(appointmentSlot.captured.dttmTxt).isEqualTo("2021-07-14T16:52:52.389929+08:00")
+        then(appointmentSlot.captured.dttmStarts).isEqualTo(ZonedDateTime.parse("2021-07-15T15:52:52.389929+08:00"))
+        then(appointmentSlot.captured.dttmEnds).isEqualTo(ZonedDateTime.parse("2021-07-15T16:52:52.389929+08:00"))
 
     }
 
@@ -236,14 +238,16 @@ class AppointmentImplTest {
         val uuidAppointment = UUID.randomUUID()
 
         val request = AppointmentRequest(
-            date = "2021-07-16T16:52:52.389929+08:00",
+            dttmStarts = "2021-07-15T15:52:52.389929+08:00",
+            dttmEnds = "2021-07-17T16:52:52.389929+08:00",
             price = 100.5f,
             notes = "Simple note updated",
         )
 
         val appointment1 = AppointmentDtoBuilder.maker()
             .but(with(AppointmentDtoMaker.identifier, uuidAppointment),
-                with(AppointmentDtoMaker.dttmTxt, "2021-07-16T16:52:52.389929+08:00"),
+                with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-15T15:52:52.389929+08:00")),
+                with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-17T16:52:52.389929+08:00")),
                 with(AppointmentDtoMaker.price, 100.5f),
                 with(AppointmentDtoMaker.client, ClientDtoBuilder.default()),
                 with(AppointmentDtoMaker.notes, "Simple note updated"))
@@ -263,7 +267,8 @@ class AppointmentImplTest {
 
         then(firstAppointment.price).isEqualTo(100.5f)
         then(firstAppointment.notes).isEqualTo("Simple note updated")
-        then(firstAppointment.date).isEqualTo("2021-07-16T16:52:52.389929+08:00")
+        then(firstAppointment.dttmStarts).isEqualTo("2021-07-15T15:52:52.389929+08:00")
+        then(firstAppointment.dttmEnds).isEqualTo("2021-07-17T16:52:52.389929+08:00")
         then(firstAppointment.client).isNotNull
         then(firstAppointment.client?.identifier).isEqualTo(appointment1.client?.identifier.toString())
         then(firstAppointment.client?.firstName).isEqualTo(appointment1.client?.firstName)
@@ -274,7 +279,8 @@ class AppointmentImplTest {
         then(appointmentSlot.captured.delete).isFalse
         then(appointmentSlot.captured.price).isEqualTo(100.5f)
         then(appointmentSlot.captured.notes).isEqualTo("Simple note updated")
-        then(appointmentSlot.captured.dttmTxt).isEqualTo("2021-07-16T16:52:52.389929+08:00")
+        then(appointmentSlot.captured.dttmStarts).isEqualTo(ZonedDateTime.parse("2021-07-15T15:52:52.389929+08:00"))
+        then(appointmentSlot.captured.dttmEnds).isEqualTo(ZonedDateTime.parse("2021-07-17T16:52:52.389929+08:00"))
 
     }
 

@@ -72,7 +72,8 @@ class CreateAppointmentTest : BaseIntegrationTest() {
 
         val appointment1 = body.getAsJsonArray("appointments").first()
 
-        then(appointment1.asJsonObject.getAsJsonPrimitive("date").asString).isEqualTo("2021-07-14T10:52:52+08:00")
+        then(appointment1.asJsonObject.getAsJsonPrimitive("dttmStarts").asString).isEqualTo("2021-07-14T03:52:52+01:00")
+        then(appointment1.asJsonObject.getAsJsonPrimitive("dttmEnds").asString).isEqualTo("2021-07-14T05:52:52+01:00")
         then(appointment1.asJsonObject.getAsJsonPrimitive("price").asFloat).isEqualTo(156.5f)
         then(appointment1.asJsonObject.getAsJsonPrimitive("notes").asString).isEqualTo("This is my first appointment")
         then(appointment1.asJsonObject.getAsJsonObject("client").getAsJsonPrimitive("identifier").asString).isEqualTo(

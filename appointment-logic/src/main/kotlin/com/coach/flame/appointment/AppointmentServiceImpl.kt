@@ -33,23 +33,14 @@ class AppointmentServiceImpl(
         appointmentDto: AppointmentDto,
     ): AppointmentDto {
 
-        checkNotNull(appointmentDto.dttmTxt) { "dttmTxt can not be null" }
-
         LOGGER.info("opr='createAppointment', msg='Create a new appointment'")
 
         val coach = coachOperations.getCoach(coachIdentifier)
         val client = coach.clients.firstOrNull { it.uuid == clientIdentifier }
             ?: throw CustomerNotFoundException("Could not find any client with uuid: $clientIdentifier.")
 
-        val zonedDateTime = toZonedDateTime(appointmentDto.dttmTxt!!)
-        val dttmZonedSystem = toAnotherZone(zonedDateTime, ZoneId.systemDefault()).toLocalDateTime()
-
-        LOGGER.debug("opr='createAppointment', msg='Convert date string to date with timezone', " +
-                "dateToConvert={}, date={}, sysDate={}", appointmentDto.dttmTxt, zonedDateTime, dttmZonedSystem)
-
         val appointment = appointmentDto
             .apply {
-                this.dttm = dttmZonedSystem
                 this.coach = coach.toDto()
                 this.client = client.toDto()
             }
@@ -58,10 +49,6 @@ class AppointmentServiceImpl(
         LOGGER.debug("opr='createAppointment', msg='Appointment to persist', appointment={}", appointment)
 
         val appointmentPersisted = appointmentRepository.save(appointment).toDto()
-            .apply {
-                this.dttmTxt = appointmentDto.dttmTxt
-                this.dttmZoned = zonedDateTime
-            }
 
         LOGGER.info("opr='createAppointment', msg='Appointment created with success', appointment={}",
             appointmentPersisted)
@@ -79,14 +66,7 @@ class AppointmentServiceImpl(
         val coach = coachOperations.getCoach(coachIdentifier)
 
         return appointmentRepository.findAppointmentsByCoach(coach.uuid)
-            .map {
-                val dttmWithZone = toAnotherZone(it.dttm, ZoneId.systemDefault())
-                it.toDto().apply {
-                    //FIXME: Change this to support time zone appointments
-                    dttmZoned = dttmWithZone
-                    dttmTxt = toISODateWithOffset(dttmWithZone)
-                }
-            }
+            .map { it.toDto() }
     }
 
     @Transactional(readOnly = true)
@@ -98,14 +78,7 @@ class AppointmentServiceImpl(
         val client = clientOperations.getClient(clientIdentifier)
 
         return appointmentRepository.findAppointmentsByClient(client.uuid)
-            .map {
-                val dttmWithZone = toAnotherZone(it.dttm, ZoneId.systemDefault())
-                it.toDto().apply {
-                    //FIXME: Change this to support time zone appointments
-                    dttmZoned = dttmWithZone
-                    dttmTxt = toISODateWithOffset(dttmWithZone)
-                }
-            }
+            .map { it.toDto() }
 
     }
 
@@ -121,20 +94,11 @@ class AppointmentServiceImpl(
             ?: throw CustomerNotFoundException("Could not find any client with uuid: $clientIdentifier.")
 
         return appointmentRepository.findAppointments(coach.uuid, client.uuid)
-            .map {
-                val dttmWithZone = toAnotherZone(it.dttm, ZoneId.systemDefault())
-                it.toDto().apply {
-                    //FIXME: Change this to support time zone appointments
-                    dttmZoned = dttmWithZone
-                    dttmTxt = toISODateWithOffset(dttmWithZone)
-                }
-            }
+            .map { it.toDto() }
     }
 
     @Transactional
     override fun updateAppointment(appointmentDto: AppointmentDto): AppointmentDto {
-
-        checkNotNull(appointmentDto.dttmTxt) { "dttmTxt can not be null" }
 
         LOGGER.info("opr='updateAppointment', msg='Update appointments'")
 
@@ -144,12 +108,10 @@ class AppointmentServiceImpl(
             throw AppointmentNotFoundException("Appointment not found, please check the identifier.")
         }
 
-        val zonedDateTime = toZonedDateTime(appointmentDto.dttmTxt!!)
-        val dttmZonedSystem = toAnotherZone(zonedDateTime, ZoneId.systemDefault()).toLocalDateTime()
-
         val appointmentToPersist = appointmentEntity
             .apply {
-                dttm = dttmZonedSystem
+                dttmStarts = toAnotherZone(appointmentDto.dttmStarts, ZoneId.systemDefault()).toLocalDateTime()
+                dttmEnds = toAnotherZone(appointmentDto.dttmEnds, ZoneId.systemDefault()).toLocalDateTime()
                 price = appointmentDto.price
                 currency = appointmentDto.currency.currencyCode
                 notes = appointmentDto.notes
@@ -159,10 +121,6 @@ class AppointmentServiceImpl(
 
         val appointmentPersisted = appointmentRepository.save(appointmentToPersist)
             .toDto()
-            .apply {
-                this.dttmTxt = appointmentDto.dttmTxt
-                this.dttmZoned = zonedDateTime
-            }
 
         LOGGER.info("opr='updateAppointment', msg='Appointment updated with success', appointment={}",
             appointmentPersisted)

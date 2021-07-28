@@ -1,8 +1,6 @@
 package com.coach.flame.testing.component.api.appointments
 
 import com.coach.flame.testing.component.base.BaseComponentTest
-import com.coach.flame.testing.component.base.utils.AppointmentsHelper.oneAppointment
-import com.coach.flame.testing.component.base.utils.AppointmentsHelper.twoAppointments
 import com.coach.flame.testing.component.base.utils.ClientHelper.oneClientAvailable
 import com.coach.flame.testing.component.base.utils.ClientHelper.oneClientPending
 import com.coach.flame.testing.component.base.utils.CoachHelper.oneCoach
@@ -68,13 +66,15 @@ class CreateAppointmentTest : BaseComponentTest() {
         then(capturedAppointment.captured.delete).isFalse
         then(capturedAppointment.captured.coach).isNotNull
         then(capturedAppointment.captured.client).isNotNull
-        then(capturedAppointment.captured.dttm).isEqualTo(LocalDateTime.parse("2021-07-14T03:52:52"))
+        then(capturedAppointment.captured.dttmStarts).isEqualTo(LocalDateTime.parse("2021-07-14T03:52:52"))
+        then(capturedAppointment.captured.dttmEnds).isEqualTo(LocalDateTime.parse("2021-07-14T05:52:52"))
 
         then(jsonResponse.getAsJsonArray("appointments")).hasSize(1)
 
         val appointment1 = jsonResponse.getAsJsonArray("appointments").first()
 
-        then(appointment1.asJsonObject.getAsJsonPrimitive("date").asString).isEqualTo("2021-07-14T10:52:52+08:00")
+        then(appointment1.asJsonObject.getAsJsonPrimitive("dttmStarts").asString).isEqualTo("2021-07-14T03:52:52+01:00")
+        then(appointment1.asJsonObject.getAsJsonPrimitive("dttmEnds").asString).isEqualTo("2021-07-14T05:52:52+01:00")
         then(appointment1.asJsonObject.getAsJsonPrimitive("price").asFloat).isEqualTo(156.5f)
         then(appointment1.asJsonObject.getAsJsonPrimitive("notes").asString).isEqualTo("This is my first appointment")
         then(appointment1.asJsonObject.getAsJsonObject("client").getAsJsonPrimitive("identifier").asString).isEqualTo(client2.uuid.toString())

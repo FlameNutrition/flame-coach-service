@@ -8,9 +8,8 @@ import java.util.Objects.hash
 class AppointmentDto(
     val id: Long? = null,
     val identifier: UUID,
-    var dttmTxt: String? = null,
-    var dttm: LocalDateTime? = null,
-    var dttmZoned: ZonedDateTime? = null,
+    var dttmStarts: ZonedDateTime,
+    var dttmEnds: ZonedDateTime,
     val delete: Boolean = false,
     var coach: CoachDto? = null,
     var client: ClientDto? = null,
@@ -49,9 +48,8 @@ class AppointmentDto(
     override fun toString(): String {
         return "AppointmentDto(" +
                 "uuid=$identifier, " +
-                "dttmTxt=$dttmTxt, " +
-                "dttm=$dttm, " +
-                "dttmZoned=$dttmZoned, " +
+                "dttmStarts=$dttmStarts, " +
+                "dttmEnds=$dttmEnds, " +
                 "delete=$delete, " +
                 "coach=$coach, " +
                 "client=$client, " +

@@ -8,11 +8,13 @@ import com.coach.flame.api.appointment.response.Client
 import com.coach.flame.appointment.AppointmentService
 import com.coach.flame.aspect.LoggingRequest
 import com.coach.flame.aspect.LoggingResponse
+import com.coach.flame.date.DateHelper
+import com.coach.flame.date.DateHelper.toISODate
+import com.coach.flame.date.DateHelper.toISODateWithOffset
 import com.coach.flame.date.DateHelper.toZonedDateTime
 import com.coach.flame.domain.AppointmentDto
 import com.coach.flame.domain.ClientDto
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import com.coach.flame.domain.maker.AppointmentDtoMaker
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
@@ -34,7 +36,8 @@ class AppointmentImpl(
         private val toAppointment: (AppointmentDto) -> (Appointment) = {
             Appointment(
                 identifier = it.identifier.toString(),
-                date = it.dttmTxt,
+                dttmStarts = toISODateWithOffset(it.dttmStarts),
+                dttmEnds = toISODateWithOffset(it.dttmEnds),
                 price = it.price,
                 notes = it.notes,
                 client = toClient(it.safeClient)
@@ -99,7 +102,8 @@ class AppointmentImpl(
 
             val appointmentToPersist = AppointmentDto(
                 identifier = UUID.randomUUID(),
-                dttmTxt = appointmentRequest.date,
+                dttmStarts = toZonedDateTime(appointmentRequest.dttmStarts),
+                dttmEnds = toZonedDateTime(appointmentRequest.dttmEnds),
                 notes = appointmentRequest.notes,
                 price = appointmentRequest.price,
                 delete = false)
@@ -123,7 +127,8 @@ class AppointmentImpl(
 
             val appointmentToUpdate = AppointmentDto(
                 identifier = appointmentIdentifier,
-                dttmTxt = appointmentRequest.date,
+                dttmStarts = toZonedDateTime(appointmentRequest.dttmStarts),
+                dttmEnds = toZonedDateTime(appointmentRequest.dttmEnds),
                 notes = appointmentRequest.notes,
                 price = appointmentRequest.price)
 

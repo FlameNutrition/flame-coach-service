@@ -69,14 +69,16 @@ class GetAppointmentsTest : BaseComponentTest() {
         val appointment2 = jsonResponse.getAsJsonArray("appointments")
             .first { it.asJsonObject.getAsJsonPrimitive("identifier").asString == appointment2UUID.toString() }
 
-        then(appointment1.asJsonObject.getAsJsonPrimitive("date").asString).isEqualTo("2021-07-14T10:52:52+01:00")
+        then(appointment1.asJsonObject.getAsJsonPrimitive("dttmStarts").asString).isEqualTo("2021-07-14T10:52:52+01:00")
+        then(appointment1.asJsonObject.getAsJsonPrimitive("dttmEnds").asString).isEqualTo("2021-07-14T11:52:52+01:00")
         then(appointment1.asJsonObject.getAsJsonPrimitive("price").asFloat).isEqualTo(100.5f)
         then(appointment1.asJsonObject.getAsJsonPrimitive("notes").asString).isEqualTo("First appointment")
         then(appointment1.asJsonObject.getAsJsonObject("client").getAsJsonPrimitive("identifier").asString).isEqualTo(client2.uuid.toString())
         then(appointment1.asJsonObject.getAsJsonObject("client").getAsJsonPrimitive("firstName").asString).isEqualTo(client2.firstName)
         then(appointment1.asJsonObject.getAsJsonObject("client").getAsJsonPrimitive("lastName").asString).isEqualTo(client2.lastName)
 
-        then(appointment2.asJsonObject.getAsJsonPrimitive("date").asString).isEqualTo("2021-07-20T10:52:52+01:00")
+        then(appointment2.asJsonObject.getAsJsonPrimitive("dttmStarts").asString).isEqualTo("2021-07-20T10:52:52+01:00")
+        then(appointment2.asJsonObject.getAsJsonPrimitive("dttmEnds").asString).isEqualTo("2021-07-20T11:52:52+01:00")
         then(appointment2.asJsonObject.getAsJsonPrimitive("price").asFloat).isEqualTo(200.5f)
         then(appointment2.asJsonObject.getAsJsonPrimitive("notes").asString).isEqualTo("Review appointment")
         then(appointment2.asJsonObject.getAsJsonObject("client").getAsJsonPrimitive("identifier").asString).isEqualTo(client2.uuid.toString())

@@ -69,18 +69,23 @@ class UpdateAppointmentTest : BaseComponentTest() {
         then(capturedAppointment.captured.delete).isFalse
         then(capturedAppointment.captured.coach).isNotNull
         then(capturedAppointment.captured.client).isNotNull
-        then(capturedAppointment.captured.dttm).isEqualTo(LocalDateTime.parse("2021-07-14T05:52:52"))
+        then(capturedAppointment.captured.dttmStarts).isEqualTo(LocalDateTime.parse("2021-07-14T05:52:52"))
+        then(capturedAppointment.captured.dttmEnds).isEqualTo(LocalDateTime.parse("2021-07-14T07:52:52"))
 
         then(jsonResponse.getAsJsonArray("appointments")).hasSize(1)
 
         val appointment1 = jsonResponse.getAsJsonArray("appointments").first()
 
-        then(appointment1.asJsonObject.getAsJsonPrimitive("date").asString).isEqualTo("2021-07-14T10:52:52+06:00")
+        then(appointment1.asJsonObject.getAsJsonPrimitive("dttmStarts").asString).isEqualTo("2021-07-14T05:52:52+01:00")
+        then(appointment1.asJsonObject.getAsJsonPrimitive("dttmEnds").asString).isEqualTo("2021-07-14T07:52:52+01:00")
         then(appointment1.asJsonObject.getAsJsonPrimitive("price").asFloat).isEqualTo(200.5f)
         then(appointment1.asJsonObject.getAsJsonPrimitive("notes").asString).isEqualTo("This is my first appointment but was updated")
-        then(appointment1.asJsonObject.getAsJsonObject("client").getAsJsonPrimitive("identifier").asString).isEqualTo(client2.uuid.toString())
-        then(appointment1.asJsonObject.getAsJsonObject("client").getAsJsonPrimitive("firstName").asString).isEqualTo(client2.firstName)
-        then(appointment1.asJsonObject.getAsJsonObject("client").getAsJsonPrimitive("lastName").asString).isEqualTo(client2.lastName)
+        then(appointment1.asJsonObject.getAsJsonObject("client").getAsJsonPrimitive("identifier").asString).isEqualTo(
+            client2.uuid.toString())
+        then(appointment1.asJsonObject.getAsJsonObject("client").getAsJsonPrimitive("firstName").asString).isEqualTo(
+            client2.firstName)
+        then(appointment1.asJsonObject.getAsJsonObject("client").getAsJsonPrimitive("lastName").asString).isEqualTo(
+            client2.lastName)
 
     }
 

@@ -6,13 +6,9 @@ import com.coach.flame.jpa.entity.Appointment
 import com.coach.flame.jpa.entity.Appointment.Companion.toAppointment
 import com.coach.flame.jpa.entity.Client
 import com.coach.flame.jpa.entity.Coach
-import com.coach.flame.jpa.entity.maker.CoachBuilder
-import com.coach.flame.jpa.entity.maker.CoachMaker
-import com.natpryce.makeiteasy.MakeItEasy
 import com.natpryce.makeiteasy.MakeItEasy.*
-import io.mockk.Answer
-import io.mockk.Call
 import java.time.LocalDateTime
+import java.time.ZonedDateTime
 import java.util.*
 
 object AppointmentsHelper {
@@ -22,7 +18,8 @@ object AppointmentsHelper {
             .but(with(AppointmentDtoMaker.id, 100L),
                 with(AppointmentDtoMaker.identifier, identifier),
                 with(AppointmentDtoMaker.notes, "First appointment"),
-                with(AppointmentDtoMaker.dttm, LocalDateTime.parse("2021-07-14T10:52:52")),
+                with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T10:52:52+01:00")),
+                with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-14T11:52:52+01:00")),
                 with(AppointmentDtoMaker.price, 100.5f),
                 with(AppointmentDtoMaker.coach, coach.toDto()),
                 with(AppointmentDtoMaker.client, client.toDto()))
@@ -37,7 +34,8 @@ object AppointmentsHelper {
                     .but(with(AppointmentDtoMaker.id, 100L),
                         with(AppointmentDtoMaker.identifier, identifiers.first()),
                         with(AppointmentDtoMaker.notes, "First appointment"),
-                        with(AppointmentDtoMaker.dttm, LocalDateTime.parse("2021-07-14T10:52:52")),
+                        with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T10:52:52+01:00")),
+                        with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-14T11:52:52+01:00")),
                         with(AppointmentDtoMaker.price, 100.5f),
                         with(AppointmentDtoMaker.coach, coach.toDto()),
                         with(AppointmentDtoMaker.client, client.toDto()))
@@ -47,7 +45,8 @@ object AppointmentsHelper {
                     .but(with(AppointmentDtoMaker.id, 200L),
                         with(AppointmentDtoMaker.identifier, identifiers.last()),
                         with(AppointmentDtoMaker.notes, "Review appointment"),
-                        with(AppointmentDtoMaker.dttm, LocalDateTime.parse("2021-07-20T10:52:52")),
+                        with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-20T10:52:52+01:00")),
+                        with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-20T11:52:52+01:00")),
                         with(AppointmentDtoMaker.price, 200.5f),
                         with(AppointmentDtoMaker.coach, coach.toDto()),
                         with(AppointmentDtoMaker.client, client.toDto()))
@@ -63,7 +62,8 @@ object AppointmentsHelper {
                     .but(with(AppointmentDtoMaker.id, 100L),
                         with(AppointmentDtoMaker.identifier, identifiers.first()),
                         with(AppointmentDtoMaker.notes, "First appointment"),
-                        with(AppointmentDtoMaker.dttm, LocalDateTime.parse("2021-07-14T10:52:52")),
+                        with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T10:52:52+01:00")),
+                        with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-14T11:52:52+01:00")),
                         with(AppointmentDtoMaker.price, 100.5f),
                         with(AppointmentDtoMaker.coach, coach.toDto()),
                         with(AppointmentDtoMaker.client, client1.toDto()))
@@ -73,7 +73,8 @@ object AppointmentsHelper {
                     .but(with(AppointmentDtoMaker.id, 200L),
                         with(AppointmentDtoMaker.identifier, identifiers.last()),
                         with(AppointmentDtoMaker.notes, "Review appointment"),
-                        with(AppointmentDtoMaker.dttm, LocalDateTime.parse("2021-07-20T10:52:52")),
+                        with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-20T10:52:52+01:00")),
+                        with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-20T11:52:52+01:00")),
                         with(AppointmentDtoMaker.price, 200.5f),
                         with(AppointmentDtoMaker.coach, coach.toDto()),
                         with(AppointmentDtoMaker.client, client2.toDto()))

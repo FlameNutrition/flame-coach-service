@@ -67,7 +67,7 @@ class AppointmentServiceImplTest {
         every {
             appointmentRepository.findAppointments(any(), any())
         } returns listOf(AppointmentDtoBuilder.maker()
-            .but(with(AppointmentDtoMaker.dttm, LocalDateTime.parse("2021-07-14T09:52:52.389929")),
+            .but(with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T09:52:52.389929+01:00")),
                 with(AppointmentDtoMaker.coach, coach.toDto()),
                 with(AppointmentDtoMaker.client, client.toDto()))
             .make()
@@ -81,10 +81,6 @@ class AppointmentServiceImplTest {
         then(result).hasSize(1)
 
         val appointment = result.first()
-
-        then(appointment.dttm).isEqualTo(LocalDateTime.parse("2021-07-14T09:52:52.389929"))
-        then(appointment.dttmZoned).isEqualTo(ZonedDateTime.parse("2021-07-14T09:52:52.389929+01:00"))
-        then(appointment.dttmTxt).isEqualTo("2021-07-14T09:52:52.389929+01:00")
 
     }
 
@@ -109,7 +105,7 @@ class AppointmentServiceImplTest {
         every {
             appointmentRepository.findAppointmentsByClient(any())
         } returns listOf(AppointmentDtoBuilder.maker()
-            .but(with(AppointmentDtoMaker.dttm, LocalDateTime.parse("2021-07-14T09:52:52.389929")),
+            .but(with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T09:52:52.389929+01:00")),
                 with(AppointmentDtoMaker.coach, coach.toDto()),
                 with(AppointmentDtoMaker.client, client.toDto()))
             .make()
@@ -121,13 +117,6 @@ class AppointmentServiceImplTest {
         verify { appointmentRepository.findAppointmentsByClient(client.uuid) }
 
         then(result).hasSize(1)
-
-        val appointment = result.first()
-
-        then(appointment.dttm).isEqualTo(LocalDateTime.parse("2021-07-14T09:52:52.389929"))
-        then(appointment.dttmZoned).isEqualTo(ZonedDateTime.parse("2021-07-14T09:52:52.389929+01:00"))
-        then(appointment.dttmTxt).isEqualTo("2021-07-14T09:52:52.389929+01:00")
-
     }
 
     @Test
@@ -178,13 +167,13 @@ class AppointmentServiceImplTest {
         every {
             appointmentRepository.findAppointmentsByCoach(any())
         } returns listOf(AppointmentDtoBuilder.maker()
-            .but(with(AppointmentDtoMaker.dttm, LocalDateTime.parse("2021-07-14T09:52:52.389929")),
+            .but(with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T09:52:52.389929+01:00")),
                 with(AppointmentDtoMaker.coach, coach.toDto()),
                 with(AppointmentDtoMaker.client, client1.toDto()))
             .make()
             .toAppointment(),
             AppointmentDtoBuilder.maker()
-                .but(with(AppointmentDtoMaker.dttm, LocalDateTime.parse("2021-07-14T09:52:52.389929")),
+                .but(with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T09:52:52.389929+01:00")),
                     with(AppointmentDtoMaker.coach, coach.toDto()),
                     with(AppointmentDtoMaker.client, client2.toDto()))
                 .make()
@@ -200,9 +189,6 @@ class AppointmentServiceImplTest {
         val appointment = result.first()
         val other = result.last()
 
-        then(appointment.dttm).isEqualTo(LocalDateTime.parse("2021-07-14T09:52:52.389929"))
-        then(appointment.dttmZoned).isEqualTo(ZonedDateTime.parse("2021-07-14T09:52:52.389929+01:00"))
-        then(appointment.dttmTxt).isEqualTo("2021-07-14T09:52:52.389929+01:00")
         then(appointment.client).isEqualTo(client1.toDto())
         then(other.client).isEqualTo(client2.toDto())
 
@@ -231,7 +217,7 @@ class AppointmentServiceImplTest {
         val result = appointmentServiceImpl
             .createAppointment(uuidCoach, uuidClient, AppointmentDtoBuilder
                 .maker()
-                .but(with(AppointmentDtoMaker.dttmTxt, "2021-07-14T16:52:52.389929+08:00"))
+                .but(with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T16:52:52.389929+08:00")))
                 .make())
 
         verify { coachOperations.getCoach(uuidCoach) }
@@ -239,11 +225,7 @@ class AppointmentServiceImplTest {
         then(appointmentInjected.isCaptured).isTrue
         then(appointmentInjected.captured.coach).isNotNull
         then(appointmentInjected.captured.client).isNotNull
-        then(appointmentInjected.captured.dttm).isEqualTo(LocalDateTime.parse("2021-07-14T09:52:52.389929"))
-
-        then(result.dttm).isEqualTo(LocalDateTime.parse("2021-07-14T09:52:52.389929"))
-        then(result.dttmZoned).isEqualTo(ZonedDateTime.parse("2021-07-14T16:52:52.389929+08:00"))
-        then(result.dttmTxt).isEqualTo("2021-07-14T16:52:52.389929+08:00")
+        then(appointmentInjected.captured.dttmStarts).isEqualTo(LocalDateTime.parse("2021-07-14T09:52:52.389929"))
 
     }
 
@@ -263,7 +245,7 @@ class AppointmentServiceImplTest {
             appointmentServiceImpl
                 .createAppointment(uuidCoach, uuidClient, AppointmentDtoBuilder
                     .maker()
-                    .but(with(AppointmentDtoMaker.dttmTxt, "2021-07-14T16:52:52.389929+08:00"))
+                    .but(with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T16:52:52.389929+08:00")))
                     .make())
         }
 
@@ -284,7 +266,8 @@ class AppointmentServiceImplTest {
                 with(AppointmentDtoMaker.price, 200.5f),
                 with(AppointmentDtoMaker.delete, true),
                 with(AppointmentDtoMaker.notes, "Hey hello!"),
-                with(AppointmentDtoMaker.dttmTxt, "2021-06-14T16:52:52.389929+09:00"),
+                with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-06-14T16:52:52.389929+09:00")),
+                with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-06-14T12:52:52.389929+09:00")),
                 with(AppointmentDtoMaker.currency, Currency.getInstance("EUR")))
             .make()
 
@@ -309,14 +292,11 @@ class AppointmentServiceImplTest {
         then(appointmentInjected.captured.coach).isNotNull
         then(appointmentInjected.captured.client).isNotNull
         then(appointmentInjected.captured.price).isEqualTo(200.5f)
-        then(appointmentInjected.captured.dttm).isEqualTo(LocalDateTime.parse("2021-06-14T08:52:52.389929"))
+        then(appointmentInjected.captured.dttmStarts).isEqualTo(LocalDateTime.parse("2021-06-14T08:52:52.389929"))
+        then(appointmentInjected.captured.dttmEnds).isEqualTo(LocalDateTime.parse("2021-06-14T04:52:52.389929"))
         then(appointmentInjected.captured.delete).isFalse
         then(appointmentInjected.captured.currency).isEqualTo("EUR")
         then(appointmentInjected.captured.notes).isEqualTo("Hey hello!")
-
-        then(result.dttm).isEqualTo(LocalDateTime.parse("2021-06-14T08:52:52.389929"))
-        then(result.dttmZoned).isEqualTo(ZonedDateTime.parse("2021-06-14T16:52:52.389929+09:00"))
-        then(result.dttmTxt).isEqualTo("2021-06-14T16:52:52.389929+09:00")
 
     }
 
@@ -330,7 +310,7 @@ class AppointmentServiceImplTest {
                 with(AppointmentDtoMaker.price, 200.5f),
                 with(AppointmentDtoMaker.delete, true),
                 with(AppointmentDtoMaker.notes, "Hey hello!"),
-                with(AppointmentDtoMaker.dttmTxt, "2021-06-14T16:52:52.389929+09:00"),
+                with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-06-14T16:52:52.389929+09:00")),
                 with(AppointmentDtoMaker.currency, Currency.getInstance("EUR")))
             .make()
 

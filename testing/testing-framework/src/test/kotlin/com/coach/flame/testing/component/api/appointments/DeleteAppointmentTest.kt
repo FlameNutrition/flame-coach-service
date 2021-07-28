@@ -68,7 +68,7 @@ class DeleteAppointmentTest : BaseComponentTest() {
         then(capturedAppointment.captured.delete).isTrue
         then(capturedAppointment.captured.coach).isNotNull
         then(capturedAppointment.captured.client).isNotNull
-        then(capturedAppointment.captured.dttm).isEqualTo(LocalDateTime.parse("2021-07-14T10:52:52"))
+        then(capturedAppointment.captured.dttmStarts).isEqualTo(LocalDateTime.parse("2021-07-14T10:52:52"))
 
         then(jsonResponse.getAsJsonArray("appointments")).hasSize(1)
 
