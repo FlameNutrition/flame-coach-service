@@ -46,7 +46,7 @@ class AppointmentImplTest {
                 with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-15T04:52:52.389929-04:00")),
                 with(AppointmentDtoMaker.client, ClientDtoBuilder.default()),
                 with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
-                    .but(with(IncomeDtoBuilder.IncomeDtoMaker.price, 200.5f))
+                    .but(with(IncomeDtoMaker.price, 200.5f))
                     .make()),
                 with(AppointmentDtoMaker.notes, "Simple test"))
             .make()
@@ -57,7 +57,7 @@ class AppointmentImplTest {
                 with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-15T04:52:52.389929-04:00")),
                 with(AppointmentDtoMaker.client, ClientDtoBuilder.default()),
                 with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
-                    .but(with(IncomeDtoBuilder.IncomeDtoMaker.price, 100.5f))
+                    .but(with(IncomeDtoMaker.price, 100.5f))
                     .make()),
                 with(AppointmentDtoMaker.notes, "Simple test 2"))
             .make()
@@ -96,7 +96,7 @@ class AppointmentImplTest {
                     .but(with(ClientDtoMaker.identifier, clientIdentifier1))
                     .make()),
                 with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
-                    .but(with(IncomeDtoBuilder.IncomeDtoMaker.price, 200.5f))
+                    .but(with(IncomeDtoMaker.price, 200.5f))
                     .make()),
                 with(AppointmentDtoMaker.notes, "Simple test"))
             .make()
@@ -107,7 +107,7 @@ class AppointmentImplTest {
                     .but(with(ClientDtoMaker.identifier, clientIdentifier2))
                     .make()),
                 with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
-                    .but(with(IncomeDtoBuilder.IncomeDtoMaker.price, 100.5f))
+                    .but(with(IncomeDtoMaker.price, 100.5f))
                     .make()),
                 with(AppointmentDtoMaker.notes, "Simple test 2"))
             .make()
@@ -150,7 +150,7 @@ class AppointmentImplTest {
             .but(with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
                 with(AppointmentDtoMaker.client, client),
                 with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
-                    .but(with(IncomeDtoBuilder.IncomeDtoMaker.price, 200.5f))
+                    .but(with(IncomeDtoMaker.price, 200.5f))
                     .make()),
                 with(AppointmentDtoMaker.notes, "Simple test"))
             .make()
@@ -159,7 +159,7 @@ class AppointmentImplTest {
             .but(with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
                 with(AppointmentDtoMaker.client, client),
                 with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
-                    .but(with(IncomeDtoBuilder.IncomeDtoMaker.price, 100.5f))
+                    .but(with(IncomeDtoMaker.price, 100.5f))
                     .make()),
                 with(AppointmentDtoMaker.notes, "Simple test 2"))
             .make()
@@ -208,7 +208,7 @@ class AppointmentImplTest {
                 with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-15T15:52:52.389929+08:00")),
                 with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-15T16:52:52.389929+08:00")),
                 with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
-                    .but(with(IncomeDtoBuilder.IncomeDtoMaker.price, 20.5f))
+                    .but(with(IncomeDtoMaker.price, 20.5f))
                     .make()),
                 with(AppointmentDtoMaker.notes, "Simple note"))
             .make()
@@ -262,7 +262,7 @@ class AppointmentImplTest {
                 with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-15T15:52:52.389929+08:00")),
                 with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-17T16:52:52.389929+08:00")),
                 with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
-                    .but(with(IncomeDtoBuilder.IncomeDtoMaker.price, 100.5f))
+                    .but(with(IncomeDtoMaker.price, 100.5f))
                     .make()),
                 with(AppointmentDtoMaker.client, ClientDtoBuilder.default()),
                 with(AppointmentDtoMaker.notes, "Simple note updated"))

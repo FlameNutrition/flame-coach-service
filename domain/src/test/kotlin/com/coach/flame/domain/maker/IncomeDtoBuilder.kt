@@ -18,23 +18,23 @@ object IncomeDtoBuilder {
     fun default(): IncomeDto {
         return maker().make()
     }
+}
 
-    class IncomeDtoMaker {
-        companion object {
+class IncomeDtoMaker {
+    companion object {
 
-            val id: Property<IncomeDto, Long?> = Property.newProperty()
-            val price: Property<IncomeDto, Float> = Property.newProperty()
-            val status: Property<IncomeDto, IncomeDtoStatus> = Property.newProperty()
+        val id: Property<IncomeDto, Long?> = Property.newProperty()
+        val price: Property<IncomeDto, Float> = Property.newProperty()
+        val status: Property<IncomeDto, IncomeDtoStatus> = Property.newProperty()
 
-            val IncomeDto: Instantiator<IncomeDto> = Instantiator {
-                val income = IncomeDto(
-                    price = it.valueOf(price, 0.0f),
-                    status = it.valueOf(status, IncomeDtoStatus.PENDING)
-                )
-                income.id = it.valueOf(id, null as Long?)
+        val IncomeDto: Instantiator<IncomeDto> = Instantiator {
+            val income = IncomeDto(
+                price = it.valueOf(price, 0.0f),
+                status = it.valueOf(status, IncomeDtoStatus.PENDING)
+            )
+            income.id = it.valueOf(id, null as Long?)
 
-                income
-            }
+            income
         }
     }
 }

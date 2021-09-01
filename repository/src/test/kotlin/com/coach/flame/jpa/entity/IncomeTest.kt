@@ -2,6 +2,7 @@ package com.coach.flame.jpa.entity
 
 import com.coach.flame.domain.IncomeDto
 import com.coach.flame.domain.maker.IncomeDtoBuilder
+import com.coach.flame.domain.maker.IncomeDtoMaker
 import com.coach.flame.jpa.entity.Income.Companion.toIncome
 import com.natpryce.makeiteasy.MakeItEasy.with
 import org.assertj.core.api.BDDAssertions.then
@@ -31,9 +32,9 @@ class IncomeTest {
     fun `test convert dto to entity all values`() {
 
         val income = IncomeDtoBuilder.maker()
-            .but(with(IncomeDtoBuilder.IncomeDtoMaker.id, 200L),
-                with(IncomeDtoBuilder.IncomeDtoMaker.price, 760.42f),
-                with(IncomeDtoBuilder.IncomeDtoMaker.status, IncomeDto.IncomeStatus.REJECTED))
+            .but(with(IncomeDtoMaker.id, 200L),
+                with(IncomeDtoMaker.price, 760.42f),
+                with(IncomeDtoMaker.status, IncomeDto.IncomeStatus.REJECTED))
             .make()
 
         val entity = income.toIncome()

@@ -4,6 +4,7 @@ import com.coach.flame.domain.IncomeDto
 import com.coach.flame.domain.maker.AppointmentDtoBuilder
 import com.coach.flame.domain.maker.AppointmentDtoMaker
 import com.coach.flame.domain.maker.IncomeDtoBuilder
+import com.coach.flame.domain.maker.IncomeDtoMaker
 import com.coach.flame.failure.exception.CustomerNotFoundException
 import com.coach.flame.jpa.entity.Appointment
 import com.coach.flame.jpa.entity.Appointment.Companion.toAppointment
@@ -265,7 +266,7 @@ class AppointmentServiceImplTest {
         val appointmentIdentifier = UUID.randomUUID()
 
         val income = IncomeDtoBuilder.maker()
-            .but(with(IncomeDtoBuilder.IncomeDtoMaker.price, 200.5f))
+            .but(with(IncomeDtoMaker.price, 200.5f))
             .make()
 
         val appointment = AppointmentDtoBuilder.maker()
@@ -284,8 +285,8 @@ class AppointmentServiceImplTest {
                 with(AppointmentDtoMaker.coach, CoachBuilder.default().toDto()),
                 with(AppointmentDtoMaker.client, ClientBuilder.default().toDto()),
                 with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
-                    .but(with(IncomeDtoBuilder.IncomeDtoMaker.price, 500.5f),
-                        with(IncomeDtoBuilder.IncomeDtoMaker.status, IncomeDto.IncomeStatus.ACCEPTED))
+                    .but(with(IncomeDtoMaker.price, 500.5f),
+                        with(IncomeDtoMaker.status, IncomeDto.IncomeStatus.ACCEPTED))
                     .make())
             )
             .make()
@@ -320,7 +321,7 @@ class AppointmentServiceImplTest {
         val appointmentIdentifier = UUID.randomUUID()
 
         val income = IncomeDtoBuilder.maker()
-            .but(with(IncomeDtoBuilder.IncomeDtoMaker.price, 200.5f))
+            .but(with(IncomeDtoMaker.price, 200.5f))
             .make()
 
         val appointment = AppointmentDtoBuilder.maker()

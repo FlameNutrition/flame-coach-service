@@ -4,6 +4,7 @@ import com.coach.flame.jpa.entity.*
 import com.github.javafaker.Faker
 import com.natpryce.makeiteasy.Instantiator
 import com.natpryce.makeiteasy.MakeItEasy.*
+import com.natpryce.makeiteasy.Maker
 import com.natpryce.makeiteasy.Property
 import com.natpryce.makeiteasy.Property.newProperty
 import java.time.LocalDate
@@ -51,6 +52,20 @@ class CoachMaker {
                 registrationDate = it.valueOf(registrationDate, LocalDate.now())
             )
         }
+    }
+
+}
+
+object CoachBuilder {
+
+    private val MAKER: Maker<Coach> = an(CoachMaker.Coach)
+
+    fun maker(): Maker<Coach> {
+        return MAKER
+    }
+
+    fun default(): Coach {
+        return maker().make()
     }
 
 }
