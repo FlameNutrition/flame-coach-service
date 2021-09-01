@@ -61,7 +61,8 @@ class CreateAppointmentTest : BaseComponentTest() {
 
         then(capturedAppointment.isCaptured).isTrue
         then(capturedAppointment.captured.currency).isEqualTo("GBP")
-        then(capturedAppointment.captured.price).isEqualTo(156.5f)
+        then(capturedAppointment.captured.income.price).isEqualTo(156.5f)
+        then(capturedAppointment.captured.income.status).isEqualTo("PENDING")
         then(capturedAppointment.captured.notes).isEqualTo("This is my first appointment")
         then(capturedAppointment.captured.delete).isFalse
         then(capturedAppointment.captured.coach).isNotNull

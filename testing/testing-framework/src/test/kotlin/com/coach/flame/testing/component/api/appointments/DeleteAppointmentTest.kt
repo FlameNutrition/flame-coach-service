@@ -63,7 +63,8 @@ class DeleteAppointmentTest : BaseComponentTest() {
 
         then(capturedAppointment.isCaptured).isTrue
         then(capturedAppointment.captured.currency).isEqualTo("GBP")
-        then(capturedAppointment.captured.price).isEqualTo(100.5f)
+        then(capturedAppointment.captured.income.price).isEqualTo(100.5f)
+        then(capturedAppointment.captured.income.status).isEqualTo("PENDING")
         then(capturedAppointment.captured.notes).isEqualTo("First appointment")
         then(capturedAppointment.captured.delete).isTrue
         then(capturedAppointment.captured.coach).isNotNull

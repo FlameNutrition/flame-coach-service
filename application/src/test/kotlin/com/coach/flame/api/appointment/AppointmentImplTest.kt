@@ -3,10 +3,8 @@ package com.coach.flame.api.appointment
 import com.coach.flame.api.appointment.request.AppointmentRequest
 import com.coach.flame.appointment.AppointmentService
 import com.coach.flame.domain.AppointmentDto
-import com.coach.flame.domain.maker.AppointmentDtoBuilder
-import com.coach.flame.domain.maker.AppointmentDtoMaker
-import com.coach.flame.domain.maker.ClientDtoBuilder
-import com.coach.flame.domain.maker.ClientDtoMaker
+import com.coach.flame.domain.IncomeDto
+import com.coach.flame.domain.maker.*
 import com.natpryce.makeiteasy.MakeItEasy.with
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -47,7 +45,9 @@ class AppointmentImplTest {
                 with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-15T03:52:52.389929-04:00")),
                 with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-15T04:52:52.389929-04:00")),
                 with(AppointmentDtoMaker.client, ClientDtoBuilder.default()),
-                with(AppointmentDtoMaker.price, 200.5f),
+                with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
+                    .but(with(IncomeDtoBuilder.IncomeDtoMaker.price, 200.5f))
+                    .make()),
                 with(AppointmentDtoMaker.notes, "Simple test"))
             .make()
 
@@ -56,7 +56,9 @@ class AppointmentImplTest {
                 with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-15T03:52:52.389929-04:00")),
                 with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-15T04:52:52.389929-04:00")),
                 with(AppointmentDtoMaker.client, ClientDtoBuilder.default()),
-                with(AppointmentDtoMaker.price, 100.5f),
+                with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
+                    .but(with(IncomeDtoBuilder.IncomeDtoMaker.price, 100.5f))
+                    .make()),
                 with(AppointmentDtoMaker.notes, "Simple test 2"))
             .make()
 
@@ -93,7 +95,9 @@ class AppointmentImplTest {
                 with(AppointmentDtoMaker.client, ClientDtoBuilder.maker()
                     .but(with(ClientDtoMaker.identifier, clientIdentifier1))
                     .make()),
-                with(AppointmentDtoMaker.price, 200.5f),
+                with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
+                    .but(with(IncomeDtoBuilder.IncomeDtoMaker.price, 200.5f))
+                    .make()),
                 with(AppointmentDtoMaker.notes, "Simple test"))
             .make()
 
@@ -102,7 +106,9 @@ class AppointmentImplTest {
                 with(AppointmentDtoMaker.client, ClientDtoBuilder.maker()
                     .but(with(ClientDtoMaker.identifier, clientIdentifier2))
                     .make()),
-                with(AppointmentDtoMaker.price, 100.5f),
+                with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
+                    .but(with(IncomeDtoBuilder.IncomeDtoMaker.price, 100.5f))
+                    .make()),
                 with(AppointmentDtoMaker.notes, "Simple test 2"))
             .make()
 
@@ -143,14 +149,18 @@ class AppointmentImplTest {
         val appointment1 = AppointmentDtoBuilder.maker()
             .but(with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
                 with(AppointmentDtoMaker.client, client),
-                with(AppointmentDtoMaker.price, 200.5f),
+                with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
+                    .but(with(IncomeDtoBuilder.IncomeDtoMaker.price, 200.5f))
+                    .make()),
                 with(AppointmentDtoMaker.notes, "Simple test"))
             .make()
 
         val appointment2 = AppointmentDtoBuilder.maker()
             .but(with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
                 with(AppointmentDtoMaker.client, client),
-                with(AppointmentDtoMaker.price, 100.5f),
+                with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
+                    .but(with(IncomeDtoBuilder.IncomeDtoMaker.price, 100.5f))
+                    .make()),
                 with(AppointmentDtoMaker.notes, "Simple test 2"))
             .make()
 
@@ -197,7 +207,9 @@ class AppointmentImplTest {
                 with(AppointmentDtoMaker.client, ClientDtoBuilder.default()),
                 with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-15T15:52:52.389929+08:00")),
                 with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-15T16:52:52.389929+08:00")),
-                with(AppointmentDtoMaker.price, 20.5f),
+                with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
+                    .but(with(IncomeDtoBuilder.IncomeDtoMaker.price, 20.5f))
+                    .make()),
                 with(AppointmentDtoMaker.notes, "Simple note"))
             .make()
 
@@ -225,7 +237,8 @@ class AppointmentImplTest {
         then(appointmentSlot.isCaptured).isTrue
         then(appointmentSlot.captured.identifier).isNotNull
         then(appointmentSlot.captured.delete).isFalse
-        then(appointmentSlot.captured.price).isEqualTo(20.5f)
+        then(appointmentSlot.captured.income.price).isEqualTo(20.5f)
+        then(appointmentSlot.captured.income.status).isEqualTo(IncomeDto.IncomeStatus.PENDING)
         then(appointmentSlot.captured.notes).isEqualTo("Simple note")
         then(appointmentSlot.captured.dttmStarts).isEqualTo(ZonedDateTime.parse("2021-07-15T15:52:52.389929+08:00"))
         then(appointmentSlot.captured.dttmEnds).isEqualTo(ZonedDateTime.parse("2021-07-15T16:52:52.389929+08:00"))
@@ -248,7 +261,9 @@ class AppointmentImplTest {
             .but(with(AppointmentDtoMaker.identifier, uuidAppointment),
                 with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-15T15:52:52.389929+08:00")),
                 with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-17T16:52:52.389929+08:00")),
-                with(AppointmentDtoMaker.price, 100.5f),
+                with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
+                    .but(with(IncomeDtoBuilder.IncomeDtoMaker.price, 100.5f))
+                    .make()),
                 with(AppointmentDtoMaker.client, ClientDtoBuilder.default()),
                 with(AppointmentDtoMaker.notes, "Simple note updated"))
             .make()
@@ -277,7 +292,8 @@ class AppointmentImplTest {
         then(appointmentSlot.isCaptured).isTrue
         then(appointmentSlot.captured.identifier).isNotNull
         then(appointmentSlot.captured.delete).isFalse
-        then(appointmentSlot.captured.price).isEqualTo(100.5f)
+        then(appointmentSlot.captured.income.price).isEqualTo(100.5f)
+        then(appointmentSlot.captured.income.status).isEqualTo(IncomeDto.IncomeStatus.PENDING)
         then(appointmentSlot.captured.notes).isEqualTo("Simple note updated")
         then(appointmentSlot.captured.dttmStarts).isEqualTo(ZonedDateTime.parse("2021-07-15T15:52:52.389929+08:00"))
         then(appointmentSlot.captured.dttmEnds).isEqualTo(ZonedDateTime.parse("2021-07-17T16:52:52.389929+08:00"))

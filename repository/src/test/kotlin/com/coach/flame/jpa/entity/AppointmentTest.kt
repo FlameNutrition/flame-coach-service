@@ -2,10 +2,7 @@ package com.coach.flame.jpa.entity
 
 import com.coach.flame.domain.ClientDto
 import com.coach.flame.domain.CoachDto
-import com.coach.flame.domain.maker.AppointmentDtoBuilder
-import com.coach.flame.domain.maker.AppointmentDtoMaker
-import com.coach.flame.domain.maker.ClientDtoBuilder
-import com.coach.flame.domain.maker.CoachDtoBuilder
+import com.coach.flame.domain.maker.*
 import com.coach.flame.jpa.entity.Appointment.Companion.toAppointment
 import com.coach.flame.jpa.entity.maker.ClientBuilder
 import com.coach.flame.jpa.entity.maker.CoachBuilder
@@ -31,7 +28,7 @@ class AppointmentTest {
             uuid = identifier,
             coach = CoachBuilder.default(),
             client = ClientBuilder.default(),
-            price = 80.5f,
+            income = Income(),
             dttmStarts = dateNow,
             dttmEnds = dttmEnds,
             delete = true,
@@ -44,7 +41,7 @@ class AppointmentTest {
         then(dto.identifier).isEqualTo(identifier)
         then(dto.coach).isNotNull
         then(dto.client).isNotNull
-        then(dto.price).isEqualTo(80.5f)
+        then(dto.income).isNotNull
         then(dto.dttmStarts).isEqualTo(ZonedDateTime.parse("2021-07-15T04:52:52.389929+01:00"))
         then(dto.dttmEnds).isEqualTo(ZonedDateTime.parse("2021-07-15T04:52:52.389929+01:00"))
         then(dto.delete).isTrue
@@ -63,7 +60,7 @@ class AppointmentTest {
             uuid = identifier,
             coach = CoachBuilder.default(),
             client = ClientBuilder.default(),
-            price = 80.5f,
+            income = Income(),
             dttmStarts = dttmStarts,
             dttmEnds = dttmEnds,
             delete = true,
@@ -85,7 +82,7 @@ class AppointmentTest {
         val endDate = ZonedDateTime.parse("2021-07-15T04:52:52.389929-04:00")
 
         val appointment = AppointmentDtoBuilder.maker()
-            .but(with(AppointmentDtoMaker.price, 80.5f),
+            .but(with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()),
                 with(AppointmentDtoMaker.delete, true),
                 with(AppointmentDtoMaker.coach, CoachDtoBuilder.makerWithLoginInfo().make()),
                 with(AppointmentDtoMaker.client, ClientDtoBuilder.makerWithLoginInfo().make()),
@@ -98,7 +95,7 @@ class AppointmentTest {
 
         then(entity.coach).isNotNull
         then(entity.client).isNotNull
-        then(entity.price).isEqualTo(80.5f)
+        then(entity.income).isNotNull
         then(entity.dttmStarts).isEqualTo(LocalDateTime.parse("2021-07-15T09:52:52.389929"))
         then(entity.dttmEnds).isEqualTo(LocalDateTime.parse("2021-07-15T09:52:52.389929"))
         then(entity.currency).isEqualTo("GBP")

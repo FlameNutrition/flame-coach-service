@@ -4,6 +4,7 @@ import com.coach.flame.date.DateHelper.toAnotherZone
 import com.coach.flame.domain.AppointmentDto
 import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.jpa.entity.Coach.Companion.toCoach
+import com.coach.flame.jpa.entity.Income.Companion.toIncome
 import org.hibernate.annotations.Type
 import org.springframework.data.jpa.domain.AbstractPersistable
 import java.time.LocalDateTime
@@ -28,9 +29,6 @@ class Appointment(
     @Column(name = "\"delete\"", nullable = false, columnDefinition = "tinyint(1) default 0")
     var delete: Boolean,
 
-    @Column(name = "price", nullable = false, columnDefinition = "float default '0.0'")
-    var price: Float = 0.0f,
-
     @ManyToOne(optional = false)
     @JoinColumn(name = "clientFk", nullable = false)
     var client: Client,
@@ -42,6 +40,10 @@ class Appointment(
     @Column(name = "currency", nullable = false, length = 3)
     var currency: String,
 
+    @OneToOne(orphanRemoval = true, cascade = [CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH])
+    @JoinColumn(name = "incomeFk", referencedColumnName = "id")
+    var income: Income,
+
     @Column(name = "notes")
     var notes: String? = null,
 ) : AbstractPersistable<Long>() {
@@ -52,11 +54,11 @@ class Appointment(
             identifier = this.uuid,
             coach = this.coach.toDto(),
             client = this.client.toDto(),
-            price = this.price,
             delete = this.delete,
             dttmStarts = toAnotherZone(this.dttmStarts, zoneId),
             dttmEnds = toAnotherZone(this.dttmEnds, zoneId),
             currency = Currency.getInstance(this.currency),
+            income = this.income.toDto(),
             notes = this.notes
         )
     }
@@ -78,8 +80,8 @@ class Appointment(
                 dttmStarts = toAnotherZone(dttmStarts, ZoneId.systemDefault()).toLocalDateTime(),
                 dttmEnds = toAnotherZone(dttmEnds, ZoneId.systemDefault()).toLocalDateTime(),
                 delete = delete,
-                price = price,
                 currency = currency.currencyCode,
+                income = income.toIncome(),
                 notes = notes
             )
 
@@ -88,7 +90,6 @@ class Appointment(
             return appointment
         }
     }
-
 }
 
 

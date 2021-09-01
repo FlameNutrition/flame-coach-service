@@ -19,7 +19,7 @@ class AppointmentDtoMaker {
         val delete: Property<AppointmentDto, Boolean> = newProperty()
         val coach: Property<AppointmentDto, CoachDto?> = newProperty()
         val client: Property<AppointmentDto, ClientDto?> = newProperty()
-        val price: Property<AppointmentDto, Float> = newProperty()
+        val income: Property<AppointmentDto, IncomeDto> = newProperty()
         val currency: Property<AppointmentDto, Currency> = newProperty()
         val notes: Property<AppointmentDto, String?> = newProperty()
 
@@ -32,7 +32,7 @@ class AppointmentDtoMaker {
                 delete = it.valueOf(delete, false),
                 coach = it.valueOf(coach, null as CoachDto?),
                 client = it.valueOf(client, null as ClientDto?),
-                price = it.valueOf(price, 0.0f),
+                income = it.valueOf(income, IncomeDto()),
                 currency = it.valueOf(currency, Currency.getInstance("GBP")),
                 notes = it.valueOf(notes, null as String?),
             )

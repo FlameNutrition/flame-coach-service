@@ -14,6 +14,7 @@ import com.coach.flame.date.DateHelper.toISODateWithOffset
 import com.coach.flame.date.DateHelper.toZonedDateTime
 import com.coach.flame.domain.AppointmentDto
 import com.coach.flame.domain.ClientDto
+import com.coach.flame.domain.IncomeDto
 import com.coach.flame.domain.maker.AppointmentDtoMaker
 import org.springframework.web.bind.annotation.*
 import java.util.*
@@ -38,7 +39,7 @@ class AppointmentImpl(
                 identifier = it.identifier.toString(),
                 dttmStarts = toISODateWithOffset(it.dttmStarts),
                 dttmEnds = toISODateWithOffset(it.dttmEnds),
-                price = it.price,
+                price = it.income.price,
                 notes = it.notes,
                 client = toClient(it.safeClient)
             )
@@ -105,7 +106,7 @@ class AppointmentImpl(
                 dttmStarts = toZonedDateTime(appointmentRequest.dttmStarts),
                 dttmEnds = toZonedDateTime(appointmentRequest.dttmEnds),
                 notes = appointmentRequest.notes,
-                price = appointmentRequest.price,
+                income = IncomeDto(appointmentRequest.price, IncomeDto.IncomeStatus.PENDING),
                 delete = false)
 
             val appointment =
@@ -130,7 +131,7 @@ class AppointmentImpl(
                 dttmStarts = toZonedDateTime(appointmentRequest.dttmStarts),
                 dttmEnds = toZonedDateTime(appointmentRequest.dttmEnds),
                 notes = appointmentRequest.notes,
-                price = appointmentRequest.price)
+                income = IncomeDto(appointmentRequest.price, IncomeDto.IncomeStatus.PENDING))
 
             val appointment = appointmentService.updateAppointment(appointmentToUpdate)
 

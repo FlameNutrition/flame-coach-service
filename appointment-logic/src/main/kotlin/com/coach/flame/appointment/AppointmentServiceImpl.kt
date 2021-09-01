@@ -1,8 +1,6 @@
 package com.coach.flame.appointment
 
 import com.coach.flame.date.DateHelper.toAnotherZone
-import com.coach.flame.date.DateHelper.toISODateWithOffset
-import com.coach.flame.date.DateHelper.toZonedDateTime
 import com.coach.flame.domain.AppointmentDto
 import com.coach.flame.failure.exception.CustomerNotFoundException
 import com.coach.flame.jpa.entity.Appointment.Companion.toAppointment
@@ -112,7 +110,8 @@ class AppointmentServiceImpl(
             .apply {
                 dttmStarts = toAnotherZone(appointmentDto.dttmStarts, ZoneId.systemDefault()).toLocalDateTime()
                 dttmEnds = toAnotherZone(appointmentDto.dttmEnds, ZoneId.systemDefault()).toLocalDateTime()
-                price = appointmentDto.price
+                income.price = appointmentDto.income.price
+                income.status = appointmentDto.income.status.name
                 currency = appointmentDto.currency.currencyCode
                 notes = appointmentDto.notes
             }

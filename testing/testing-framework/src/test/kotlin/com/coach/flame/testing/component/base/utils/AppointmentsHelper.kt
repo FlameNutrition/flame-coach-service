@@ -1,5 +1,6 @@
 package com.coach.flame.testing.component.base.utils
 
+import com.coach.flame.domain.IncomeDto
 import com.coach.flame.domain.maker.AppointmentDtoBuilder
 import com.coach.flame.domain.maker.AppointmentDtoMaker
 import com.coach.flame.jpa.entity.Appointment
@@ -20,7 +21,7 @@ object AppointmentsHelper {
                 with(AppointmentDtoMaker.notes, "First appointment"),
                 with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T10:52:52+01:00")),
                 with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-14T11:52:52+01:00")),
-                with(AppointmentDtoMaker.price, 100.5f),
+                with(AppointmentDtoMaker.income, IncomeDto(100.5f)),
                 with(AppointmentDtoMaker.coach, coach.toDto()),
                 with(AppointmentDtoMaker.client, client.toDto()))
             .make()
@@ -36,7 +37,7 @@ object AppointmentsHelper {
                         with(AppointmentDtoMaker.notes, "First appointment"),
                         with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T10:52:52+01:00")),
                         with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-14T11:52:52+01:00")),
-                        with(AppointmentDtoMaker.price, 100.5f),
+                        with(AppointmentDtoMaker.income, IncomeDto(100.5f)),
                         with(AppointmentDtoMaker.coach, coach.toDto()),
                         with(AppointmentDtoMaker.client, client.toDto()))
                     .make()
@@ -47,7 +48,7 @@ object AppointmentsHelper {
                         with(AppointmentDtoMaker.notes, "Review appointment"),
                         with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-20T10:52:52+01:00")),
                         with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-20T11:52:52+01:00")),
-                        with(AppointmentDtoMaker.price, 200.5f),
+                        with(AppointmentDtoMaker.income, IncomeDto(200.5f)),
                         with(AppointmentDtoMaker.coach, coach.toDto()),
                         with(AppointmentDtoMaker.client, client.toDto()))
                     .make()
@@ -64,7 +65,7 @@ object AppointmentsHelper {
                         with(AppointmentDtoMaker.notes, "First appointment"),
                         with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T10:52:52+01:00")),
                         with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-14T11:52:52+01:00")),
-                        with(AppointmentDtoMaker.price, 100.5f),
+                        with(AppointmentDtoMaker.income, IncomeDto(100.5f)),
                         with(AppointmentDtoMaker.coach, coach.toDto()),
                         with(AppointmentDtoMaker.client, client1.toDto()))
                     .make()
@@ -75,7 +76,7 @@ object AppointmentsHelper {
                         with(AppointmentDtoMaker.notes, "Review appointment"),
                         with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-20T10:52:52+01:00")),
                         with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-20T11:52:52+01:00")),
-                        with(AppointmentDtoMaker.price, 200.5f),
+                        with(AppointmentDtoMaker.income, IncomeDto(200.5f)),
                         with(AppointmentDtoMaker.coach, coach.toDto()),
                         with(AppointmentDtoMaker.client, client2.toDto()))
                     .make()

@@ -1,10 +1,13 @@
 package com.coach.flame.appointment
 
+import com.coach.flame.domain.IncomeDto
 import com.coach.flame.domain.maker.AppointmentDtoBuilder
 import com.coach.flame.domain.maker.AppointmentDtoMaker
+import com.coach.flame.domain.maker.IncomeDtoBuilder
 import com.coach.flame.failure.exception.CustomerNotFoundException
 import com.coach.flame.jpa.entity.Appointment
 import com.coach.flame.jpa.entity.Appointment.Companion.toAppointment
+import com.coach.flame.jpa.entity.Income
 import com.coach.flame.jpa.entity.maker.ClientBuilder
 import com.coach.flame.jpa.entity.maker.ClientMaker
 import com.coach.flame.jpa.entity.maker.CoachBuilder
@@ -261,9 +264,13 @@ class AppointmentServiceImplTest {
 
         val appointmentIdentifier = UUID.randomUUID()
 
+        val income = IncomeDtoBuilder.maker()
+            .but(with(IncomeDtoBuilder.IncomeDtoMaker.price, 200.5f))
+            .make()
+
         val appointment = AppointmentDtoBuilder.maker()
             .but(with(AppointmentDtoMaker.identifier, appointmentIdentifier),
-                with(AppointmentDtoMaker.price, 200.5f),
+                with(AppointmentDtoMaker.income, income),
                 with(AppointmentDtoMaker.delete, true),
                 with(AppointmentDtoMaker.notes, "Hey hello!"),
                 with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-06-14T16:52:52.389929+09:00")),
@@ -275,7 +282,12 @@ class AppointmentServiceImplTest {
             .but(with(AppointmentDtoMaker.id, 100L),
                 with(AppointmentDtoMaker.identifier, appointmentIdentifier),
                 with(AppointmentDtoMaker.coach, CoachBuilder.default().toDto()),
-                with(AppointmentDtoMaker.client, ClientBuilder.default().toDto()))
+                with(AppointmentDtoMaker.client, ClientBuilder.default().toDto()),
+                with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
+                    .but(with(IncomeDtoBuilder.IncomeDtoMaker.price, 500.5f),
+                        with(IncomeDtoBuilder.IncomeDtoMaker.status, IncomeDto.IncomeStatus.ACCEPTED))
+                    .make())
+            )
             .make()
             .toAppointment()
 
@@ -284,14 +296,16 @@ class AppointmentServiceImplTest {
         every { appointmentRepository.findByUuidAndDeleteFalse(appointmentIdentifier) } returns appointmentToUpdate
         every { appointmentRepository.save(capture(appointmentInjected)) } answers { appointmentInjected.captured }
 
-        val result = appointmentServiceImpl.updateAppointment(appointment)
+        appointmentServiceImpl.updateAppointment(appointment)
 
         then(appointmentInjected.isCaptured).isTrue
         then(appointmentInjected.captured.id).isEqualTo(100L)
         then(appointmentInjected.captured.uuid).isEqualTo(appointmentIdentifier)
         then(appointmentInjected.captured.coach).isNotNull
         then(appointmentInjected.captured.client).isNotNull
-        then(appointmentInjected.captured.price).isEqualTo(200.5f)
+        then(appointmentInjected.captured.income).isNotNull
+        then(appointmentInjected.captured.income.price).isEqualTo(200.5f)
+        then(appointmentInjected.captured.income.status).isEqualTo("PENDING")
         then(appointmentInjected.captured.dttmStarts).isEqualTo(LocalDateTime.parse("2021-06-14T08:52:52.389929"))
         then(appointmentInjected.captured.dttmEnds).isEqualTo(LocalDateTime.parse("2021-06-14T04:52:52.389929"))
         then(appointmentInjected.captured.delete).isFalse
@@ -305,9 +319,13 @@ class AppointmentServiceImplTest {
 
         val appointmentIdentifier = UUID.randomUUID()
 
+        val income = IncomeDtoBuilder.maker()
+            .but(with(IncomeDtoBuilder.IncomeDtoMaker.price, 200.5f))
+            .make()
+
         val appointment = AppointmentDtoBuilder.maker()
             .but(with(AppointmentDtoMaker.identifier, appointmentIdentifier),
-                with(AppointmentDtoMaker.price, 200.5f),
+                with(AppointmentDtoMaker.income, income),
                 with(AppointmentDtoMaker.delete, true),
                 with(AppointmentDtoMaker.notes, "Hey hello!"),
                 with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-06-14T16:52:52.389929+09:00")),

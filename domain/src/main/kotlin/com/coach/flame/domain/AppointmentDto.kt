@@ -1,6 +1,5 @@
 package com.coach.flame.domain
 
-import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.util.*
 import java.util.Objects.hash
@@ -13,8 +12,8 @@ class AppointmentDto(
     val delete: Boolean = false,
     var coach: CoachDto? = null,
     var client: ClientDto? = null,
-    val price: Float,
     val currency: Currency = Currency.getInstance("GBP"),
+    val income: IncomeDto,
     val notes: String?,
 ) {
 
@@ -53,8 +52,8 @@ class AppointmentDto(
                 "delete=$delete, " +
                 "coach=$coach, " +
                 "client=$client, " +
-                "price=$price, " +
                 "currency=$currency, " +
+                "income=$income, " +
                 "notes=$notes" +
                 ")"
     }
