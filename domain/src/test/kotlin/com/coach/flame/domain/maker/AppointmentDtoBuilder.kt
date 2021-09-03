@@ -6,6 +6,7 @@ import com.coach.flame.domain.CoachDto
 import com.coach.flame.domain.IncomeDto
 import com.natpryce.makeiteasy.Instantiator
 import com.natpryce.makeiteasy.MakeItEasy.an
+import com.natpryce.makeiteasy.MakeItEasy.with
 import com.natpryce.makeiteasy.Maker
 import com.natpryce.makeiteasy.Property
 import java.time.ZonedDateTime
@@ -17,6 +18,12 @@ object AppointmentDtoBuilder {
 
     fun maker(): Maker<AppointmentDto> {
         return MAKER
+    }
+
+    fun makerWithClientAndCoach(): Maker<AppointmentDto> {
+        return maker()
+            .but(with(AppointmentDtoMaker.client, ClientDtoBuilder.makerWithLoginInfo()),
+                with(AppointmentDtoMaker.coach, CoachDtoBuilder.makerWithLoginInfo()))
     }
 
     fun default(): AppointmentDto {

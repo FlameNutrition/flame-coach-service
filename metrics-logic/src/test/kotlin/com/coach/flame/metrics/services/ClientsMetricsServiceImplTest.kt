@@ -1,4 +1,4 @@
-package com.coach.flame.metrics
+package com.coach.flame.metrics.services
 
 import com.coach.flame.jpa.entity.ClientStatus
 import com.coach.flame.jpa.entity.maker.ClientBuilder
@@ -6,6 +6,7 @@ import com.coach.flame.jpa.entity.maker.ClientMaker
 import com.coach.flame.jpa.entity.maker.CoachBuilder
 import com.coach.flame.jpa.entity.maker.CoachMaker
 import com.coach.flame.jpa.repository.operations.CoachRepositoryOperation
+import com.coach.flame.metrics.MetricsFilter
 import com.natpryce.makeiteasy.MakeItEasy.with
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -53,11 +54,13 @@ class ClientsMetricsServiceImplTest {
             )))
             .make()
 
-        val result = classToTest.getClientsMetrics(uuid)
+        val filter = MetricsFilter(uuid)
 
-        then(result.numberOfClientsAccepted).isEqualTo(1)
-        then(result.numberOfClientsPending).isEqualTo(2)
-        then(result.numberOfTotalClients).isEqualTo(3)
+        val result = classToTest.getMetrics(filter)
+
+        then(result.clients?.numberOfClientsAccepted).isEqualTo(1)
+        then(result.clients?.numberOfClientsPending).isEqualTo(2)
+        then(result.clients?.numberOfTotalClients).isEqualTo(3)
 
     }
 

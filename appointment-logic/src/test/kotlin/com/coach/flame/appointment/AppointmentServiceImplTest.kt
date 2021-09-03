@@ -8,7 +8,6 @@ import com.coach.flame.domain.maker.IncomeDtoMaker
 import com.coach.flame.failure.exception.CustomerNotFoundException
 import com.coach.flame.jpa.entity.Appointment
 import com.coach.flame.jpa.entity.Appointment.Companion.toAppointment
-import com.coach.flame.jpa.entity.Income
 import com.coach.flame.jpa.entity.maker.ClientBuilder
 import com.coach.flame.jpa.entity.maker.ClientMaker
 import com.coach.flame.jpa.entity.maker.CoachBuilder
@@ -83,9 +82,6 @@ class AppointmentServiceImplTest {
         verify { appointmentRepository.findAppointments(uuidCoach, uuidClient) }
 
         then(result).hasSize(1)
-
-        val appointment = result.first()
-
     }
 
     @Test
@@ -218,7 +214,7 @@ class AppointmentServiceImplTest {
         every { coachOperations.getCoach(any()) } returns coach
         every { appointmentRepository.save(capture(appointmentInjected)) } answers { appointmentInjected.captured }
 
-        val result = appointmentServiceImpl
+        appointmentServiceImpl
             .createAppointment(uuidCoach, uuidClient, AppointmentDtoBuilder
                 .maker()
                 .but(with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T16:52:52.389929+08:00")))

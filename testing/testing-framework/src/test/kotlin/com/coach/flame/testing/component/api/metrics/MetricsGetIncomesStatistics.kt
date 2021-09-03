@@ -1,7 +1,11 @@
 package com.coach.flame.testing.component.api.metrics
 
+import com.coach.flame.domain.IncomeDto
+import com.coach.flame.domain.maker.IncomeDtoBuilder
+import com.coach.flame.domain.maker.IncomeDtoMaker
 import com.coach.flame.failure.exception.CustomerNotFoundException
 import com.coach.flame.jpa.entity.ClientStatus
+import com.coach.flame.jpa.entity.Income.Companion.toIncome
 import com.coach.flame.jpa.entity.maker.ClientBuilder
 import com.coach.flame.jpa.entity.maker.ClientMaker
 import com.coach.flame.jpa.entity.maker.CoachBuilder
@@ -19,43 +23,49 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.web.bind.annotation.RequestMethod
+import java.time.LocalDate
 import java.util.*
 
-class MetricsGetClientsStatistics : BaseComponentTest() {
+class MetricsGetIncomesStatistics : BaseComponentTest() {
 
     @Autowired
     private lateinit var mockMvc: MockMvc
 
     @Test
     @LoadRequest(
-        endpoint = "/api/metrics/clients",
+        endpoint = "/api/metrics/incomes",
         httpMethod = RequestMethod.GET,
         parameters = [
-            "coachIdentifier:3c5845f1-4a90-4396-8610-7261761369ae"
+            "coachIdentifier:3c5845f1-4a90-4396-8610-7261761369ae",
+            "from:2021-05-30",
+            "to:2021-06-30"
         ]
     )
-    fun `test get clients metrics from coach`() {
+    fun `test get incomes metrics from coach`() {
 
         // given
-        val client1 = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.PENDING))
+        val incomePending1 = IncomeDtoBuilder.maker()
+            .but(with(IncomeDtoMaker.status, IncomeDto.IncomeStatus.PENDING))
             .make()
-        val client2 = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.PENDING))
+        val incomePending2 = IncomeDtoBuilder.maker()
+            .but(with(IncomeDtoMaker.status, IncomeDto.IncomeStatus.PENDING))
             .make()
-        val client3 = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.ACCEPTED))
+        val incomeAccepted = IncomeDtoBuilder.maker()
+            .but(with(IncomeDtoMaker.status, IncomeDto.IncomeStatus.ACCEPTED))
             .make()
-        val listOfClients = mutableListOf(client1, client2, client3)
+        val incomeRejected = IncomeDtoBuilder.maker()
+            .but(with(IncomeDtoMaker.status, IncomeDto.IncomeStatus.REJECTED))
+            .make()
 
-        val coach = CoachBuilder.maker()
-            .but(with(CoachMaker.clients, listOfClients),
-                with(CoachMaker.uuid, UUID.fromString("3c5845f1-4a90-4396-8610-7261761369ae")))
-            .make()
+        val listOfIncomes = listOf(incomePending1, incomePending2, incomeAccepted, incomeRejected)
 
         every {
-            coachOperationsMock.getCoach(UUID.fromString("3c5845f1-4a90-4396-8610-7261761369ae"))
-        } returns coach
+            coachOperationsMock.getIncome(
+                UUID.fromString("3c5845f1-4a90-4396-8610-7261761369ae"),
+                LocalDate.of(2021, 5, 30),
+                LocalDate.of(2021, 6, 30)
+            )
+        } returns listOfIncomes.map { it.toIncome() }
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -70,27 +80,25 @@ class MetricsGetClientsStatistics : BaseComponentTest() {
 
         val jsonResponse = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        then(jsonResponse.getAsJsonPrimitive("identifier").asString).isEqualTo(coach.uuid.toString())
+        then(jsonResponse.getAsJsonPrimitive("identifier").asString).isEqualTo("3c5845f1-4a90-4396-8610-7261761369ae")
 
-        then(jsonResponse.getAsJsonObject("clientsStatus").get("numberOfClientsAccepted").asInt).isEqualTo(1)
-        then(jsonResponse.getAsJsonObject("clientsStatus").get("numberOfClientsPending").asInt).isEqualTo(2)
-        then(jsonResponse.getAsJsonObject("clientsStatus").get("numberOfTotalClients").asInt).isEqualTo(3)
+        then(jsonResponse.getAsJsonObject("incomesStatus").get("accepted").asInt).isEqualTo(1)
+        then(jsonResponse.getAsJsonObject("incomesStatus").get("pending").asInt).isEqualTo(2)
+        then(jsonResponse.getAsJsonObject("incomesStatus").get("rejected").asInt).isEqualTo(1)
 
     }
 
     @Test
     @LoadRequest(
-        endpoint = "/api/metrics/clients",
+        endpoint = "/api/metrics/incomes",
         httpMethod = RequestMethod.GET,
         parameters = [
-            "coachIdentifier:3c5845f1-4a90-4396-8610-7261761369a7"
+            "coachIdentifier:3c5845f1-4a90-4396-8610-7261761369a7",
+            "from:2021/05/30",
+            "to:2021-06-30"
         ]
     )
-    fun `test get clients metrics from invalid coach`() {
-
-        every {
-            coachOperationsMock.getCoach(UUID.fromString("3c5845f1-4a90-4396-8610-7261761369a7"))
-        } throws CustomerNotFoundException("Could not find any coach with uuid: 3c5845f1-4a90-4396-8610-7261761369a7")
+    fun `test get incomes metrics from coach but received invalid dates`() {
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -100,16 +108,16 @@ class MetricsGetClientsStatistics : BaseComponentTest() {
 
         // then
         then(mvnResponse.response).isNotNull
-        then(mvnResponse.response.status).isEqualTo(HttpStatus.NOT_FOUND.value())
+        then(mvnResponse.response.status).isEqualTo(HttpStatus.BAD_REQUEST.value())
         then(mvnResponse.response.contentType).isEqualTo(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("CustomerNotFoundException.html")
-        thenErrorMessageTitle(body).isEqualTo("CustomerNotFoundException")
-        thenErrorMessageDetail(body).contains("Could not find any coach with uuid: 3c5845f1-4a90-4396-8610-7261761369a7")
-        thenErrorMessageStatus(body).isEqualTo("404")
-        thenErrorCode(body).isEqualTo("2001")
+        thenErrorMessageType(body).endsWith("RestInvalidRequestException.html")
+        thenErrorMessageTitle(body).isEqualTo("RestInvalidRequestException")
+        thenErrorMessageDetail(body).contains("Invalid date format. Date: 2021/05/30")
+        thenErrorMessageStatus(body).isEqualTo("400")
+        thenErrorCode(body).isEqualTo("1001")
         thenErrorMessageInstance(body).isNotEmpty
         thenErrorMessageDebug(body).isEmpty()
 

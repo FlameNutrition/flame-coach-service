@@ -1,26 +1,18 @@
 package com.coach.flame.domain
 
-data class MetricsDto(
-    val clients: Clients,
-) {
+import com.coach.flame.domain.metrics.Clients
+import com.coach.flame.domain.metrics.Incomes
 
-    data class Clients(
-        val numberOfClientsPending: Int = 0,
-        val numberOfClientsAccepted: Int = 0,
-        val numberOfTotalClients: Int = 0,
-    ) {
-        override fun toString(): String {
-            return "Client(" +
-                    "numberOfClientsPending=$numberOfClientsPending, " +
-                    "numberOfClientsAccepted=$numberOfClientsAccepted" +
-                    "numberOfTotalClients=$numberOfTotalClients" +
-                    ")"
-        }
-    }
+class MetricsDto {
+
+    var clients: Clients? = null
+
+    var incomes: Incomes? = null
 
     override fun toString(): String {
         return "MetricsDto(" +
-                "clients=$clients" +
+                "clients=$clients, " +
+                "incomes=$incomes" +
                 ")"
     }
 

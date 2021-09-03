@@ -81,7 +81,6 @@ class AppointmentImpl(
         @RequestParam coachIdentifier: UUID,
         @RequestParam clientIdentifier: UUID,
     ): AppointmentResponse {
-
         return APIWrapperException.executeRequest {
 
             val appointments = appointmentService.getAppointments(coachIdentifier, clientIdentifier)

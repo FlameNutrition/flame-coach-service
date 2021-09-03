@@ -83,6 +83,7 @@
                 <configuration>
                     <excludes>
                         <exclude>**/domain/**.*</exclude>
+                        <exclude>**/domain/metrics/**.*</exclude>
                     </excludes>
                 </configuration>
             </plugin>
