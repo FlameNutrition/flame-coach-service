@@ -3,6 +3,7 @@ package com.coach.flame.testing.component.base.utils
 import com.coach.flame.domain.IncomeDto
 import com.coach.flame.domain.maker.AppointmentDtoBuilder
 import com.coach.flame.domain.maker.AppointmentDtoMaker
+import com.coach.flame.domain.maker.IncomeDtoBuilder
 import com.coach.flame.jpa.entity.Appointment
 import com.coach.flame.jpa.entity.Appointment.Companion.toAppointment
 import com.coach.flame.jpa.entity.Client
@@ -11,6 +12,7 @@ import com.natpryce.makeiteasy.MakeItEasy.*
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.util.*
+import java.util.concurrent.atomic.AtomicLong
 
 object AppointmentsHelper {
 
@@ -56,6 +58,29 @@ object AppointmentsHelper {
             )
         }
 
+    val multipleAppointments: (Coach, Client, List<UUID>, List<String>, List<String>) -> (List<Appointment>) =
+        { coach: Coach, client: Client, identifiers: List<UUID>, from: List<String>, to: List<String> ->
+            val id = AtomicLong(100)
+            val maker = AppointmentDtoBuilder.maker()
+                .but(with(AppointmentDtoMaker.notes, "Appointment"),
+                    with(AppointmentDtoMaker.income, IncomeDtoBuilder.accepted()),
+                    with(AppointmentDtoMaker.coach, coach.toDto()),
+                    with(AppointmentDtoMaker.client, client.toDto()))
+
+            val listOfAppointments = mutableListOf<Appointment>()
+
+            IntRange(0, identifiers.size - 1).forEach { index ->
+                listOfAppointments.add(maker
+                    .but(with(AppointmentDtoMaker.id, id.getAndIncrement()),
+                        with(AppointmentDtoMaker.identifier, identifiers[index]),
+                        with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse(from[index])),
+                        with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse(to[index])))
+                    .make().toAppointment())
+            }
+
+            listOfAppointments
+        }
+
     val twoAppointmentsDifferentClient: (Coach, Client, Client, List<UUID>) -> (List<Appointment>) =
         { coach: Coach, client1: Client, client2: Client, identifiers: List<UUID> ->
             listOf(
@@ -83,4 +108,5 @@ object AppointmentsHelper {
                     .toAppointment()
             )
         }
+
 }

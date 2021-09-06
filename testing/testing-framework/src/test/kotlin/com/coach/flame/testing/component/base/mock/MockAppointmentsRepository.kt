@@ -12,6 +12,7 @@ import io.mockk.slot
 import org.assertj.core.api.BDDAssertions.then
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.TestComponent
+import java.time.LocalDateTime
 import java.util.*
 
 @TestComponent
@@ -30,6 +31,17 @@ class MockAppointmentsRepository {
 
     fun mockFindAppointments(uuidCoach: UUID, uuidClient: UUID, listOfAppointments: List<Appointment>) {
         every { appointmentRepositoryMock.findAppointments(uuidCoach, uuidClient) } returns listOfAppointments
+    }
+
+    fun mockFindAppointmentsByCoachBetweenDate(
+        uuidCoach: UUID,
+        from: LocalDateTime,
+        to: LocalDateTime,
+        listOfAppointments: List<Appointment>,
+    ) {
+        every {
+            appointmentRepositoryMock.findAppointmentsByCoachBetweenDates(uuidCoach, from, to)
+        } returns listOfAppointments
     }
 
     fun mockFindAppointmentsByClient(client: Client, listOfAppointments: List<Appointment>) {
