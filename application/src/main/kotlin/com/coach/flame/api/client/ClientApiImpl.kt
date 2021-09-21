@@ -57,7 +57,8 @@ class ClientApiImpl(
                 registrationLink = inviteInfoDto.registrationLink,
                 registrationKey = inviteInfoDto.registrationKey,
                 clientStatus = inviteInfoDto.clientStatus?.name,
-                registrationInvite = inviteInfoDto.isRegistrationInvite)
+                registrationInvite = inviteInfoDto.isRegistrationInvite
+            )
         } catch (ex: IllegalArgumentException) {
             LOGGER.warn("opr='registrationInvite', msg='Invalid request'", ex)
             throw RestInvalidRequestException(ex.localizedMessage, ex)
@@ -150,11 +151,14 @@ class ClientApiImpl(
                 throw IllegalArgumentException("measureTypeCode invalid")
             }
 
-            val newClient = customerService.updateCustomer(identifier, client.copy(
-                weight = request.weight,
-                height = request.height,
-                gender = request.genderCode?.let { configsService.getGender(request.genderCode) },
-                measureType = measureType)) as ClientDto
+            val newClient = customerService.updateCustomer(
+                identifier, client.copy(
+                    weight = request.weight,
+                    height = request.height,
+                    gender = request.genderCode?.let { configsService.getGender(request.genderCode) },
+                    measureType = measureType
+                )
+            ) as ClientDto
 
 
             return PersonalDataResponse(

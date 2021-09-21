@@ -5,6 +5,7 @@ import com.coach.flame.jpa.entity.maker.ClientBuilder
 import com.coach.flame.jpa.entity.maker.CoachBuilder
 import com.coach.flame.jpa.entity.maker.DailyTaskBuilder
 import com.coach.flame.jpa.entity.maker.DailyTaskMaker
+import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
@@ -44,9 +45,11 @@ class DailyTaskUpdateTest : BaseComponentTest() {
         val client = ClientBuilder.default()
         val coach = CoachBuilder.default()
         val task = DailyTaskBuilder.maker()
-            .but(with(DailyTaskMaker.uuid, taskUUID),
+            .but(
+                with(DailyTaskMaker.uuid, taskUUID),
                 with(DailyTaskMaker.client, client),
-                with(DailyTaskMaker.createdBy, coach))
+                with(DailyTaskMaker.createdBy, coach)
+            )
             .make()
 
         every { dailyTaskRepositoryMock.findByUuid(taskUUID) } returns task
@@ -111,13 +114,14 @@ class DailyTaskUpdateTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("DailyTaskNotFoundException.html")
-        thenErrorMessageTitle(body).isEqualTo("DailyTaskNotFoundException")
-        thenErrorMessageDetail(body).isEqualTo("Daily task not found, please check the identifier.")
-        thenErrorMessageStatus(body).isEqualTo("404")
-        thenErrorCode(body).isEqualTo("4001")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("DailyTaskNotFoundException.html")
+            .hasErrorMessageTitle("DailyTaskNotFoundException")
+            .hasErrorMessageDetail("Daily task not found, please check the identifier.")
+            .hasErrorMessageStatus("404")
+            .hasErrorMessageCode("4001")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
 
     }
 
@@ -145,13 +149,14 @@ class DailyTaskUpdateTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("RestInvalidRequestException.html")
-        thenErrorMessageTitle(body).isEqualTo("RestInvalidRequestException")
-        thenErrorMessageDetail(body).isEqualTo("ticked is a mandatory parameters")
-        thenErrorMessageStatus(body).isEqualTo("400")
-        thenErrorCode(body).isEqualTo("1001")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("RestInvalidRequestException.html")
+            .hasErrorMessageTitle("RestInvalidRequestException")
+            .hasErrorMessageDetail("ticked is a mandatory parameters")
+            .hasErrorMessageStatus("400")
+            .hasErrorMessageCode("1001")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
 
     }
 

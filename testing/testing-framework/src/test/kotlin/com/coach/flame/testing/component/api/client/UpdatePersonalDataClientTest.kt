@@ -7,6 +7,7 @@ import com.coach.flame.jpa.entity.maker.ClientBuilder
 import com.coach.flame.jpa.entity.maker.ClientMaker
 import com.coach.flame.jpa.entity.maker.GenderBuilder
 import com.coach.flame.jpa.entity.maker.GenderMaker
+import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
@@ -40,22 +41,32 @@ class UpdatePersonalDataClientTest : BaseComponentTest() {
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
         val client = ClientBuilder.maker()
-            .but(with(ClientMaker.uuid, uuid),
+            .but(
+                with(ClientMaker.uuid, uuid),
                 with(ClientMaker.weight, 80.5f),
                 with(ClientMaker.height, 1.75f),
-                with(ClientMaker.gender, GenderBuilder.maker()
-                    .but(with(GenderMaker.externalValue, "Male"),
-                        with(GenderMaker.genderCode, "M"))
-                    .make()),
-                with(ClientMaker.measureConfig, MeasureConfig.KG_CM))
+                with(
+                    ClientMaker.gender, GenderBuilder.maker()
+                        .but(
+                            with(GenderMaker.externalValue, "Male"),
+                            with(GenderMaker.genderCode, "M")
+                        )
+                        .make()
+                ),
+                with(ClientMaker.measureConfig, MeasureConfig.KG_CM)
+            )
             .make()
         val clientCapture = slot<Client>()
 
         every { clientRepositoryMock.findByUuid(uuid) } returns client
-        every { genderConfigCacheMock.getValue("F") } returns Optional.of(GenderBuilder.maker()
-            .but(with(GenderMaker.genderCode, "F"),
-                with(GenderMaker.externalValue, "Female"))
-            .make())
+        every { genderConfigCacheMock.getValue("F") } returns Optional.of(
+            GenderBuilder.maker()
+                .but(
+                    with(GenderMaker.genderCode, "F"),
+                    with(GenderMaker.externalValue, "Female")
+                )
+                .make()
+        )
         every { clientRepositoryMock.save(capture(clientCapture)) } answers { clientCapture.captured }
 
         // when
@@ -101,13 +112,14 @@ class UpdatePersonalDataClientTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("InternalServerException.html")
-        thenErrorMessageTitle(body).isEqualTo("InternalServerException")
-        thenErrorMessageDetail(body).isEqualTo("This is an internal problem, please contact the admin system.")
-        thenErrorMessageStatus(body).isEqualTo("500")
-        thenErrorCode(body).isEqualTo("9999")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("InternalServerException.html")
+            .hasErrorMessageTitle("InternalServerException")
+            .hasErrorMessageDetail("This is an internal problem, please contact the admin system.")
+            .hasErrorMessageStatus("500")
+            .hasErrorMessageCode("9999")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
 
     }
 
@@ -123,11 +135,13 @@ class UpdatePersonalDataClientTest : BaseComponentTest() {
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
         val client = ClientBuilder.maker()
-            .but(with(ClientMaker.uuid, uuid),
+            .but(
+                with(ClientMaker.uuid, uuid),
                 with(ClientMaker.weight, 80.5f),
                 with(ClientMaker.height, 1.75f),
                 with(ClientMaker.gender, null as GenderConfig?),
-                with(ClientMaker.measureConfig, MeasureConfig.KG_CM))
+                with(ClientMaker.measureConfig, MeasureConfig.KG_CM)
+            )
             .make()
         val clientCapture = slot<Client>()
 
@@ -166,11 +180,13 @@ class UpdatePersonalDataClientTest : BaseComponentTest() {
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
         val client = ClientBuilder.maker()
-            .but(with(ClientMaker.uuid, uuid),
+            .but(
+                with(ClientMaker.uuid, uuid),
                 with(ClientMaker.weight, 80.5f),
                 with(ClientMaker.height, 1.75f),
                 with(ClientMaker.gender, null as GenderConfig?),
-                with(ClientMaker.measureConfig, MeasureConfig.KG_CM))
+                with(ClientMaker.measureConfig, MeasureConfig.KG_CM)
+            )
             .make()
         val clientCapture = slot<Client>()
 
@@ -191,13 +207,14 @@ class UpdatePersonalDataClientTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("UnexpectedConfigException.html")
-        thenErrorMessageTitle(body).isEqualTo("UnexpectedConfigException")
-        thenErrorMessageDetail(body).isEqualTo("Gender Code: 'KILL' is not present in the system.")
-        thenErrorMessageStatus(body).isEqualTo("500")
-        thenErrorCode(body).isEqualTo("5001")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("UnexpectedConfigException.html")
+            .hasErrorMessageTitle("UnexpectedConfigException")
+            .hasErrorMessageDetail("Gender Code: 'KILL' is not present in the system.")
+            .hasErrorMessageStatus("500")
+            .hasErrorMessageCode("5001")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
 
     }
 

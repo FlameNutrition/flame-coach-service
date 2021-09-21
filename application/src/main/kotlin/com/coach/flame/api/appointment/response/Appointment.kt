@@ -10,4 +10,5 @@ data class Appointment(
     val price: Float? = null,
     val notes: String? = null,
     val client: Client? = null,
+    val incomeStatus: String?
 )

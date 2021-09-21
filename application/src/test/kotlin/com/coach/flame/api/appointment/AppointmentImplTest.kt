@@ -2,7 +2,9 @@ package com.coach.flame.api.appointment
 
 import com.coach.flame.api.appointment.request.AppointmentRequest
 import com.coach.flame.appointment.AppointmentService
+import com.coach.flame.date.DateHelper
 import com.coach.flame.domain.AppointmentDto
+import com.coach.flame.domain.DateIntervalDto
 import com.coach.flame.domain.IncomeDto
 import com.coach.flame.domain.maker.*
 import com.natpryce.makeiteasy.MakeItEasy.with
@@ -39,6 +41,8 @@ class AppointmentImplTest {
 
         val coachIdentifier = UUID.randomUUID()
         val clientIdentifier = UUID.randomUUID()
+        val from = "2021-01-01"
+        val to = "2021-12-31"
 
         val appointment1 = AppointmentDtoBuilder.maker()
             .but(with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
@@ -63,10 +67,12 @@ class AppointmentImplTest {
             .make()
 
         every {
-            appointmentService.getAppointments(coachIdentifier, clientIdentifier)
+            appointmentService.getAppointments(coachIdentifier,
+                clientIdentifier,
+                Optional.of(DateIntervalDto(DateHelper.toDate(from), DateHelper.toDate(to))))
         } returns listOf(appointment1, appointment2)
 
-        val response = classToTest.getAppointments(coachIdentifier, clientIdentifier)
+        val response = classToTest.getAppointments(coachIdentifier, clientIdentifier, from, to)
 
         then(response.appointments).hasSize(2)
 
@@ -89,6 +95,8 @@ class AppointmentImplTest {
         val coachIdentifier = UUID.randomUUID()
         val clientIdentifier1 = UUID.randomUUID()
         val clientIdentifier2 = UUID.randomUUID()
+        val from = "2021-01-01"
+        val to = "2021-12-31"
 
         val appointment1 = AppointmentDtoBuilder.maker()
             .but(with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
@@ -113,10 +121,11 @@ class AppointmentImplTest {
             .make()
 
         every {
-            appointmentService.getAllCoachAppointments(coachIdentifier)
+            appointmentService.getAllCoachAppointments(coachIdentifier,
+                Optional.of(DateIntervalDto(DateHelper.toDate(from), DateHelper.toDate(to))))
         } returns listOf(appointment1, appointment2)
 
-        val response = classToTest.getAppointmentsCoach(coachIdentifier)
+        val response = classToTest.getAppointmentsCoach(coachIdentifier, from, to)
 
         then(response.appointments).hasSize(2)
 
@@ -141,6 +150,8 @@ class AppointmentImplTest {
     fun `test get all client appointments`() {
 
         val clientIdentifier = UUID.randomUUID()
+        val from = "2021-01-01"
+        val to = "2021-12-31"
 
         val client = ClientDtoBuilder.maker()
             .but(with(ClientDtoMaker.identifier, clientIdentifier))
@@ -165,10 +176,11 @@ class AppointmentImplTest {
             .make()
 
         every {
-            appointmentService.getAllClientAppointments(clientIdentifier)
+            appointmentService.getAllClientAppointments(clientIdentifier,
+                Optional.of(DateIntervalDto(DateHelper.toDate(from), DateHelper.toDate(to))))
         } returns listOf(appointment1, appointment2)
 
-        val response = classToTest.getAppointmentsClient(clientIdentifier)
+        val response = classToTest.getAppointmentsClient(clientIdentifier, from, to)
 
         then(response.appointments).hasSize(2)
 
@@ -255,6 +267,7 @@ class AppointmentImplTest {
             dttmEnds = "2021-07-17T16:52:52.389929+08:00",
             price = 100.5f,
             notes = "Simple note updated",
+            incomeStatus = "REJECTED"
         )
 
         val appointment1 = AppointmentDtoBuilder.maker()
@@ -262,7 +275,8 @@ class AppointmentImplTest {
                 with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-15T15:52:52.389929+08:00")),
                 with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-17T16:52:52.389929+08:00")),
                 with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
-                    .but(with(IncomeDtoMaker.price, 100.5f))
+                    .but(with(IncomeDtoMaker.price, 100.5f),
+                        with(IncomeDtoMaker.status, IncomeDto.IncomeStatus.REJECTED))
                     .make()),
                 with(AppointmentDtoMaker.client, ClientDtoBuilder.default()),
                 with(AppointmentDtoMaker.notes, "Simple note updated"))
@@ -293,7 +307,7 @@ class AppointmentImplTest {
         then(appointmentSlot.captured.identifier).isNotNull
         then(appointmentSlot.captured.delete).isFalse
         then(appointmentSlot.captured.income.price).isEqualTo(100.5f)
-        then(appointmentSlot.captured.income.status).isEqualTo(IncomeDto.IncomeStatus.PENDING)
+        then(appointmentSlot.captured.income.status).isEqualTo(IncomeDto.IncomeStatus.REJECTED)
         then(appointmentSlot.captured.notes).isEqualTo("Simple note updated")
         then(appointmentSlot.captured.dttmStarts).isEqualTo(ZonedDateTime.parse("2021-07-15T15:52:52.389929+08:00"))
         then(appointmentSlot.captured.dttmEnds).isEqualTo(ZonedDateTime.parse("2021-07-17T16:52:52.389929+08:00"))

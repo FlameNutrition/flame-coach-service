@@ -9,14 +9,14 @@ import com.coach.flame.appointment.AppointmentService
 import com.coach.flame.aspect.LoggingRequest
 import com.coach.flame.aspect.LoggingResponse
 import com.coach.flame.date.DateHelper
-import com.coach.flame.date.DateHelper.toISODate
 import com.coach.flame.date.DateHelper.toISODateWithOffset
 import com.coach.flame.date.DateHelper.toZonedDateTime
 import com.coach.flame.domain.AppointmentDto
 import com.coach.flame.domain.ClientDto
+import com.coach.flame.domain.DateIntervalDto
 import com.coach.flame.domain.IncomeDto
-import com.coach.flame.domain.maker.AppointmentDtoMaker
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDate
 import java.util.*
 
 @RestController
@@ -41,7 +41,8 @@ class AppointmentImpl(
                 dttmEnds = toISODateWithOffset(it.dttmEnds),
                 price = it.income.price,
                 notes = it.notes,
-                client = toClient(it.safeClient)
+                client = toClient(it.safeClient),
+                incomeStatus = it.income.status.name
             )
         }
     }
@@ -50,10 +51,24 @@ class AppointmentImpl(
     @LoggingResponse
     @GetMapping("/client/get")
     @ResponseBody
-    override fun getAppointmentsClient(@RequestParam clientIdentifier: UUID): AppointmentResponse {
+    override fun getAppointmentsClient(
+        @RequestParam clientIdentifier: UUID,
+        @RequestParam(required = false) from: String?,
+        @RequestParam(required = false) to: String?,
+    ): AppointmentResponse {
         return APIWrapperException.executeRequest {
 
-            val appointments = appointmentService.getAllClientAppointments(clientIdentifier)
+            val interval = to?.let {
+                val actualFrom = if (from != null) {
+                    DateHelper.toDate(from)
+                } else {
+                    LocalDate.now()
+                }
+                DateIntervalDto(actualFrom, DateHelper.toDate(to))
+            }
+
+            val appointments =
+                appointmentService.getAllClientAppointments(clientIdentifier, Optional.ofNullable(interval))
 
             AppointmentResponse(appointments = appointments.map { toAppointment(it) }.toSet())
         }
@@ -63,10 +78,24 @@ class AppointmentImpl(
     @LoggingResponse
     @GetMapping("/coach/get")
     @ResponseBody
-    override fun getAppointmentsCoach(@RequestParam coachIdentifier: UUID): AppointmentResponse {
+    override fun getAppointmentsCoach(
+        @RequestParam coachIdentifier: UUID,
+        @RequestParam(required = false) from: String?,
+        @RequestParam(required = false) to: String?,
+    ): AppointmentResponse {
         return APIWrapperException.executeRequest {
 
-            val appointments = appointmentService.getAllCoachAppointments(coachIdentifier)
+            val interval = to?.let {
+                val actualFrom = if (from != null) {
+                    DateHelper.toDate(from)
+                } else {
+                    LocalDate.now()
+                }
+                DateIntervalDto(actualFrom, DateHelper.toDate(to))
+            }
+
+            val appointments =
+                appointmentService.getAllCoachAppointments(coachIdentifier, Optional.ofNullable(interval))
 
             AppointmentResponse(appointments = appointments.map { toAppointment(it) }.toSet())
 
@@ -80,10 +109,22 @@ class AppointmentImpl(
     override fun getAppointments(
         @RequestParam coachIdentifier: UUID,
         @RequestParam clientIdentifier: UUID,
+        @RequestParam(required = false) from: String?,
+        @RequestParam(required = false) to: String?,
     ): AppointmentResponse {
         return APIWrapperException.executeRequest {
 
-            val appointments = appointmentService.getAppointments(coachIdentifier, clientIdentifier)
+            val interval = to?.let {
+                val actualFrom = if (from != null) {
+                    DateHelper.toDate(from)
+                } else {
+                    LocalDate.now()
+                }
+                DateIntervalDto(actualFrom, DateHelper.toDate(to))
+            }
+
+            val appointments =
+                appointmentService.getAppointments(coachIdentifier, clientIdentifier, Optional.ofNullable(interval))
 
             AppointmentResponse(appointments = appointments.map { toAppointment(it) }.toSet())
         }
@@ -130,7 +171,8 @@ class AppointmentImpl(
                 dttmStarts = toZonedDateTime(appointmentRequest.dttmStarts),
                 dttmEnds = toZonedDateTime(appointmentRequest.dttmEnds),
                 notes = appointmentRequest.notes,
-                income = IncomeDto(appointmentRequest.price, IncomeDto.IncomeStatus.PENDING))
+                income = IncomeDto(appointmentRequest.price,
+                    IncomeDto.IncomeStatus.valueOf(appointmentRequest.incomeStatus)))
 
             val appointment = appointmentService.updateAppointment(appointmentToUpdate)
 
@@ -150,7 +192,8 @@ class AppointmentImpl(
             AppointmentResponse(
                 appointments = setOf(
                     Appointment(
-                        identifier = appointmentIdentifier.toString()
+                        identifier = appointmentIdentifier.toString(),
+                        incomeStatus = null
                     ))
             )
         }

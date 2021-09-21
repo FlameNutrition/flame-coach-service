@@ -4,6 +4,7 @@ import com.coach.flame.jpa.entity.ClientStatus
 import com.coach.flame.jpa.entity.maker.ClientBuilder
 import com.coach.flame.jpa.entity.maker.ClientMaker
 import com.coach.flame.jpa.entity.maker.CoachMaker
+import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
@@ -47,14 +48,18 @@ class GetClientsCoachPlusAvailableClientsTest : BaseComponentTest() {
             .but(with(ClientMaker.clientStatus, ClientStatus.AVAILABLE))
             .make()
         val coach = coachMaker
-            .but(with(CoachMaker.clients, mutableListOf(client0, client1)),
-                with(CoachMaker.uuid, uuid))
+            .but(
+                with(CoachMaker.clients, mutableListOf(client0, client1)),
+                with(CoachMaker.uuid, uuid)
+            )
             .make()
 
-        every { clientRepositoryMock.findClientsForCoach(coach.uuid.toString()) } returns listOf(client0,
+        every { clientRepositoryMock.findClientsForCoach(coach.uuid.toString()) } returns listOf(
+            client0,
             client1,
             client2,
-            client3)
+            client3
+        )
         every { coachRepositoryMock.findByUuid(uuid) } returns coach
 
         // when
@@ -149,13 +154,14 @@ class GetClientsCoachPlusAvailableClientsTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("CustomerNotFoundException.html")
-        thenErrorMessageTitle(body).isEqualTo("CustomerNotFoundException")
-        thenErrorMessageDetail(body).isEqualTo("Could not find any coach with uuid: e59343bc-6563-4488-a77e-112e886c57ae.")
-        thenErrorMessageStatus(body).isEqualTo("404")
-        thenErrorCode(body).isEqualTo("2001")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("CustomerNotFoundException.html")
+            .hasErrorMessageTitle("CustomerNotFoundException")
+            .hasErrorMessageDetail("Could not find any coach with uuid: e59343bc-6563-4488-a77e-112e886c57ae.")
+            .hasErrorMessageStatus("404")
+            .hasErrorMessageCode("2001")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
     }
 
 

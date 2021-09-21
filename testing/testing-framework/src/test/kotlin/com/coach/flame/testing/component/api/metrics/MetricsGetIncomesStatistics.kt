@@ -3,13 +3,8 @@ package com.coach.flame.testing.component.api.metrics
 import com.coach.flame.domain.IncomeDto
 import com.coach.flame.domain.maker.IncomeDtoBuilder
 import com.coach.flame.domain.maker.IncomeDtoMaker
-import com.coach.flame.failure.exception.CustomerNotFoundException
-import com.coach.flame.jpa.entity.ClientStatus
 import com.coach.flame.jpa.entity.Income.Companion.toIncome
-import com.coach.flame.jpa.entity.maker.ClientBuilder
-import com.coach.flame.jpa.entity.maker.ClientMaker
-import com.coach.flame.jpa.entity.maker.CoachBuilder
-import com.coach.flame.jpa.entity.maker.CoachMaker
+import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
@@ -112,14 +107,14 @@ class MetricsGetIncomesStatistics : BaseComponentTest() {
         then(mvnResponse.response.contentType).isEqualTo(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
-
-        thenErrorMessageType(body).endsWith("RestInvalidRequestException.html")
-        thenErrorMessageTitle(body).isEqualTo("RestInvalidRequestException")
-        thenErrorMessageDetail(body).contains("Invalid date format. Date: 2021/05/30")
-        thenErrorMessageStatus(body).isEqualTo("400")
-        thenErrorCode(body).isEqualTo("1001")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("RestInvalidRequestException.html")
+            .hasErrorMessageTitle("RestInvalidRequestException")
+            .hasErrorMessageDetail("Invalid date format. Date: 2021/05/30.")
+            .hasErrorMessageStatus("400")
+            .hasErrorMessageCode("1001")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
 
     }
 

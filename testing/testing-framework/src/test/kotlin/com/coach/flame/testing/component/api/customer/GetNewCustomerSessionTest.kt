@@ -4,6 +4,7 @@ import com.coach.flame.jpa.entity.maker.ClientBuilder
 import com.coach.flame.jpa.entity.maker.ClientMaker
 import com.coach.flame.jpa.entity.maker.UserBuilder
 import com.coach.flame.jpa.entity.maker.UserMaker
+import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
@@ -99,13 +100,14 @@ class GetNewCustomerSessionTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("CustomerUsernameOrPasswordException.html")
-        thenErrorMessageTitle(body).isEqualTo("CustomerUsernameOrPasswordException")
-        thenErrorMessageDetail(body).isEqualTo("Username invalid.")
-        thenErrorMessageStatus(body).isEqualTo("400")
-        thenErrorCode(body).isEqualTo("2003")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("CustomerUsernameOrPasswordException.html")
+            .hasErrorMessageTitle("CustomerUsernameOrPasswordException")
+            .hasErrorMessageDetail("Username invalid.")
+            .hasErrorMessageStatus("400")
+            .hasErrorMessageCode("2003")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
 
     }
 
@@ -140,13 +142,14 @@ class GetNewCustomerSessionTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("CustomerUsernameOrPasswordException.html")
-        thenErrorMessageTitle(body).isEqualTo("CustomerUsernameOrPasswordException")
-        thenErrorMessageDetail(body).isEqualTo("Password invalid.")
-        thenErrorMessageStatus(body).isEqualTo("400")
-        thenErrorCode(body).isEqualTo("2003")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("CustomerUsernameOrPasswordException.html")
+            .hasErrorMessageTitle("CustomerUsernameOrPasswordException")
+            .hasErrorMessageDetail("Password invalid.")
+            .hasErrorMessageStatus("400")
+            .hasErrorMessageCode("2003")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
 
     }
 
@@ -182,14 +185,14 @@ class GetNewCustomerSessionTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("InternalServerException.html")
-        thenErrorMessageTitle(body).isEqualTo("InternalServerException")
-        thenErrorMessageDetail(body).isEqualTo("This is an internal problem, please contact the admin system.")
-        thenErrorMessageStatus(body).isEqualTo("500")
-        thenErrorCode(body).isEqualTo("9999")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
-
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("InternalServerException.html")
+            .hasErrorMessageTitle("InternalServerException")
+            .hasErrorMessageDetail("This is an internal problem, please contact the admin system.")
+            .hasErrorMessageStatus("500")
+            .hasErrorMessageCode("9999")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
     }
 
 

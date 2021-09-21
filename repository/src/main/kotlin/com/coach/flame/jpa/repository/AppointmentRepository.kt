@@ -27,8 +27,26 @@ interface AppointmentRepository : JpaRepository<Appointment, Long> {
     fun findAppointmentsByCoach(@Param("uuid") uuid: UUID): List<Appointment>
 
     @Query("select a from Appointment a " +
+            "where a.coach.uuid = :uuidCoach and a.client.uuid = :uuidClient " +
+            "and a.delete = false and a.dttmStarts between :from and :to")
+    fun findAppointmentsBetweenDates(
+        @Param("uuidCoach") uuidCoach: UUID,
+        @Param("uuidClient") uuidClient: UUID,
+        @Param("from") from: LocalDateTime,
+        @Param("to") to: LocalDateTime,
+    ): List<Appointment>
+
+    @Query("select a from Appointment a " +
             "where a.coach.uuid = :uuid and a.delete = false and a.dttmStarts between :from and :to")
     fun findAppointmentsByCoachBetweenDates(
+        @Param("uuid") uuid: UUID,
+        @Param("from") from: LocalDateTime,
+        @Param("to") to: LocalDateTime,
+    ): List<Appointment>
+
+    @Query("select a from Appointment a " +
+            "where a.client.uuid = :uuid and a.delete = false and a.dttmStarts between :from and :to")
+    fun findAppointmentsByClientBetweenDates(
         @Param("uuid") uuid: UUID,
         @Param("from") from: LocalDateTime,
         @Param("to") to: LocalDateTime,

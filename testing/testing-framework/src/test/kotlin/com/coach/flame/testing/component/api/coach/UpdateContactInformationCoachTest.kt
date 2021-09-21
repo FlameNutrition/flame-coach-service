@@ -5,6 +5,7 @@ import com.coach.flame.jpa.entity.maker.CoachBuilder
 import com.coach.flame.jpa.entity.maker.CoachMaker
 import com.coach.flame.jpa.entity.maker.CountryBuilder
 import com.coach.flame.jpa.entity.maker.CountryMaker
+import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
@@ -38,23 +39,33 @@ class UpdateContactInformationCoachTest : BaseComponentTest() {
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
         val coach = CoachBuilder.maker()
-            .but(with(CoachMaker.uuid, uuid),
+            .but(
+                with(CoachMaker.uuid, uuid),
                 with(CoachMaker.firstname, "Nuno"),
                 with(CoachMaker.lastname, "Bento"),
                 with(CoachMaker.phoneCode, "+44"),
                 with(CoachMaker.phoneNumber, "2244556677"),
-                with(CoachMaker.country, CountryBuilder.maker()
-                    .but(with(CountryMaker.countryCode, "PT"),
-                        with(CountryMaker.externalValue, "Portugal"))
-                    .make()))
+                with(
+                    CoachMaker.country, CountryBuilder.maker()
+                        .but(
+                            with(CountryMaker.countryCode, "PT"),
+                            with(CountryMaker.externalValue, "Portugal")
+                        )
+                        .make()
+                )
+            )
             .make()
         val coachCapture = slot<Coach>()
 
         every { coachRepositoryMock.findByUuid(uuid) } returns coach
-        every { countryConfigCacheMock.getValue("BR") } returns Optional.of(CountryBuilder.maker()
-            .but(with(CountryMaker.countryCode, "BR"),
-                with(CountryMaker.externalValue, "Brazil"))
-            .make())
+        every { countryConfigCacheMock.getValue("BR") } returns Optional.of(
+            CountryBuilder.maker()
+                .but(
+                    with(CountryMaker.countryCode, "BR"),
+                    with(CountryMaker.externalValue, "Brazil")
+                )
+                .make()
+        )
         every { coachRepositoryMock.save(capture(coachCapture)) } answers { coachCapture.captured }
 
         // when
@@ -101,13 +112,14 @@ class UpdateContactInformationCoachTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("InternalServerException.html")
-        thenErrorMessageTitle(body).isEqualTo("InternalServerException")
-        thenErrorMessageDetail(body).isEqualTo("This is an internal problem, please contact the admin system.")
-        thenErrorMessageStatus(body).isEqualTo("500")
-        thenErrorCode(body).isEqualTo("9999")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("InternalServerException.html")
+            .hasErrorMessageTitle("InternalServerException")
+            .hasErrorMessageDetail("This is an internal problem, please contact the admin system.")
+            .hasErrorMessageStatus("500")
+            .hasErrorMessageCode("9999")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
 
     }
 
@@ -123,15 +135,21 @@ class UpdateContactInformationCoachTest : BaseComponentTest() {
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
         val coach = CoachBuilder.maker()
-            .but(with(CoachMaker.uuid, uuid),
+            .but(
+                with(CoachMaker.uuid, uuid),
                 with(CoachMaker.firstname, "Nuno"),
                 with(CoachMaker.lastname, "Neves"),
                 with(CoachMaker.phoneCode, "+44"),
                 with(CoachMaker.phoneNumber, "1122345"),
-                with(CoachMaker.country, CountryBuilder.maker()
-                    .but(with(CountryMaker.countryCode, "PT"),
-                        with(CountryMaker.externalValue, "Portugal"))
-                    .make()))
+                with(
+                    CoachMaker.country, CountryBuilder.maker()
+                        .but(
+                            with(CountryMaker.countryCode, "PT"),
+                            with(CountryMaker.externalValue, "Portugal")
+                        )
+                        .make()
+                )
+            )
             .make()
         val coachCapture = slot<Coach>()
 
@@ -171,15 +189,21 @@ class UpdateContactInformationCoachTest : BaseComponentTest() {
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
         val coach = CoachBuilder.maker()
-            .but(with(CoachMaker.uuid, uuid),
+            .but(
+                with(CoachMaker.uuid, uuid),
                 with(CoachMaker.firstname, "Nuno"),
                 with(CoachMaker.lastname, "Bento"),
                 with(CoachMaker.phoneCode, "+44"),
                 with(CoachMaker.phoneNumber, "2244556677"),
-                with(CoachMaker.country, CountryBuilder.maker()
-                    .but(with(CountryMaker.countryCode, "PT"),
-                        with(CountryMaker.externalValue, "Portugal"))
-                    .make()))
+                with(
+                    CoachMaker.country, CountryBuilder.maker()
+                        .but(
+                            with(CountryMaker.countryCode, "PT"),
+                            with(CountryMaker.externalValue, "Portugal")
+                        )
+                        .make()
+                )
+            )
             .make()
         val coachCapture = slot<Coach>()
 
@@ -200,13 +224,14 @@ class UpdateContactInformationCoachTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("UnexpectedConfigException.html")
-        thenErrorMessageTitle(body).isEqualTo("UnexpectedConfigException")
-        thenErrorMessageDetail(body).isEqualTo("Country Code: 'KILL' is not present in the system.")
-        thenErrorMessageStatus(body).isEqualTo("500")
-        thenErrorCode(body).isEqualTo("5001")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("UnexpectedConfigException.html")
+            .hasErrorMessageTitle("UnexpectedConfigException")
+            .hasErrorMessageDetail("Country Code: 'KILL' is not present in the system.")
+            .hasErrorMessageStatus("500")
+            .hasErrorMessageCode("5001")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
 
     }
 

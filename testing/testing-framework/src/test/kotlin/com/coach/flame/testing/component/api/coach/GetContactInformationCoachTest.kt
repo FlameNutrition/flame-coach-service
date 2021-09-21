@@ -5,6 +5,7 @@ import com.coach.flame.jpa.entity.maker.CoachBuilder
 import com.coach.flame.jpa.entity.maker.CoachMaker
 import com.coach.flame.jpa.entity.maker.CountryBuilder
 import com.coach.flame.jpa.entity.maker.CountryMaker
+import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
@@ -36,15 +37,21 @@ class GetContactInformationCoachTest : BaseComponentTest() {
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
         val coach = CoachBuilder.maker()
-            .but(with(CoachMaker.uuid, uuid),
+            .but(
+                with(CoachMaker.uuid, uuid),
                 with(CoachMaker.firstname, "Nuno"),
                 with(CoachMaker.lastname, "Neves"),
                 with(CoachMaker.phoneCode, "+44"),
                 with(CoachMaker.phoneNumber, "22444555664"),
-                with(CoachMaker.country, CountryBuilder.maker()
-                    .but(with(CountryMaker.countryCode, "PT"),
-                        with(CountryMaker.externalValue, "Portugal"))
-                    .make()))
+                with(
+                    CoachMaker.country, CountryBuilder.maker()
+                        .but(
+                            with(CountryMaker.countryCode, "PT"),
+                            with(CountryMaker.externalValue, "Portugal")
+                        )
+                        .make()
+                )
+            )
             .make()
 
         every { coachRepositoryMock.findByUuid(uuid) } returns coach
@@ -92,13 +99,14 @@ class GetContactInformationCoachTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("InternalServerException.html")
-        thenErrorMessageTitle(body).isEqualTo("InternalServerException")
-        thenErrorMessageDetail(body).isEqualTo("This is an internal problem, please contact the admin system.")
-        thenErrorMessageStatus(body).isEqualTo("500")
-        thenErrorCode(body).isEqualTo("9999")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("InternalServerException.html")
+            .hasErrorMessageTitle("InternalServerException")
+            .hasErrorMessageDetail("This is an internal problem, please contact the admin system.")
+            .hasErrorMessageStatus("500")
+            .hasErrorMessageCode("9999")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
 
     }
 
@@ -113,12 +121,14 @@ class GetContactInformationCoachTest : BaseComponentTest() {
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
         val coach = CoachBuilder.maker()
-            .but(with(CoachMaker.uuid, uuid),
+            .but(
+                with(CoachMaker.uuid, uuid),
                 with(CoachMaker.firstname, "Nuno"),
                 with(CoachMaker.lastname, "Neves"),
                 with(CoachMaker.phoneCode, null as String?),
                 with(CoachMaker.phoneNumber, null as String?),
-                with(CoachMaker.country, null as CountryConfig?))
+                with(CoachMaker.country, null as CountryConfig?)
+            )
             .make()
 
         every { coachRepositoryMock.findByUuid(uuid) } returns coach

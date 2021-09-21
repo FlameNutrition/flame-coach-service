@@ -5,6 +5,7 @@ import com.coach.flame.domain.maker.MeasureDtoMaker
 import com.coach.flame.jpa.entity.ClientMeasureWeight.Companion.toClientMeasureWeight
 import com.coach.flame.jpa.entity.maker.ClientBuilder
 import com.coach.flame.jpa.entity.maker.ClientMaker
+import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
@@ -40,13 +41,20 @@ class DeleteWeightClientTest : BaseComponentTest() {
 
         val weight0 = MeasureDtoBuilder.makerWithId().make()
         val weight1 = MeasureDtoBuilder.maker()
-            .but(with(MeasureDtoMaker.id, 100L),
-                with(MeasureDtoMaker.value, 70.5f))
+            .but(
+                with(MeasureDtoMaker.id, 100L),
+                with(MeasureDtoMaker.value, 70.5f)
+            )
             .make()
         val client = ClientBuilder.maker()
-            .but(with(ClientMaker.clientMeasureWeight, mutableListOf(
-                weight0.toClientMeasureWeight(),
-                weight1.toClientMeasureWeight())))
+            .but(
+                with(
+                    ClientMaker.clientMeasureWeight, mutableListOf(
+                        weight0.toClientMeasureWeight(),
+                        weight1.toClientMeasureWeight()
+                    )
+                )
+            )
             .make()
 
         mockClientRepository.findByUuid(uuid, client)
@@ -89,8 +97,10 @@ class DeleteWeightClientTest : BaseComponentTest() {
         val uuid = UUID.fromString("79275cc8-ed8a-4f8a-b790-ff66f74d758a")
 
         val weight0 = MeasureDtoBuilder.maker()
-            .but(with(MeasureDtoMaker.id, 100L),
-                with(MeasureDtoMaker.value, 70.5f))
+            .but(
+                with(MeasureDtoMaker.id, 100L),
+                with(MeasureDtoMaker.value, 70.5f)
+            )
             .make()
         val client = ClientBuilder.maker()
             .but(with(ClientMaker.clientMeasureWeight, mutableListOf(weight0.toClientMeasureWeight())))
@@ -111,13 +121,14 @@ class DeleteWeightClientTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("MeasureNotFoundException.html")
-        thenErrorMessageTitle(body).isEqualTo("MeasureNotFoundException")
-        thenErrorMessageDetail(body).isEqualTo("Measure is not present in the list.")
-        thenErrorMessageStatus(body).isEqualTo("404")
-        thenErrorCode(body).isEqualTo("6001")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("MeasureNotFoundException.html")
+            .hasErrorMessageTitle("MeasureNotFoundException")
+            .hasErrorMessageDetail("Measure is not present in the list.")
+            .hasErrorMessageStatus("404")
+            .hasErrorMessageCode("6001")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
 
     }
 

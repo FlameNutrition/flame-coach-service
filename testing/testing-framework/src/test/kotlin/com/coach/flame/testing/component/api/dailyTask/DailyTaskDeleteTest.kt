@@ -2,6 +2,7 @@ package com.coach.flame.testing.component.api.dailyTask
 
 import com.coach.flame.jpa.entity.maker.DailyTaskBuilder
 import com.coach.flame.jpa.entity.maker.DailyTaskMaker
+import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
@@ -83,13 +84,14 @@ class DailyTaskDeleteTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("DailyTaskMissingDeleteException.html")
-        thenErrorMessageTitle(body).isEqualTo("DailyTaskMissingDeleteException")
-        thenErrorMessageDetail(body).contains("Didn't find the following uuid task: 3c5845f1-4a90-4396-8610-7261761369ae")
-        thenErrorMessageStatus(body).isEqualTo("400")
-        thenErrorCode(body).isEqualTo("4002")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("DailyTaskMissingDeleteException.html")
+            .hasErrorMessageTitle("DailyTaskMissingDeleteException")
+            .hasErrorMessageDetail("Didn't find the following uuid task: 3c5845f1-4a90-4396-8610-7261761369ae.")
+            .hasErrorMessageStatus("400")
+            .hasErrorMessageCode("4002")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
 
     }
 

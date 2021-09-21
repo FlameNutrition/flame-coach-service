@@ -1,5 +1,6 @@
 package com.coach.flame.testing.component.api.appointments
 
+import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.component.base.utils.AppointmentsHelper.oneAppointment
 import com.coach.flame.testing.component.base.utils.ClientHelper.oneClientAvailable
@@ -117,13 +118,14 @@ class UpdateAppointmentTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("AppointmentNotFoundException.html")
-        thenErrorMessageTitle(body).isEqualTo("AppointmentNotFoundException")
-        thenErrorMessageDetail(body).contains("Appointment not found, please check the identifier.")
-        thenErrorMessageStatus(body).isEqualTo("404")
-        thenErrorCode(body).isEqualTo("2101")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("AppointmentNotFoundException.html")
+            .hasErrorMessageTitle("AppointmentNotFoundException")
+            .hasErrorMessageDetail("Appointment not found, please check the identifier.")
+            .hasErrorMessageStatus("404")
+            .hasErrorMessageCode("2101")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
 
     }
 }

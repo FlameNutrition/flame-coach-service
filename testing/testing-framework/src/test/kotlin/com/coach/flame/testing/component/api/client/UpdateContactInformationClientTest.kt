@@ -5,6 +5,7 @@ import com.coach.flame.jpa.entity.maker.ClientBuilder
 import com.coach.flame.jpa.entity.maker.ClientMaker
 import com.coach.flame.jpa.entity.maker.CountryBuilder
 import com.coach.flame.jpa.entity.maker.CountryMaker
+import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
@@ -38,23 +39,33 @@ class UpdateContactInformationClientTest : BaseComponentTest() {
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
         val client = ClientBuilder.maker()
-            .but(with(ClientMaker.uuid, uuid),
+            .but(
+                with(ClientMaker.uuid, uuid),
                 with(ClientMaker.firstname, "Nuno"),
                 with(ClientMaker.lastname, "Bento"),
                 with(ClientMaker.phoneCode, "+44"),
                 with(ClientMaker.phoneNumber, "2244556677"),
-                with(ClientMaker.country, CountryBuilder.maker()
-                    .but(with(CountryMaker.countryCode, "PT"),
-                        with(CountryMaker.externalValue, "Portugal"))
-                    .make()))
+                with(
+                    ClientMaker.country, CountryBuilder.maker()
+                        .but(
+                            with(CountryMaker.countryCode, "PT"),
+                            with(CountryMaker.externalValue, "Portugal")
+                        )
+                        .make()
+                )
+            )
             .make()
         val clientCapture = slot<Client>()
 
         every { clientRepositoryMock.findByUuid(uuid) } returns client
-        every { countryConfigCacheMock.getValue("BR") } returns Optional.of(CountryBuilder.maker()
-            .but(with(CountryMaker.countryCode, "BR"),
-                with(CountryMaker.externalValue, "Brazil"))
-            .make())
+        every { countryConfigCacheMock.getValue("BR") } returns Optional.of(
+            CountryBuilder.maker()
+                .but(
+                    with(CountryMaker.countryCode, "BR"),
+                    with(CountryMaker.externalValue, "Brazil")
+                )
+                .make()
+        )
         every { clientRepositoryMock.save(capture(clientCapture)) } answers { clientCapture.captured }
 
         // when
@@ -100,14 +111,14 @@ class UpdateContactInformationClientTest : BaseComponentTest() {
         then(mvnResponse.response.contentType).isEqualTo(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
-
-        thenErrorMessageType(body).endsWith("InternalServerException.html")
-        thenErrorMessageTitle(body).isEqualTo("InternalServerException")
-        thenErrorMessageDetail(body).isEqualTo("This is an internal problem, please contact the admin system.")
-        thenErrorMessageStatus(body).isEqualTo("500")
-        thenErrorCode(body).isEqualTo("9999")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("InternalServerException.html")
+            .hasErrorMessageTitle("InternalServerException")
+            .hasErrorMessageDetail("This is an internal problem, please contact the admin system.")
+            .hasErrorMessageStatus("500")
+            .hasErrorMessageCode("9999")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
 
     }
 
@@ -123,15 +134,21 @@ class UpdateContactInformationClientTest : BaseComponentTest() {
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
         val client = ClientBuilder.maker()
-            .but(with(ClientMaker.uuid, uuid),
+            .but(
+                with(ClientMaker.uuid, uuid),
                 with(ClientMaker.firstname, "Nuno"),
                 with(ClientMaker.lastname, "Neves"),
                 with(ClientMaker.phoneCode, "+44"),
                 with(ClientMaker.phoneNumber, "1122345"),
-                with(ClientMaker.country, CountryBuilder.maker()
-                    .but(with(CountryMaker.countryCode, "PT"),
-                        with(CountryMaker.externalValue, "Portugal"))
-                    .make()))
+                with(
+                    ClientMaker.country, CountryBuilder.maker()
+                        .but(
+                            with(CountryMaker.countryCode, "PT"),
+                            with(CountryMaker.externalValue, "Portugal")
+                        )
+                        .make()
+                )
+            )
             .make()
         val clientCapture = slot<Client>()
 
@@ -171,15 +188,21 @@ class UpdateContactInformationClientTest : BaseComponentTest() {
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
         val client = ClientBuilder.maker()
-            .but(with(ClientMaker.uuid, uuid),
+            .but(
+                with(ClientMaker.uuid, uuid),
                 with(ClientMaker.firstname, "Nuno"),
                 with(ClientMaker.lastname, "Bento"),
                 with(ClientMaker.phoneCode, "+44"),
                 with(ClientMaker.phoneNumber, "2244556677"),
-                with(ClientMaker.country, CountryBuilder.maker()
-                    .but(with(CountryMaker.countryCode, "PT"),
-                        with(CountryMaker.externalValue, "Portugal"))
-                    .make()))
+                with(
+                    ClientMaker.country, CountryBuilder.maker()
+                        .but(
+                            with(CountryMaker.countryCode, "PT"),
+                            with(CountryMaker.externalValue, "Portugal")
+                        )
+                        .make()
+                )
+            )
             .make()
         val clientCapture = slot<Client>()
 
@@ -199,14 +222,14 @@ class UpdateContactInformationClientTest : BaseComponentTest() {
         then(mvnResponse.response.contentType).isEqualTo(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
-
-        thenErrorMessageType(body).endsWith("UnexpectedConfigException.html")
-        thenErrorMessageTitle(body).isEqualTo("UnexpectedConfigException")
-        thenErrorMessageDetail(body).isEqualTo("Country Code: 'KILL' is not present in the system.")
-        thenErrorMessageStatus(body).isEqualTo("500")
-        thenErrorCode(body).isEqualTo("5001")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("UnexpectedConfigException.html")
+            .hasErrorMessageTitle("UnexpectedConfigException")
+            .hasErrorMessageDetail("Country Code: 'KILL' is not present in the system.")
+            .hasErrorMessageStatus("500")
+            .hasErrorMessageCode("5001")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
 
     }
 

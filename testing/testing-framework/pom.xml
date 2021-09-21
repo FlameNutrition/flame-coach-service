@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>component-testing</artifactId>
+    <artifactId>testing-framework</artifactId>
 
     <dependencies>
 
@@ -22,6 +22,13 @@
         <dependency>
             <groupId>com.coach.flame</groupId>
             <artifactId>repository</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.coach.flame</groupId>
+            <artifactId>assertions-testing</artifactId>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>

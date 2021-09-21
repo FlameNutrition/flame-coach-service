@@ -3,6 +3,7 @@ package com.coach.flame.testing.component.api.dailyTask
 import com.coach.flame.jpa.entity.DailyTask
 import com.coach.flame.jpa.entity.maker.ClientBuilder
 import com.coach.flame.jpa.entity.maker.CoachBuilder
+import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
@@ -156,13 +157,14 @@ class DailyTaskCreateTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("InternalServerException.html")
-        thenErrorMessageTitle(body).isEqualTo("InternalServerException")
-        thenErrorMessageDetail(body).isEqualTo("This is an internal problem, please contact the admin system.")
-        thenErrorMessageStatus(body).isEqualTo("500")
-        thenErrorCode(body).isEqualTo("9999")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("InternalServerException.html")
+            .hasErrorMessageTitle("InternalServerException")
+            .hasErrorMessageDetail("This is an internal problem, please contact the admin system.")
+            .hasErrorMessageStatus("500")
+            .hasErrorMessageCode("9999")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
 
     }
 
@@ -195,13 +197,14 @@ class DailyTaskCreateTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("CustomerNotFoundException.html")
-        thenErrorMessageTitle(body).isEqualTo("CustomerNotFoundException")
-        thenErrorMessageDetail(body).isEqualTo("Didn't find any coach with this identifier, please check the coach identifier.")
-        thenErrorMessageStatus(body).isEqualTo("404")
-        thenErrorCode(body).isEqualTo("2001")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("CustomerNotFoundException.html")
+            .hasErrorMessageTitle("CustomerNotFoundException")
+            .hasErrorMessageDetail("Didn't find any coach with this identifier, please check the coach identifier.")
+            .hasErrorMessageStatus("404")
+            .hasErrorMessageCode("2001")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
 
     }
 
@@ -238,13 +241,14 @@ class DailyTaskCreateTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("CustomerNotFoundException.html")
-        thenErrorMessageTitle(body).isEqualTo("CustomerNotFoundException")
-        thenErrorMessageDetail(body).isEqualTo("Didn't find any client with this identifier, please check the client identifier.")
-        thenErrorMessageStatus(body).isEqualTo("404")
-        thenErrorCode(body).isEqualTo("2001")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("CustomerNotFoundException.html")
+            .hasErrorMessageTitle("CustomerNotFoundException")
+            .hasErrorMessageDetail("Didn't find any client with this identifier, please check the client identifier.")
+            .hasErrorMessageStatus("404")
+            .hasErrorMessageCode("2001")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
 
     }
 

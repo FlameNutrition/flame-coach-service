@@ -1,7 +1,6 @@
 package com.coach.flame.api.appointment
 
 import com.coach.flame.api.APIWrapperException
-import com.coach.flame.api.appointment.response.Income
 import com.coach.flame.api.appointment.response.IncomeResponse
 import com.coach.flame.appointment.income.IncomeAggregator
 import com.coach.flame.appointment.income.IncomeService

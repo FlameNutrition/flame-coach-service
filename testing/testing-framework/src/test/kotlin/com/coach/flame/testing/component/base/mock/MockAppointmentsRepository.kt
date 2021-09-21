@@ -34,13 +34,24 @@ class MockAppointmentsRepository {
     }
 
     fun mockFindAppointmentsByCoachBetweenDate(
-        uuidCoach: UUID,
+        coach: Coach,
         from: LocalDateTime,
         to: LocalDateTime,
         listOfAppointments: List<Appointment>,
     ) {
         every {
-            appointmentRepositoryMock.findAppointmentsByCoachBetweenDates(uuidCoach, from, to)
+            appointmentRepositoryMock.findAppointmentsByCoachBetweenDates(coach.uuid, from, to)
+        } returns listOfAppointments
+    }
+
+    fun mockFindAppointmentsByClientBetweenDate(
+        client: Client,
+        from: LocalDateTime,
+        to: LocalDateTime,
+        listOfAppointments: List<Appointment>,
+    ) {
+        every {
+            appointmentRepositoryMock.findAppointmentsByClientBetweenDates(client.uuid, from, to)
         } returns listOfAppointments
     }
 

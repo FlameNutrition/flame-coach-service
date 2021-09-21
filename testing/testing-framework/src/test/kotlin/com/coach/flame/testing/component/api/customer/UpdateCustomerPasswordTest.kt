@@ -3,6 +3,7 @@ package com.coach.flame.testing.component.api.customer
 import com.coach.flame.jpa.entity.User
 import com.coach.flame.jpa.entity.maker.UserBuilder
 import com.coach.flame.jpa.entity.maker.UserMaker
+import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
@@ -36,9 +37,11 @@ class UpdateCustomerPasswordTest : BaseComponentTest() {
         val salt = saltTool.generate()
         val oldHashPassword = hashPasswordTool.generate("12345", salt)
         val user = UserBuilder.maker()
-            .but(with(UserMaker.email, "test@gmail.com"),
+            .but(
+                with(UserMaker.email, "test@gmail.com"),
                 with(UserMaker.key, salt),
-                with(UserMaker.password, oldHashPassword))
+                with(UserMaker.password, oldHashPassword)
+            )
             .make()
         val entityCaptured = slot<User>()
         every { userRepositoryMock.findUserByEmail("test@gmail.com") } returns user
@@ -85,13 +88,14 @@ class UpdateCustomerPasswordTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("InternalServerException.html")
-        thenErrorMessageTitle(body).isEqualTo("InternalServerException")
-        thenErrorMessageDetail(body).isEqualTo("This is an internal problem, please contact the admin system.")
-        thenErrorMessageStatus(body).isEqualTo("500")
-        thenErrorCode(body).isEqualTo("9999")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("InternalServerException.html")
+            .hasErrorMessageTitle("InternalServerException")
+            .hasErrorMessageDetail("This is an internal problem, please contact the admin system.")
+            .hasErrorMessageStatus("500")
+            .hasErrorMessageCode("9999")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
 
 
     }

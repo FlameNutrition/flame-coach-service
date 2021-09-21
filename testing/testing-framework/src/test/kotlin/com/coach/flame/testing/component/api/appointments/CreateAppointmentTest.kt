@@ -1,5 +1,6 @@
 package com.coach.flame.testing.component.api.appointments
 
+import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.component.base.utils.ClientHelper.oneClientAvailable
 import com.coach.flame.testing.component.base.utils.ClientHelper.oneClientPending
@@ -78,9 +79,15 @@ class CreateAppointmentTest : BaseComponentTest() {
         then(appointment1.asJsonObject.getAsJsonPrimitive("dttmEnds").asString).isEqualTo("2021-07-14T05:52:52+01:00")
         then(appointment1.asJsonObject.getAsJsonPrimitive("price").asFloat).isEqualTo(156.5f)
         then(appointment1.asJsonObject.getAsJsonPrimitive("notes").asString).isEqualTo("This is my first appointment")
-        then(appointment1.asJsonObject.getAsJsonObject("client").getAsJsonPrimitive("identifier").asString).isEqualTo(client2.uuid.toString())
-        then(appointment1.asJsonObject.getAsJsonObject("client").getAsJsonPrimitive("firstName").asString).isEqualTo(client2.firstName)
-        then(appointment1.asJsonObject.getAsJsonObject("client").getAsJsonPrimitive("lastName").asString).isEqualTo(client2.lastName)
+        then(appointment1.asJsonObject.getAsJsonObject("client").getAsJsonPrimitive("identifier").asString).isEqualTo(
+            client2.uuid.toString()
+        )
+        then(appointment1.asJsonObject.getAsJsonObject("client").getAsJsonPrimitive("firstName").asString).isEqualTo(
+            client2.firstName
+        )
+        then(appointment1.asJsonObject.getAsJsonObject("client").getAsJsonPrimitive("lastName").asString).isEqualTo(
+            client2.lastName
+        )
 
     }
 
@@ -111,13 +118,14 @@ class CreateAppointmentTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("CustomerNotFoundException.html")
-        thenErrorMessageTitle(body).isEqualTo("CustomerNotFoundException")
-        thenErrorMessageDetail(body).contains("Could not find any coach with uuid: 3c5845f1-4a90-4396-8610-7261761369ae")
-        thenErrorMessageStatus(body).isEqualTo("404")
-        thenErrorCode(body).isEqualTo("2001")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("CustomerNotFoundException.html")
+            .hasErrorMessageTitle("CustomerNotFoundException")
+            .hasErrorMessageDetail("Could not find any coach with uuid: 3c5845f1-4a90-4396-8610-7261761369ae.")
+            .hasErrorMessageStatus("404")
+            .hasErrorMessageCode("2001")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
 
     }
 
@@ -155,14 +163,14 @@ class CreateAppointmentTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("CustomerNotFoundException.html")
-        thenErrorMessageTitle(body).isEqualTo("CustomerNotFoundException")
-        thenErrorMessageDetail(body).contains("Could not find any client with uuid: 0f1c2e7f-a6c8-4f0d-8edc-01c7a5014419")
-        thenErrorMessageStatus(body).isEqualTo("404")
-        thenErrorCode(body).isEqualTo("2001")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
-
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("CustomerNotFoundException.html")
+            .hasErrorMessageTitle("CustomerNotFoundException")
+            .hasErrorMessageDetail("Could not find any client with uuid: 0f1c2e7f-a6c8-4f0d-8edc-01c7a5014419.")
+            .hasErrorMessageStatus("404")
+            .hasErrorMessageCode("2001")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
     }
 
 }

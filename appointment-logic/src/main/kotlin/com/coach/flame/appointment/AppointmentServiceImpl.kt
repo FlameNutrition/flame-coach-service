@@ -2,6 +2,7 @@ package com.coach.flame.appointment
 
 import com.coach.flame.date.DateHelper.toAnotherZone
 import com.coach.flame.domain.AppointmentDto
+import com.coach.flame.domain.DateIntervalDto
 import com.coach.flame.failure.exception.CustomerNotFoundException
 import com.coach.flame.jpa.entity.Appointment.Companion.toAppointment
 import com.coach.flame.jpa.repository.AppointmentRepository
@@ -56,43 +57,83 @@ class AppointmentServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun getAllCoachAppointments(coachIdentifier: UUID): List<AppointmentDto> {
+    override fun getAllCoachAppointments(
+        coachIdentifier: UUID,
+        intervalFilter: Optional<DateIntervalDto>,
+    ): List<AppointmentDto> {
 
-        LOGGER.info("opr='getAllCoachAppointments', msg='Get coach appointments', coachIdentifier={}",
-            coachIdentifier)
+        LOGGER.info("opr='getAllCoachAppointments', msg='Get coach appointments', coachIdentifier={}, intervalFilter={}",
+            coachIdentifier, intervalFilter)
 
         val coach = coachOperations.getCoach(coachIdentifier)
 
-        return appointmentRepository.findAppointmentsByCoach(coach.uuid)
-            .map { it.toDto() }
+        return if (intervalFilter.isPresent) {
+            val interval = intervalFilter.get()
+
+            appointmentRepository
+                .findAppointmentsByCoachBetweenDates(coach.uuid,
+                    interval.from.atStartOfDay(),
+                    interval.to.atStartOfDay())
+                .map { it.toDto() }
+        } else {
+            appointmentRepository.findAppointmentsByCoach(coach.uuid)
+                .map { it.toDto() }
+        }
     }
 
     @Transactional(readOnly = true)
-    override fun getAllClientAppointments(clientIdentifier: UUID): List<AppointmentDto> {
+    override fun getAllClientAppointments(
+        clientIdentifier: UUID,
+        intervalFilter: Optional<DateIntervalDto>,
+    ): List<AppointmentDto> {
 
-        LOGGER.info("opr='getAllClientAppointments', msg='Get client appointments', clientIdentifier={}",
-            clientIdentifier)
+        LOGGER.info("opr='getAllClientAppointments', msg='Get client appointments', clientIdentifier={}, intervalFilter={}",
+            clientIdentifier, intervalFilter)
 
         val client = clientOperations.getClient(clientIdentifier)
 
-        return appointmentRepository.findAppointmentsByClient(client.uuid)
-            .map { it.toDto() }
+        return if (intervalFilter.isPresent) {
+            val interval = intervalFilter.get()
+
+            appointmentRepository
+                .findAppointmentsByClientBetweenDates(client.uuid,
+                    interval.from.atStartOfDay(),
+                    interval.to.atStartOfDay())
+                .map { it.toDto() }
+        } else {
+            appointmentRepository.findAppointmentsByClient(client.uuid)
+                .map { it.toDto() }
+        }
 
     }
 
     @Transactional(readOnly = true)
-    override fun getAppointments(coachIdentifier: UUID, clientIdentifier: UUID): List<AppointmentDto> {
+    override fun getAppointments(
+        coachIdentifier: UUID,
+        clientIdentifier: UUID,
+        intervalFilter: Optional<DateIntervalDto>,
+    ): List<AppointmentDto> {
 
-        LOGGER.info("opr='getAppointments', msg='Get appointments', coachIdentifier={}, clientIdentifier={}",
+        LOGGER.info("opr='getAppointments', msg='Get appointments', coachIdentifier={}, clientIdentifier={}, intervalFilter={}",
             coachIdentifier,
-            clientIdentifier)
+            clientIdentifier,
+            intervalFilter)
 
         val coach = coachOperations.getCoach(coachIdentifier)
         val client = coach.clients.firstOrNull { it.uuid == clientIdentifier }
             ?: throw CustomerNotFoundException("Could not find any client with uuid: $clientIdentifier.")
 
-        return appointmentRepository.findAppointments(coach.uuid, client.uuid)
-            .map { it.toDto() }
+        return if (intervalFilter.isPresent) {
+            val interval = intervalFilter.get()
+            appointmentRepository
+                .findAppointmentsBetweenDates(coach.uuid, client.uuid,
+                    interval.from.atStartOfDay(),
+                    interval.to.atStartOfDay())
+                .map { it.toDto() }
+        } else {
+            appointmentRepository.findAppointments(coach.uuid, client.uuid)
+                .map { it.toDto() }
+        }
     }
 
     @Transactional

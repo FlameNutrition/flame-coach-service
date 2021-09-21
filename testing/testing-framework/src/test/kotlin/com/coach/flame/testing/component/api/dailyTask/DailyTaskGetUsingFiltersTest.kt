@@ -2,6 +2,7 @@ package com.coach.flame.testing.component.api.dailyTask
 
 import com.coach.flame.jpa.entity.DailyTask
 import com.coach.flame.jpa.entity.maker.DailyTaskBuilder
+import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
@@ -110,13 +111,14 @@ class DailyTaskGetUsingFiltersTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("RestInvalidRequestException.html")
-        thenErrorMessageTitle(body).isEqualTo("RestInvalidRequestException")
-        thenErrorMessageDetail(body).contains("INVALID is an invalid filter")
-        thenErrorMessageStatus(body).isEqualTo("400")
-        thenErrorCode(body).isEqualTo("1001")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("RestInvalidRequestException.html")
+            .hasErrorMessageTitle("RestInvalidRequestException")
+            .hasErrorMessageDetail("INVALID is an invalid filter")
+            .hasErrorMessageStatus("400")
+            .hasErrorMessageCode("1001")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
 
     }
 
@@ -144,13 +146,14 @@ class DailyTaskGetUsingFiltersTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("RestException.html")
-        thenErrorMessageTitle(body).isEqualTo("RestException")
-        thenErrorMessageDetail(body).contains("BETWEEN_DATES has an invalid number of params")
-        thenErrorMessageStatus(body).isEqualTo("500")
-        thenErrorCode(body).isEqualTo("1000")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("RestException.html")
+            .hasErrorMessageTitle("RestException")
+            .hasErrorMessageDetail("BETWEEN_DATES has an invalid number of params")
+            .hasErrorMessageStatus("500")
+            .hasErrorMessageCode("1000")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
 
     }
 
@@ -178,13 +181,14 @@ class DailyTaskGetUsingFiltersTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("RestInvalidRequestException.html")
-        thenErrorMessageTitle(body).isEqualTo("RestInvalidRequestException")
-        thenErrorMessageDetail(body).contains("IDENTIFIER is an invalid filter")
-        thenErrorMessageStatus(body).isEqualTo("400")
-        thenErrorCode(body).isEqualTo("1001")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("RestInvalidRequestException.html")
+            .hasErrorMessageTitle("RestInvalidRequestException")
+            .hasErrorMessageDetail("IDENTIFIER is an invalid filter")
+            .hasErrorMessageStatus("400")
+            .hasErrorMessageCode("1001")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
 
     }
 

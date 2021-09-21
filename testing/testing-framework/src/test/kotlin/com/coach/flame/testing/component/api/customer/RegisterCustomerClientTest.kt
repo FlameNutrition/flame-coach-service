@@ -4,6 +4,7 @@ import com.coach.flame.jpa.entity.maker.ClientMaker
 import com.coach.flame.jpa.entity.maker.RegistrationInviteBuilder
 import com.coach.flame.jpa.entity.maker.UserMaker
 import com.coach.flame.jpa.entity.maker.UserSessionMaker
+import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
@@ -36,16 +37,21 @@ class RegisterCustomerClientTest : BaseComponentTest() {
         // given
         val expirationDate = LocalDateTime.now()
         val user = userMaker
-            .but(with(UserMaker.email, "test@gmail.com"),
+            .but(
+                with(UserMaker.email, "test@gmail.com"),
                 with(UserMaker.password, "test"),
-                with(UserMaker.userSession, userSessionMaker
-                    .but(with(UserSessionMaker.expirationDate, expirationDate.plusHours(2)))))
+                with(
+                    UserMaker.userSession, userSessionMaker
+                        .but(with(UserSessionMaker.expirationDate, expirationDate.plusHours(2)))
+                )
+            )
             .make()
         val client = clientMaker
             .but(
                 with(ClientMaker.firstname, "Nuno"),
                 with(ClientMaker.lastname, "Bento"),
-                with(ClientMaker.user, user))
+                with(ClientMaker.user, user)
+            )
             .make()
         val registrationInvite = RegistrationInviteBuilder.default()
 
@@ -53,10 +59,14 @@ class RegisterCustomerClientTest : BaseComponentTest() {
         every { clientRepositoryMock.saveAndFlush(any()) } returns client
 
         mockRegistrationInviteRepository.save()
-        mockRegistrationInviteRepository.existsByRegistrationKeyIs("OTk5OS0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ==",
-            true)
-        mockRegistrationInviteRepository.findByRegistrationKeyIs("OTk5OS0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ==",
-            registrationInvite)
+        mockRegistrationInviteRepository.existsByRegistrationKeyIs(
+            "OTk5OS0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ==",
+            true
+        )
+        mockRegistrationInviteRepository.findByRegistrationKeyIs(
+            "OTk5OS0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ==",
+            registrationInvite
+        )
 
         mockClientRepository.findByUuid(client.uuid, client)
         mockClientRepository.save()
@@ -109,13 +119,14 @@ class RegisterCustomerClientTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("RestInvalidRequestException.html")
-        thenErrorMessageTitle(body).isEqualTo("RestInvalidRequestException")
-        thenErrorMessageDetail(body).isEqualTo("missing required parameter: lastname")
-        thenErrorMessageStatus(body).isEqualTo("400")
-        thenErrorCode(body).isEqualTo("1001")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("RestInvalidRequestException.html")
+            .hasErrorMessageTitle("RestInvalidRequestException")
+            .hasErrorMessageDetail("missing required parameter: lastname")
+            .hasErrorMessageStatus("400")
+            .hasErrorMessageCode("1001")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
     }
 
     @Test
@@ -128,8 +139,10 @@ class RegisterCustomerClientTest : BaseComponentTest() {
 
         every { clientTypeRepositoryMock.getByType("CLIENT") } returns clientTypeMaker.make()
         every { clientRepositoryMock.saveAndFlush(any()) } throws DataIntegrityViolationException("SQL Error -> Duplicate client")
-        mockRegistrationInviteRepository.existsByRegistrationKeyIs("OTk5OS0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ==",
-            true)
+        mockRegistrationInviteRepository.existsByRegistrationKeyIs(
+            "OTk5OS0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ==",
+            true
+        )
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -144,13 +157,14 @@ class RegisterCustomerClientTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("CustomerRegisterDuplicateException.html")
-        thenErrorMessageTitle(body).isEqualTo("CustomerRegisterDuplicateException")
-        thenErrorMessageDetail(body).isEqualTo("The following customer already exists.")
-        thenErrorMessageStatus(body).isEqualTo("400")
-        thenErrorCode(body).isEqualTo("2002")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("CustomerRegisterDuplicateException.html")
+            .hasErrorMessageTitle("CustomerRegisterDuplicateException")
+            .hasErrorMessageDetail("The following customer already exists.")
+            .hasErrorMessageStatus("400")
+            .hasErrorMessageCode("2002")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
     }
 
     @Test
@@ -177,13 +191,14 @@ class RegisterCustomerClientTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("InternalServerException.html")
-        thenErrorMessageTitle(body).isEqualTo("InternalServerException")
-        thenErrorMessageDetail(body).isEqualTo("This is an internal problem, please contact the admin system.")
-        thenErrorMessageStatus(body).isEqualTo("500")
-        thenErrorCode(body).isEqualTo("9999")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("InternalServerException.html")
+            .hasErrorMessageTitle("InternalServerException")
+            .hasErrorMessageDetail("This is an internal problem, please contact the admin system.")
+            .hasErrorMessageStatus("500")
+            .hasErrorMessageCode("9999")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
     }
 
     @Test
@@ -196,22 +211,29 @@ class RegisterCustomerClientTest : BaseComponentTest() {
 
         val expirationDate = LocalDateTime.now()
         val user = userMaker
-            .but(with(UserMaker.email, "test@gmail.com"),
+            .but(
+                with(UserMaker.email, "test@gmail.com"),
                 with(UserMaker.password, "test"),
-                with(UserMaker.userSession, userSessionMaker
-                    .but(with(UserSessionMaker.expirationDate, expirationDate.plusHours(2)))))
+                with(
+                    UserMaker.userSession, userSessionMaker
+                        .but(with(UserSessionMaker.expirationDate, expirationDate.plusHours(2)))
+                )
+            )
             .make()
         val client = clientMaker
             .but(
                 with(ClientMaker.firstname, "Nuno"),
                 with(ClientMaker.lastname, "Bento"),
-                with(ClientMaker.user, user))
+                with(ClientMaker.user, user)
+            )
             .make()
         every { clientTypeRepositoryMock.getByType("CLIENT") } returns clientTypeMaker.make()
         every { clientRepositoryMock.saveAndFlush(any()) } returns client
 
-        mockRegistrationInviteRepository.existsByRegistrationKeyIs("MTk3MC0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ==",
-            true)
+        mockRegistrationInviteRepository.existsByRegistrationKeyIs(
+            "MTk3MC0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ==",
+            true
+        )
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -226,13 +248,14 @@ class RegisterCustomerClientTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("CustomerRegisterExpirationDate.html")
-        thenErrorMessageTitle(body).isEqualTo("CustomerRegisterExpirationDate")
-        thenErrorMessageDetail(body).isEqualTo("Registration key expired.")
-        thenErrorMessageStatus(body).isEqualTo("400")
-        thenErrorCode(body).isEqualTo("2006")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("CustomerRegisterExpirationDate.html")
+            .hasErrorMessageTitle("CustomerRegisterExpirationDate")
+            .hasErrorMessageDetail("Registration key expired.")
+            .hasErrorMessageStatus("400")
+            .hasErrorMessageCode("2006")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
     }
 
     @Test
@@ -245,22 +268,29 @@ class RegisterCustomerClientTest : BaseComponentTest() {
 
         val expirationDate = LocalDateTime.now()
         val user = userMaker
-            .but(with(UserMaker.email, "test@gmail.com"),
+            .but(
+                with(UserMaker.email, "test@gmail.com"),
                 with(UserMaker.password, "test"),
-                with(UserMaker.userSession, userSessionMaker
-                    .but(with(UserSessionMaker.expirationDate, expirationDate.plusHours(2)))))
+                with(
+                    UserMaker.userSession, userSessionMaker
+                        .but(with(UserSessionMaker.expirationDate, expirationDate.plusHours(2)))
+                )
+            )
             .make()
         val client = clientMaker
             .but(
                 with(ClientMaker.firstname, "Nuno"),
                 with(ClientMaker.lastname, "Bento"),
-                with(ClientMaker.user, user))
+                with(ClientMaker.user, user)
+            )
             .make()
         every { clientTypeRepositoryMock.getByType("CLIENT") } returns clientTypeMaker.make()
         every { clientRepositoryMock.saveAndFlush(any()) } returns client
 
-        mockRegistrationInviteRepository.existsByRegistrationKeyIs("OTk5OS0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ==",
-            false)
+        mockRegistrationInviteRepository.existsByRegistrationKeyIs(
+            "OTk5OS0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ==",
+            false
+        )
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -275,13 +305,14 @@ class RegisterCustomerClientTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("CustomerRegisterWrongRegistrationKey.html")
-        thenErrorMessageTitle(body).isEqualTo("CustomerRegisterWrongRegistrationKey")
-        thenErrorMessageDetail(body).isEqualTo("Registration key invalid.")
-        thenErrorMessageStatus(body).isEqualTo("400")
-        thenErrorCode(body).isEqualTo("2005")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("CustomerRegisterWrongRegistrationKey.html")
+            .hasErrorMessageTitle("CustomerRegisterWrongRegistrationKey")
+            .hasErrorMessageDetail("Registration key invalid.")
+            .hasErrorMessageStatus("400")
+            .hasErrorMessageCode("2005")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
     }
 
 }

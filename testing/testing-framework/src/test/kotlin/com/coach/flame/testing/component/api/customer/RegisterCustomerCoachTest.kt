@@ -4,6 +4,7 @@ import com.coach.flame.jpa.entity.maker.ClientTypeMaker
 import com.coach.flame.jpa.entity.maker.CoachMaker
 import com.coach.flame.jpa.entity.maker.UserMaker
 import com.coach.flame.jpa.entity.maker.UserSessionMaker
+import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
@@ -36,10 +37,14 @@ class RegisterCustomerCoachTest : BaseComponentTest() {
         // given
         val expirationDate = LocalDateTime.now()
         val user = userMaker
-            .but(with(UserMaker.email, "test@gmail.com"),
+            .but(
+                with(UserMaker.email, "test@gmail.com"),
                 with(UserMaker.password, "test"),
-                with(UserMaker.userSession, userSessionMaker
-                    .but(with(UserSessionMaker.expirationDate, expirationDate.plusHours(2)))))
+                with(
+                    UserMaker.userSession, userSessionMaker
+                        .but(with(UserSessionMaker.expirationDate, expirationDate.plusHours(2)))
+                )
+            )
             .make()
         val clientType = clientTypeMaker
             .but(with(ClientTypeMaker.type, "COACH"))
@@ -49,7 +54,8 @@ class RegisterCustomerCoachTest : BaseComponentTest() {
                 with(CoachMaker.clientType, clientType),
                 with(CoachMaker.firstname, "Nuno"),
                 with(CoachMaker.lastname, "Bento"),
-                with(CoachMaker.user, user))
+                with(CoachMaker.user, user)
+            )
             .make()
         every { clientTypeRepositoryMock.getByType("COACH") } returns clientType
         every { coachRepositoryMock.saveAndFlush(any()) } returns coach
@@ -100,13 +106,14 @@ class RegisterCustomerCoachTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("RestInvalidRequestException.html")
-        thenErrorMessageTitle(body).isEqualTo("RestInvalidRequestException")
-        thenErrorMessageDetail(body).isEqualTo("missing required parameter: lastname")
-        thenErrorMessageStatus(body).isEqualTo("400")
-        thenErrorCode(body).isEqualTo("1001")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("RestInvalidRequestException.html")
+            .hasErrorMessageTitle("RestInvalidRequestException")
+            .hasErrorMessageDetail("missing required parameter: lastname")
+            .hasErrorMessageStatus("400")
+            .hasErrorMessageCode("1001")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
     }
 
     @Test
@@ -135,13 +142,14 @@ class RegisterCustomerCoachTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("CustomerRegisterDuplicateException.html")
-        thenErrorMessageTitle(body).isEqualTo("CustomerRegisterDuplicateException")
-        thenErrorMessageDetail(body).isEqualTo("The following customer already exists.")
-        thenErrorMessageStatus(body).isEqualTo("400")
-        thenErrorCode(body).isEqualTo("2002")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("CustomerRegisterDuplicateException.html")
+            .hasErrorMessageTitle("CustomerRegisterDuplicateException")
+            .hasErrorMessageDetail("The following customer already exists.")
+            .hasErrorMessageStatus("400")
+            .hasErrorMessageCode("2002")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
     }
 
     @Test
@@ -170,13 +178,14 @@ class RegisterCustomerCoachTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("InternalServerException.html")
-        thenErrorMessageTitle(body).isEqualTo("InternalServerException")
-        thenErrorMessageDetail(body).isEqualTo("This is an internal problem, please contact the admin system.")
-        thenErrorMessageStatus(body).isEqualTo("500")
-        thenErrorCode(body).isEqualTo("9999")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("InternalServerException.html")
+            .hasErrorMessageTitle("InternalServerException")
+            .hasErrorMessageDetail("This is an internal problem, please contact the admin system.")
+            .hasErrorMessageStatus("500")
+            .hasErrorMessageCode("9999")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
     }
 
 }

@@ -1,5 +1,6 @@
 package com.coach.flame.testing.component.api.appointments
 
+import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.component.base.utils.AppointmentsHelper.oneAppointment
 import com.coach.flame.testing.component.base.utils.ClientHelper.oneClientAvailable
@@ -89,8 +90,10 @@ class DeleteAppointmentTest : BaseComponentTest() {
     )
     fun `test delete appointments but appointment identifier request is wrong`() {
 
-        mockAppointmentsRepository.findByUuidAndDeleteFalse(UUID.fromString("2fbf61a6-3b72-4313-b858-43dbf81198dc"),
-            null)
+        mockAppointmentsRepository.findByUuidAndDeleteFalse(
+            UUID.fromString("2fbf61a6-3b72-4313-b858-43dbf81198dc"),
+            null
+        )
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -105,13 +108,14 @@ class DeleteAppointmentTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("AppointmentMissingDeleteException.html")
-        thenErrorMessageTitle(body).isEqualTo("AppointmentMissingDeleteException")
-        thenErrorMessageDetail(body).contains("Didn't find the following uuid appointment: 2fbf61a6-3b72-4313-b858-43dbf81198dc")
-        thenErrorMessageStatus(body).isEqualTo("404")
-        thenErrorCode(body).isEqualTo("2102")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("AppointmentMissingDeleteException.html")
+            .hasErrorMessageTitle("AppointmentMissingDeleteException")
+            .hasErrorMessageDetail("Didn't find the following uuid appointment: 2fbf61a6-3b72-4313-b858-43dbf81198dc")
+            .hasErrorMessageStatus("404")
+            .hasErrorMessageCode("2102")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
 
     }
 }

@@ -6,5 +6,4 @@ import java.util.*
 interface IncomeAPI {
 
     fun getAcceptedIncomes(coachIdentifier: UUID, from: String, to: String, aggregateType: String): IncomeResponse
-
 }

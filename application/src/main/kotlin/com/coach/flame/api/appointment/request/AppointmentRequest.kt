@@ -8,4 +8,5 @@ data class AppointmentRequest(
     val dttmEnds: String,
     val price: Float,
     val notes: String? = null,
+    val incomeStatus: String = "PENDING",
 )

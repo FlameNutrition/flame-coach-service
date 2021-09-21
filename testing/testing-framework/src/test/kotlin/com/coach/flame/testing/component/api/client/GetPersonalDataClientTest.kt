@@ -6,6 +6,7 @@ import com.coach.flame.jpa.entity.maker.ClientBuilder
 import com.coach.flame.jpa.entity.maker.ClientMaker
 import com.coach.flame.jpa.entity.maker.GenderBuilder
 import com.coach.flame.jpa.entity.maker.GenderMaker
+import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
@@ -37,14 +38,20 @@ class GetPersonalDataClientTest : BaseComponentTest() {
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
         val client = ClientBuilder.maker()
-            .but(with(ClientMaker.uuid, uuid),
+            .but(
+                with(ClientMaker.uuid, uuid),
                 with(ClientMaker.weight, 80.5f),
                 with(ClientMaker.height, 1.75f),
-                with(ClientMaker.gender, GenderBuilder.maker()
-                    .but(with(GenderMaker.externalValue, "Male"),
-                        with(GenderMaker.genderCode, "M"))
-                    .make()),
-                with(ClientMaker.measureConfig, MeasureConfig.KG_CM))
+                with(
+                    ClientMaker.gender, GenderBuilder.maker()
+                        .but(
+                            with(GenderMaker.externalValue, "Male"),
+                            with(GenderMaker.genderCode, "M")
+                        )
+                        .make()
+                ),
+                with(ClientMaker.measureConfig, MeasureConfig.KG_CM)
+            )
             .make()
 
         every { clientRepositoryMock.findByUuid(uuid) } returns client
@@ -91,13 +98,14 @@ class GetPersonalDataClientTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("InternalServerException.html")
-        thenErrorMessageTitle(body).isEqualTo("InternalServerException")
-        thenErrorMessageDetail(body).isEqualTo("This is an internal problem, please contact the admin system.")
-        thenErrorMessageStatus(body).isEqualTo("500")
-        thenErrorCode(body).isEqualTo("9999")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("InternalServerException.html")
+            .hasErrorMessageTitle("InternalServerException")
+            .hasErrorMessageDetail("This is an internal problem, please contact the admin system.")
+            .hasErrorMessageStatus("500")
+            .hasErrorMessageCode("9999")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
 
     }
 
@@ -112,11 +120,13 @@ class GetPersonalDataClientTest : BaseComponentTest() {
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
         val client = ClientBuilder.maker()
-            .but(with(ClientMaker.uuid, uuid),
+            .but(
+                with(ClientMaker.uuid, uuid),
                 with(ClientMaker.weight, 0.0f),
                 with(ClientMaker.height, 0.0f),
                 with(ClientMaker.gender, null as GenderConfig?),
-                with(ClientMaker.measureConfig, MeasureConfig.LBS_IN))
+                with(ClientMaker.measureConfig, MeasureConfig.LBS_IN)
+            )
             .make()
 
         every { clientRepositoryMock.findByUuid(uuid) } returns client

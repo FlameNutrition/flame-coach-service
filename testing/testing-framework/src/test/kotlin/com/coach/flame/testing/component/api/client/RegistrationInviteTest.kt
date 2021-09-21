@@ -1,6 +1,7 @@
 package com.coach.flame.testing.component.api.client
 
 import com.coach.flame.jpa.entity.maker.*
+import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
@@ -75,9 +76,13 @@ class RegistrationInviteTest : BaseComponentTest() {
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
         val client = ClientBuilder.maker()
-            .but(with(ClientMaker.user, UserBuilder.maker()
-                .but(with(UserMaker.email, "test@gmail.com"))
-                .make()))
+            .but(
+                with(
+                    ClientMaker.user, UserBuilder.maker()
+                        .but(with(UserMaker.email, "test@gmail.com"))
+                        .make()
+                )
+            )
             .make()
         val coach = CoachBuilder.maker()
             .but(with(CoachMaker.uuid, uuid))
@@ -138,13 +143,14 @@ class RegistrationInviteTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("MailException.html")
-        thenErrorMessageTitle(body).isEqualTo("MailException")
-        thenErrorMessageDetail(body).isEqualTo("Something happened when trying to send the registration link.")
-        thenErrorMessageStatus(body).isEqualTo("500")
-        thenErrorCode(body).isEqualTo("7000")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("MailException.html")
+            .hasErrorMessageTitle("MailException")
+            .hasErrorMessageDetail("Something happened when trying to send the registration link.")
+            .hasErrorMessageStatus("500")
+            .hasErrorMessageCode("7000")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
     }
 
 }

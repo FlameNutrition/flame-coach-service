@@ -4,6 +4,7 @@ import com.coach.flame.jpa.entity.ClientStatus
 import com.coach.flame.jpa.entity.maker.ClientBuilder
 import com.coach.flame.jpa.entity.maker.ClientMaker
 import com.coach.flame.jpa.entity.maker.CoachMaker
+import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
@@ -41,8 +42,10 @@ class GetClientsCoachTest : BaseComponentTest() {
             .but(with(ClientMaker.clientStatus, ClientStatus.ACCEPTED))
             .make()
         val coach = coachMaker
-            .but(with(CoachMaker.clients, mutableListOf(client0, client1)),
-                with(CoachMaker.uuid, uuid))
+            .but(
+                with(CoachMaker.clients, mutableListOf(client0, client1)),
+                with(CoachMaker.uuid, uuid)
+            )
             .make()
 
         every { coachRepositoryMock.findByUuid(uuid) } returns coach
@@ -99,13 +102,14 @@ class GetClientsCoachTest : BaseComponentTest() {
 
         val body = JsonBuilder.getJsonFromMockClient(mvnResponse.response)
 
-        thenErrorMessageType(body).endsWith("InternalServerException.html")
-        thenErrorMessageTitle(body).isEqualTo("InternalServerException")
-        thenErrorMessageDetail(body).isEqualTo("This is an internal problem, please contact the admin system.")
-        thenErrorMessageStatus(body).isEqualTo("500")
-        thenErrorCode(body).isEqualTo("9999")
-        thenErrorMessageInstance(body).isNotEmpty
-        thenErrorMessageDebug(body).isEmpty()
+        ErrorAssert.assertThat(body)
+            .hasErrorMessageTypeEndsWith("InternalServerException.html")
+            .hasErrorMessageTitle("InternalServerException")
+            .hasErrorMessageDetail("This is an internal problem, please contact the admin system.")
+            .hasErrorMessageStatus("500")
+            .hasErrorMessageCode("9999")
+            .hasErrorMessageInstance()
+            .notHasErrorMessageDebug()
     }
 
 }
