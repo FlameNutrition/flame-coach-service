@@ -41,8 +41,8 @@ class CoachRepositoryOperationImpl(
                     "where a.dttmStarts between :dttmFrom and :dttmTo " +
                     "and c.uuid = :uuid", Income::class.java)
             .setParameter("uuid", identifier)
-            .setParameter("dttmFrom", from)
-            .setParameter("dttmTo", to)
+            .setParameter("dttmFrom", from.atStartOfDay())
+            .setParameter("dttmTo", to.plusDays(1).atStartOfDay())
             .resultList
 
     }

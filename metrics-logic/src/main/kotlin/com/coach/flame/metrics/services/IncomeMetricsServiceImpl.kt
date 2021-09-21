@@ -22,9 +22,9 @@ class IncomeMetricsServiceImpl(
 
         val listOfIncomes = coachOperations.getIncome(metricsFilter.identifier, interval.from, interval.to)
 
-        val numberOfPending = listOfIncomes.count { IncomeDto.IncomeStatus.PENDING.name === it.status }
-        val numberOfAccepted = listOfIncomes.count { IncomeDto.IncomeStatus.ACCEPTED.name === it.status }
-        val numberOfRejected = listOfIncomes.count { IncomeDto.IncomeStatus.REJECTED.name === it.status }
+        val numberOfPending = listOfIncomes.count { IncomeDto.IncomeStatus.PENDING.name == it.status }
+        val numberOfAccepted = listOfIncomes.count { IncomeDto.IncomeStatus.ACCEPTED.name == it.status }
+        val numberOfRejected = listOfIncomes.count { IncomeDto.IncomeStatus.REJECTED.name == it.status }
 
         return MetricsDto().apply {
             incomes = Incomes(

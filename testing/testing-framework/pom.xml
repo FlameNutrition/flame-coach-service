@@ -28,7 +28,7 @@
 
         <dependency>
             <groupId>com.coach.flame</groupId>
-            <artifactId>assertions-testing</artifactId>
+            <artifactId>testing-assertions</artifactId>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
