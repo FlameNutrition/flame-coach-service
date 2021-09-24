@@ -2,6 +2,7 @@ package com.coach.flame.testing.component.api.appointments
 
 import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
+import com.coach.flame.testing.component.base.mock.MockAppointmentsRepository
 import com.coach.flame.testing.component.base.utils.AppointmentsHelper.oneAppointment
 import com.coach.flame.testing.component.base.utils.ClientHelper.oneClientAvailable
 import com.coach.flame.testing.component.base.utils.ClientHelper.oneClientPending
@@ -46,9 +47,14 @@ class UpdateAppointmentTest : BaseComponentTest() {
         val coach = oneCoach(coachIdentifier, mutableListOf(client1, client2))
         val appointment = oneAppointment(coach, client2, appointment1UUID)
 
-        mockAppointmentsRepository.findByUuidAndDeleteFalse(appointment1UUID, appointment)
+        mockAppointmentsRepository
+            .mock(MockAppointmentsRepository.FIND_BY_UUID_AND_DELETE_FALSE)
+            .params(mapOf(Pair("uuid", appointment1UUID)))
+            .returns { appointment }
 
-        val capturedAppointment = mockAppointmentsRepository.captureSave()
+        val capturedAppointment = mockAppointmentsRepository
+            .mock(MockAppointmentsRepository.SAVE)
+            .capture()
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -83,11 +89,14 @@ class UpdateAppointmentTest : BaseComponentTest() {
         then(appointment1.asJsonObject.getAsJsonPrimitive("price").asFloat).isEqualTo(200.5f)
         then(appointment1.asJsonObject.getAsJsonPrimitive("notes").asString).isEqualTo("This is my first appointment but was updated")
         then(appointment1.asJsonObject.getAsJsonObject("client").getAsJsonPrimitive("identifier").asString).isEqualTo(
-            client2.uuid.toString())
+            client2.uuid.toString()
+        )
         then(appointment1.asJsonObject.getAsJsonObject("client").getAsJsonPrimitive("firstName").asString).isEqualTo(
-            client2.firstName)
+            client2.firstName
+        )
         then(appointment1.asJsonObject.getAsJsonObject("client").getAsJsonPrimitive("lastName").asString).isEqualTo(
-            client2.lastName)
+            client2.lastName
+        )
 
     }
 
@@ -102,8 +111,10 @@ class UpdateAppointmentTest : BaseComponentTest() {
     )
     fun `test update appointments but appointment identifier request is wrong`() {
 
-        mockAppointmentsRepository.findByUuidAndDeleteFalse(UUID.fromString("2fbf61a6-3b72-4313-b858-43dbf81198dc"),
-            null)
+        mockAppointmentsRepository
+            .mock(MockAppointmentsRepository.FIND_BY_UUID_AND_DELETE_FALSE)
+            .params(mapOf(Pair("uuid", UUID.fromString("2fbf61a6-3b72-4313-b858-43dbf81198dc"))))
+            .returns { null }
 
         // when
         val mvnResponse = mockMvc.perform(request!!)

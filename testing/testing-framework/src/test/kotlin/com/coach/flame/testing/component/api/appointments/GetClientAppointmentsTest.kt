@@ -1,8 +1,11 @@
 package com.coach.flame.testing.component.api.appointments
 
+import com.coach.flame.customer.CustomerNotFoundException
 import com.coach.flame.testing.assertion.http.AppointmentAssert
 import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
+import com.coach.flame.testing.component.base.mock.MockAppointmentsRepository
+import com.coach.flame.testing.component.base.mock.MockClientRepository
 import com.coach.flame.testing.component.base.utils.AppointmentsHelper.twoAppointments
 import com.coach.flame.testing.component.base.utils.ClientHelper.oneClientAvailable
 import com.coach.flame.testing.component.base.utils.CoachHelper.oneCoach
@@ -44,8 +47,15 @@ class GetClientAppointmentsTest : BaseComponentTest() {
         val coach = oneCoach(coachIdentifier, mutableListOf(client))
         val twoAppointments = twoAppointments(coach, client, listOf(appointment1UUID, appointment2UUID))
 
-        mockClientRepository.mockFindByUuid(clientIdentifier, client)
-        mockAppointmentsRepository.mockGetAppointmentsByClient(client, twoAppointments)
+        mockClientRepository
+            .mock(MockClientRepository.GET_CLIENT)
+            .params(mapOf(Pair("uuid", clientIdentifier)))
+            .returns { client }
+
+        mockAppointmentsRepository
+            .mock(MockAppointmentsRepository.GET_APPOINTMENTS_BY_CLIENT)
+            .params(mapOf(Pair("client", client)))
+            .returnsMulti { twoAppointments }
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -96,7 +106,10 @@ class GetClientAppointmentsTest : BaseComponentTest() {
 
         val clientIdentifier = UUID.fromString("0f1c2e7f-a6c8-4f0d-8edc-01c7a5014419")
 
-        mockClientRepository.mockFindByUuidThrowsException(clientIdentifier)
+        mockClientRepository
+            .mock(MockClientRepository.GET_CLIENT)
+            .params(mapOf(Pair("uuid", clientIdentifier)))
+            .returns { throw CustomerNotFoundException("Could not find any client with uuid: 0f1c2e7f-a6c8-4f0d-8edc-01c7a5014419.") }
 
         // when
         val mvnResponse = mockMvc.perform(request!!)

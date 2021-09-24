@@ -6,6 +6,9 @@ import com.coach.flame.jpa.entity.maker.UserMaker
 import com.coach.flame.jpa.entity.maker.UserSessionMaker
 import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
+import com.coach.flame.testing.component.base.mock.MockClientRepository
+import com.coach.flame.testing.component.base.mock.MockCoachRepository
+import com.coach.flame.testing.component.base.mock.MockRegistrationInviteRepository
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
 import com.natpryce.makeiteasy.MakeItEasy.with
@@ -58,20 +61,31 @@ class RegisterCustomerClientTest : BaseComponentTest() {
         every { clientTypeRepositoryMock.getByType("CLIENT") } returns clientTypeMaker.make()
         every { clientRepositoryMock.saveAndFlush(any()) } returns client
 
-        mockRegistrationInviteRepository.save()
-        mockRegistrationInviteRepository.existsByRegistrationKeyIs(
-            "OTk5OS0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ==",
-            true
-        )
-        mockRegistrationInviteRepository.findByRegistrationKeyIs(
-            "OTk5OS0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ==",
-            registrationInvite
-        )
+        mockRegistrationInviteRepository
+            .mock(MockRegistrationInviteRepository.SAVE)
+            .capture()
+        mockRegistrationInviteRepository
+            .mock(MockRegistrationInviteRepository.EXISTS_BY_REGISTRATION_KEY_IS)
+            .params(mapOf(Pair("key", "OTk5OS0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ==")))
+            .returnsBool { true }
+        mockRegistrationInviteRepository
+            .mock(MockRegistrationInviteRepository.FIND_BY_REGISTRATION_KEY_IS)
+            .params(mapOf(Pair("key", "OTk5OS0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ==")))
+            .returns { registrationInvite }
 
-        mockClientRepository.findByUuid(client.uuid, client)
-        mockClientRepository.save()
+        mockClientRepository
+            .mock(MockClientRepository.FIND_BY_UUID)
+            .params(mapOf(Pair("uuid", client.uuid)))
+            .returns { client }
 
-        mockCoachRepository.mockFindByUuid(registrationInvite.coach!!.uuid, registrationInvite.coach!!)
+        mockClientRepository
+            .mock(MockClientRepository.SAVE)
+            .capture()
+
+        mockCoachRepository
+            .mock(MockCoachRepository.FIND_BY_UUID)
+            .params(mapOf(Pair("uuid", registrationInvite.coach!!.uuid)))
+            .returns { registrationInvite.coach!! }
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -139,10 +153,10 @@ class RegisterCustomerClientTest : BaseComponentTest() {
 
         every { clientTypeRepositoryMock.getByType("CLIENT") } returns clientTypeMaker.make()
         every { clientRepositoryMock.saveAndFlush(any()) } throws DataIntegrityViolationException("SQL Error -> Duplicate client")
-        mockRegistrationInviteRepository.existsByRegistrationKeyIs(
-            "OTk5OS0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ==",
-            true
-        )
+        mockRegistrationInviteRepository
+            .mock(MockRegistrationInviteRepository.EXISTS_BY_REGISTRATION_KEY_IS)
+            .params(mapOf(Pair("key", "OTk5OS0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ==")))
+            .returnsBool { true }
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -230,10 +244,10 @@ class RegisterCustomerClientTest : BaseComponentTest() {
         every { clientTypeRepositoryMock.getByType("CLIENT") } returns clientTypeMaker.make()
         every { clientRepositoryMock.saveAndFlush(any()) } returns client
 
-        mockRegistrationInviteRepository.existsByRegistrationKeyIs(
-            "MTk3MC0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ==",
-            true
-        )
+        mockRegistrationInviteRepository
+            .mock(MockRegistrationInviteRepository.EXISTS_BY_REGISTRATION_KEY_IS)
+            .params(mapOf(Pair("key", "MTk3MC0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ==")))
+            .returnsBool { true }
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -287,10 +301,10 @@ class RegisterCustomerClientTest : BaseComponentTest() {
         every { clientTypeRepositoryMock.getByType("CLIENT") } returns clientTypeMaker.make()
         every { clientRepositoryMock.saveAndFlush(any()) } returns client
 
-        mockRegistrationInviteRepository.existsByRegistrationKeyIs(
-            "OTk5OS0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ==",
-            false
-        )
+        mockRegistrationInviteRepository
+            .mock(MockRegistrationInviteRepository.EXISTS_BY_REGISTRATION_KEY_IS)
+            .params(mapOf(Pair("key", "OTk5OS0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ==")))
+            .returnsBool { false }
 
         // when
         val mvnResponse = mockMvc.perform(request!!)

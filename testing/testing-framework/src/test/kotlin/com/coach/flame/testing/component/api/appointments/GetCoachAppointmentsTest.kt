@@ -1,7 +1,10 @@
 package com.coach.flame.testing.component.api.appointments
 
+import com.coach.flame.failure.exception.CustomerNotFoundException
 import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
+import com.coach.flame.testing.component.base.mock.MockAppointmentsRepository
+import com.coach.flame.testing.component.base.mock.MockCoachRepository
 import com.coach.flame.testing.component.base.utils.AppointmentsHelper.twoAppointmentsDifferentClient
 import com.coach.flame.testing.component.base.utils.ClientHelper.oneClientAvailable
 import com.coach.flame.testing.component.base.utils.CoachHelper.oneCoach
@@ -46,8 +49,15 @@ class GetCoachAppointmentsTest : BaseComponentTest() {
         val twoAppointments =
             twoAppointmentsDifferentClient(coach, client1, client2, listOf(appointment1UUID, appointment2UUID))
 
-        mockCoachRepository.mockFindByUuid(coachIdentifier, coach)
-        mockAppointmentsRepository.mockGetAppointmentsByCoach(coach, twoAppointments)
+        mockCoachRepository
+            .mock(MockCoachRepository.GET_COACH)
+            .params(mapOf(Pair("uuid", coachIdentifier)))
+            .returns { coach }
+
+        mockAppointmentsRepository
+            .mock(MockAppointmentsRepository.GET_APPOINTMENTS_BY_COACH)
+            .params(mapOf(Pair("coach", coach)))
+            .returnsMulti { twoAppointments }
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -111,7 +121,10 @@ class GetCoachAppointmentsTest : BaseComponentTest() {
 
         val coachIdentifier = UUID.fromString("0f1c2e7f-a6c8-4f0d-8edc-01c7a5014419")
 
-        mockCoachRepository.mockFindByUuidThrowsException(coachIdentifier)
+        mockCoachRepository
+            .mock(MockCoachRepository.GET_COACH)
+            .params(mapOf(Pair("uuid", coachIdentifier)))
+            .returns { throw CustomerNotFoundException("Could not find any coach with uuid: 0f1c2e7f-a6c8-4f0d-8edc-01c7a5014419.") }
 
         // when
         val mvnResponse = mockMvc.perform(request!!)

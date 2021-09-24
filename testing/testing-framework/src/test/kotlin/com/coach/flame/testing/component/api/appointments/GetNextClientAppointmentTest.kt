@@ -4,6 +4,7 @@ import com.coach.flame.date.DateHelper
 import com.coach.flame.testing.assertion.http.AppointmentAssert
 import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
+import com.coach.flame.testing.component.base.mock.MockAppointmentsRepository
 import com.coach.flame.testing.component.base.utils.AppointmentsDataGenerator
 import com.coach.flame.testing.component.base.utils.ClientHelper.oneClientAvailable
 import com.coach.flame.testing.component.base.utils.CoachHelper.oneCoach
@@ -56,7 +57,10 @@ class GetNextClientAppointmentTest : BaseComponentTest() {
             )
             .build()
 
-        mockAppointmentsRepository.mockGetAppointmentByClientAndDttmStarts(client, appointments)
+        mockAppointmentsRepository
+            .mock(MockAppointmentsRepository.GET_APPOINTMENT_BY_CLIENT_AND_DTTM_STARTS)
+            .params(mapOf(Pair("client", client)))
+            .returnsMulti { appointments }
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -97,7 +101,10 @@ class GetNextClientAppointmentTest : BaseComponentTest() {
         val clientIdentifier = UUID.fromString("0f1c2e7f-a6c8-4f0d-8edc-01c7a5014419")
 
         val client = oneClientAvailable(clientIdentifier)
-        mockAppointmentsRepository.mockGetAppointmentByClientAndDttmStarts(client, listOf())
+        mockAppointmentsRepository
+            .mock(MockAppointmentsRepository.GET_APPOINTMENT_BY_CLIENT_AND_DTTM_STARTS)
+            .params(mapOf(Pair("client", client)))
+            .returnsMulti { listOf() }
 
         // when
         val mvnResponse = mockMvc.perform(request!!)

@@ -1,7 +1,10 @@
 package com.coach.flame.testing.component.api.appointments
 
+import com.coach.flame.failure.exception.CustomerNotFoundException
 import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
+import com.coach.flame.testing.component.base.mock.MockAppointmentsRepository
+import com.coach.flame.testing.component.base.mock.MockCoachRepository
 import com.coach.flame.testing.component.base.utils.AppointmentsHelper.twoAppointments
 import com.coach.flame.testing.component.base.utils.ClientHelper.oneClientAvailable
 import com.coach.flame.testing.component.base.utils.ClientHelper.oneClientPending
@@ -47,8 +50,15 @@ class GetAppointmentsTest : BaseComponentTest() {
         val coach = oneCoach(coachIdentifier, mutableListOf(client1, client2))
         val twoAppointments = twoAppointments(coach, client2, listOf(appointment1UUID, appointment2UUID))
 
-        mockCoachRepository.mockFindByUuid(coachIdentifier, coach)
-        mockAppointmentsRepository.mockGetAppointments(coachIdentifier, client2Identifier, twoAppointments)
+        mockCoachRepository
+            .mock(MockCoachRepository.GET_COACH)
+            .params(mapOf(Pair("uuid", coachIdentifier)))
+            .returns { coach }
+
+        mockAppointmentsRepository
+            .mock(MockAppointmentsRepository.GET_APPOINTMENTS)
+            .params(mapOf(Pair("coach", coach), Pair("client", client2)))
+            .returnsMulti { twoAppointments }
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -111,7 +121,10 @@ class GetAppointmentsTest : BaseComponentTest() {
     )
     fun `test get appointments for specific client and coach but coach request is wrong`() {
 
-        mockCoachRepository.mockFindByUuidThrowsException(UUID.fromString("3c5845f1-4a90-4396-8610-7261761369ae"))
+        mockCoachRepository
+            .mock(MockCoachRepository.GET_COACH)
+            .params(mapOf(Pair("uuid", UUID.fromString("3c5845f1-4a90-4396-8610-7261761369ae"))))
+            .returns { throw CustomerNotFoundException("Could not find any coach with uuid: 3c5845f1-4a90-4396-8610-7261761369ae.") }
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -155,7 +168,10 @@ class GetAppointmentsTest : BaseComponentTest() {
         val client1 = oneClientPending(client1Identifier)
         val coach = oneCoach(coachIdentifier, mutableListOf(client1))
 
-        mockCoachRepository.mockFindByUuid(coachIdentifier, coach)
+        mockCoachRepository
+            .mock(MockCoachRepository.GET_COACH)
+            .params(mapOf(Pair("uuid", coachIdentifier)))
+            .returns { coach }
 
         // when
         val mvnResponse = mockMvc.perform(request!!)

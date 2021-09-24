@@ -2,6 +2,7 @@ package com.coach.flame.testing.component.api.appointments
 
 import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
+import com.coach.flame.testing.component.base.mock.MockAppointmentsRepository
 import com.coach.flame.testing.component.base.utils.AppointmentsHelper.oneAppointment
 import com.coach.flame.testing.component.base.utils.ClientHelper.oneClientAvailable
 import com.coach.flame.testing.component.base.utils.ClientHelper.oneClientPending
@@ -45,9 +46,14 @@ class DeleteAppointmentTest : BaseComponentTest() {
         val coach = oneCoach(coachIdentifier, mutableListOf(client1, client2))
         val appointment = oneAppointment(coach, client2, appointment1UUID)
 
-        mockAppointmentsRepository.findByUuidAndDeleteFalse(appointment1UUID, appointment)
+        mockAppointmentsRepository
+            .mock(MockAppointmentsRepository.FIND_BY_UUID_AND_DELETE_FALSE)
+            .params(mapOf(Pair("uuid", appointment1UUID)))
+            .returns { appointment }
 
-        val capturedAppointment = mockAppointmentsRepository.captureSave()
+        val capturedAppointment = mockAppointmentsRepository
+            .mock(MockAppointmentsRepository.SAVE)
+            .capture()
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -90,10 +96,10 @@ class DeleteAppointmentTest : BaseComponentTest() {
     )
     fun `test delete appointments but appointment identifier request is wrong`() {
 
-        mockAppointmentsRepository.findByUuidAndDeleteFalse(
-            UUID.fromString("2fbf61a6-3b72-4313-b858-43dbf81198dc"),
-            null
-        )
+        mockAppointmentsRepository
+            .mock(MockAppointmentsRepository.FIND_BY_UUID_AND_DELETE_FALSE)
+            .params(mapOf(Pair("uuid", UUID.fromString("2fbf61a6-3b72-4313-b858-43dbf81198dc"))))
+            .returns { null }
 
         // when
         val mvnResponse = mockMvc.perform(request!!)

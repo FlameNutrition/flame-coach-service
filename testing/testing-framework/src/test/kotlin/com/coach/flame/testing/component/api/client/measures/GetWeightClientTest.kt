@@ -8,6 +8,7 @@ import com.coach.flame.jpa.entity.maker.ClientBuilder
 import com.coach.flame.jpa.entity.maker.ClientMaker
 import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
+import com.coach.flame.testing.component.base.mock.MockClientRepository
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
 import com.natpryce.makeiteasy.MakeItEasy.with
@@ -60,7 +61,10 @@ class GetWeightClientTest : BaseComponentTest() {
             )
             .make()
 
-        mockClientRepository.findByUuid(uuid, client)
+        mockClientRepository
+            .mock(MockClientRepository.FIND_BY_UUID)
+            .params(mapOf(Pair("uuid", uuid)))
+            .returns { client }
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -111,7 +115,10 @@ class GetWeightClientTest : BaseComponentTest() {
             )
             .make()
 
-        mockClientRepository.findByUuid(uuid, client)
+        mockClientRepository
+            .mock(MockClientRepository.FIND_BY_UUID)
+            .params(mapOf(Pair("uuid", uuid)))
+            .returns { client }
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -148,7 +155,10 @@ class GetWeightClientTest : BaseComponentTest() {
         // given
         val uuid = UUID.fromString("79275cc8-ed8a-4f8a-b790-ff66f74d758a")
 
-        mockClientRepository.findByUuidThrowsException(uuid)
+        mockClientRepository
+            .mock(MockClientRepository.FIND_BY_UUID)
+            .params(mapOf(Pair("uuid", uuid)))
+            .returns { null }
 
         // when
         val mvnResponse = mockMvc.perform(request!!)

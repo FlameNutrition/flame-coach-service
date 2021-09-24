@@ -1,6 +1,7 @@
 package com.coach.flame.testing.component.api.appointments.incomes
 
 import com.coach.flame.testing.component.base.BaseComponentTest
+import com.coach.flame.testing.component.base.mock.MockAppointmentsRepository
 import com.coach.flame.testing.component.base.utils.AppointmentsHelper.multipleAppointments
 import com.coach.flame.testing.component.base.utils.ClientHelper.oneClientPending
 import com.coach.flame.testing.component.base.utils.CoachHelper.oneCoach
@@ -71,7 +72,10 @@ class GetIncomesByYearTest : BaseComponentTest() {
         val coach = oneCoach(coachIdentifier, mutableListOf(client))
         val appointments = multipleAppointments(coach, client, listOfAppointmentsIdentifier, incomesFrom, incomesTo)
 
-        mockAppointmentsRepository.mockGetAppointmentsByCoachBetweenDate(coach, from, to, appointments)
+        mockAppointmentsRepository
+            .mock(MockAppointmentsRepository.GET_APPOINTMENTS_BY_COACH_BETWEEN_DATES)
+            .params(mapOf(Pair("coach", coach), Pair("from", from), Pair("to", to)))
+            .returnsMulti { appointments }
 
         // when
         val mvnResponse = mockMvc.perform(request!!)

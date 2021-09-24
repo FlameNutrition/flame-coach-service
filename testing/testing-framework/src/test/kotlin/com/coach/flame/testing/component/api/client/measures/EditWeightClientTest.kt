@@ -8,6 +8,7 @@ import com.coach.flame.jpa.entity.maker.ClientBuilder
 import com.coach.flame.jpa.entity.maker.ClientMaker
 import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
+import com.coach.flame.testing.component.base.mock.MockClientRepository
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
 import com.natpryce.makeiteasy.MakeItEasy.with
@@ -59,8 +60,14 @@ class EditWeightClientTest : BaseComponentTest() {
             )
             .make()
 
-        mockClientRepository.findByUuid(uuid, client)
-        mockClientRepository.saveAndFlush()
+        mockClientRepository
+            .mock(MockClientRepository.FIND_BY_UUID)
+            .params(mapOf(Pair("uuid", uuid)))
+            .returns { client }
+
+        mockClientRepository
+            .mock(MockClientRepository.SAVE_AND_FLUSH)
+            .capture()
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -121,8 +128,14 @@ class EditWeightClientTest : BaseComponentTest() {
             )
             .make()
 
-        mockClientRepository.findByUuid(uuid, client)
-        val clientCaptured = mockClientRepository.saveAndFlush()
+        mockClientRepository
+            .mock(MockClientRepository.FIND_BY_UUID)
+            .params(mapOf(Pair("uuid", uuid)))
+            .returns { client }
+
+        val clientCaptured = mockClientRepository
+            .mock(MockClientRepository.SAVE_AND_FLUSH)
+            .capture()
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
@@ -180,7 +193,10 @@ class EditWeightClientTest : BaseComponentTest() {
             .but(with(ClientMaker.clientMeasureWeight, mutableListOf(weight0.toClientMeasureWeight())))
             .make()
 
-        mockClientRepository.findByUuid(uuid, client)
+        mockClientRepository
+            .mock(MockClientRepository.FIND_BY_UUID)
+            .params(mapOf(Pair("uuid", uuid)))
+            .returns { client }
 
         // when
         val mvnResponse = mockMvc.perform(request!!)
