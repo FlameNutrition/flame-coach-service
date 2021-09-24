@@ -1,5 +1,6 @@
 package com.coach.flame.appointment
 
+import com.coach.flame.domain.CustomerTypeDto
 import com.coach.flame.domain.DateIntervalDto
 import com.coach.flame.domain.IncomeDto
 import com.coach.flame.domain.maker.AppointmentDtoBuilder
@@ -61,8 +62,10 @@ class AppointmentServiceImplTest {
             .but(with(ClientMaker.uuid, uuidClient))
             .make()
         val coach = CoachBuilder.maker()
-            .but(with(CoachMaker.uuid, uuidCoach),
-                with(CoachMaker.clients, mutableListOf(client)))
+            .but(
+                with(CoachMaker.uuid, uuidCoach),
+                with(CoachMaker.clients, mutableListOf(client))
+            )
             .make()
 
         every {
@@ -71,12 +74,16 @@ class AppointmentServiceImplTest {
 
         every {
             appointmentRepository.findAppointments(any(), any())
-        } returns listOf(AppointmentDtoBuilder.maker()
-            .but(with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T09:52:52.389929+01:00")),
-                with(AppointmentDtoMaker.coach, coach.toDto()),
-                with(AppointmentDtoMaker.client, client.toDto()))
-            .make()
-            .toAppointment())
+        } returns listOf(
+            AppointmentDtoBuilder.maker()
+                .but(
+                    with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T09:52:52.389929+01:00")),
+                    with(AppointmentDtoMaker.coach, coach.toDto()),
+                    with(AppointmentDtoMaker.client, client.toDto())
+                )
+                .make()
+                .toAppointment()
+        )
 
         val result = appointmentServiceImpl.getAppointments(uuidCoach, uuidClient, Optional.empty())
 
@@ -98,8 +105,10 @@ class AppointmentServiceImplTest {
             .but(with(ClientMaker.uuid, uuidClient))
             .make()
         val coach = CoachBuilder.maker()
-            .but(with(CoachMaker.uuid, uuidCoach),
-                with(CoachMaker.clients, mutableListOf(client)))
+            .but(
+                with(CoachMaker.uuid, uuidCoach),
+                with(CoachMaker.clients, mutableListOf(client))
+            )
             .make()
 
         every {
@@ -108,22 +117,30 @@ class AppointmentServiceImplTest {
 
         every {
             appointmentRepository.findAppointmentsBetweenDates(any(), any(), any(), any())
-        } returns listOf(AppointmentDtoBuilder.maker()
-            .but(with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T09:52:52.389929+01:00")),
-                with(AppointmentDtoMaker.coach, coach.toDto()),
-                with(AppointmentDtoMaker.client, client.toDto()))
-            .make()
-            .toAppointment())
+        } returns listOf(
+            AppointmentDtoBuilder.maker()
+                .but(
+                    with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T09:52:52.389929+01:00")),
+                    with(AppointmentDtoMaker.coach, coach.toDto()),
+                    with(AppointmentDtoMaker.client, client.toDto())
+                )
+                .make()
+                .toAppointment()
+        )
 
-        val result = appointmentServiceImpl.getAppointments(uuidCoach, uuidClient,
-            Optional.of(DateIntervalDto(from, to)))
+        val result = appointmentServiceImpl.getAppointments(
+            uuidCoach, uuidClient,
+            Optional.of(DateIntervalDto(from, to))
+        )
 
         verify { coachOperations.getCoach(uuidCoach) }
         verify {
-            appointmentRepository.findAppointmentsBetweenDates(uuidCoach,
+            appointmentRepository.findAppointmentsBetweenDates(
+                uuidCoach,
                 uuidClient,
                 from.atStartOfDay(),
-                to.atStartOfDay())
+                to.atStartOfDay()
+            )
         }
 
         then(result).hasSize(1)
@@ -139,8 +156,10 @@ class AppointmentServiceImplTest {
             .but(with(ClientMaker.uuid, uuidClient))
             .make()
         val coach = CoachBuilder.maker()
-            .but(with(CoachMaker.uuid, uuidCoach),
-                with(CoachMaker.clients, mutableListOf(client)))
+            .but(
+                with(CoachMaker.uuid, uuidCoach),
+                with(CoachMaker.clients, mutableListOf(client))
+            )
             .make()
 
         every {
@@ -149,12 +168,16 @@ class AppointmentServiceImplTest {
 
         every {
             appointmentRepository.findAppointmentsByClient(any())
-        } returns listOf(AppointmentDtoBuilder.maker()
-            .but(with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T09:52:52.389929+01:00")),
-                with(AppointmentDtoMaker.coach, coach.toDto()),
-                with(AppointmentDtoMaker.client, client.toDto()))
-            .make()
-            .toAppointment())
+        } returns listOf(
+            AppointmentDtoBuilder.maker()
+                .but(
+                    with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T09:52:52.389929+01:00")),
+                    with(AppointmentDtoMaker.coach, coach.toDto()),
+                    with(AppointmentDtoMaker.client, client.toDto())
+                )
+                .make()
+                .toAppointment()
+        )
 
         val result = appointmentServiceImpl.getAllClientAppointments(uuidClient, Optional.empty())
 
@@ -176,8 +199,10 @@ class AppointmentServiceImplTest {
             .but(with(ClientMaker.uuid, uuidClient))
             .make()
         val coach = CoachBuilder.maker()
-            .but(with(CoachMaker.uuid, uuidCoach),
-                with(CoachMaker.clients, mutableListOf(client)))
+            .but(
+                with(CoachMaker.uuid, uuidCoach),
+                with(CoachMaker.clients, mutableListOf(client))
+            )
             .make()
 
         every {
@@ -186,21 +211,29 @@ class AppointmentServiceImplTest {
 
         every {
             appointmentRepository.findAppointmentsByClientBetweenDates(any(), any(), any())
-        } returns listOf(AppointmentDtoBuilder.maker()
-            .but(with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T09:52:52.389929+01:00")),
-                with(AppointmentDtoMaker.coach, coach.toDto()),
-                with(AppointmentDtoMaker.client, client.toDto()))
-            .make()
-            .toAppointment())
+        } returns listOf(
+            AppointmentDtoBuilder.maker()
+                .but(
+                    with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T09:52:52.389929+01:00")),
+                    with(AppointmentDtoMaker.coach, coach.toDto()),
+                    with(AppointmentDtoMaker.client, client.toDto())
+                )
+                .make()
+                .toAppointment()
+        )
 
-        val result = appointmentServiceImpl.getAllClientAppointments(uuidClient,
-            Optional.of(DateIntervalDto(from, to)))
+        val result = appointmentServiceImpl.getAllClientAppointments(
+            uuidClient,
+            Optional.of(DateIntervalDto(from, to))
+        )
 
         verify { clientOperations.getClient(uuidClient) }
         verify {
-            appointmentRepository.findAppointmentsByClientBetweenDates(client.uuid,
+            appointmentRepository.findAppointmentsByClientBetweenDates(
+                client.uuid,
                 from.atStartOfDay(),
-                to.atStartOfDay())
+                to.atStartOfDay()
+            )
         }
 
         then(result).hasSize(1)
@@ -244,8 +277,10 @@ class AppointmentServiceImplTest {
             .but(with(ClientMaker.uuid, uuidClient2))
             .make()
         val coach = CoachBuilder.maker()
-            .but(with(CoachMaker.uuid, uuidCoach),
-                with(CoachMaker.clients, mutableListOf(client1, client2)))
+            .but(
+                with(CoachMaker.uuid, uuidCoach),
+                with(CoachMaker.clients, mutableListOf(client1, client2))
+            )
             .make()
 
         every {
@@ -254,18 +289,24 @@ class AppointmentServiceImplTest {
 
         every {
             appointmentRepository.findAppointmentsByCoach(any())
-        } returns listOf(AppointmentDtoBuilder.maker()
-            .but(with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T09:52:52.389929+01:00")),
-                with(AppointmentDtoMaker.coach, coach.toDto()),
-                with(AppointmentDtoMaker.client, client1.toDto()))
-            .make()
-            .toAppointment(),
+        } returns listOf(
             AppointmentDtoBuilder.maker()
-                .but(with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T09:52:52.389929+01:00")),
+                .but(
+                    with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T09:52:52.389929+01:00")),
                     with(AppointmentDtoMaker.coach, coach.toDto()),
-                    with(AppointmentDtoMaker.client, client2.toDto()))
+                    with(AppointmentDtoMaker.client, client1.toDto())
+                )
                 .make()
-                .toAppointment())
+                .toAppointment(),
+            AppointmentDtoBuilder.maker()
+                .but(
+                    with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T09:52:52.389929+01:00")),
+                    with(AppointmentDtoMaker.coach, coach.toDto()),
+                    with(AppointmentDtoMaker.client, client2.toDto())
+                )
+                .make()
+                .toAppointment()
+        )
 
         val result = appointmentServiceImpl.getAllCoachAppointments(uuidCoach, Optional.empty())
 
@@ -298,8 +339,10 @@ class AppointmentServiceImplTest {
             .but(with(ClientMaker.uuid, uuidClient2))
             .make()
         val coach = CoachBuilder.maker()
-            .but(with(CoachMaker.uuid, uuidCoach),
-                with(CoachMaker.clients, mutableListOf(client1, client2)))
+            .but(
+                with(CoachMaker.uuid, uuidCoach),
+                with(CoachMaker.clients, mutableListOf(client1, client2))
+            )
             .make()
 
         every {
@@ -308,27 +351,37 @@ class AppointmentServiceImplTest {
 
         every {
             appointmentRepository.findAppointmentsByCoachBetweenDates(any(), any(), any())
-        } returns listOf(AppointmentDtoBuilder.maker()
-            .but(with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T09:52:52.389929+01:00")),
-                with(AppointmentDtoMaker.coach, coach.toDto()),
-                with(AppointmentDtoMaker.client, client1.toDto()))
-            .make()
-            .toAppointment(),
+        } returns listOf(
             AppointmentDtoBuilder.maker()
-                .but(with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T09:52:52.389929+01:00")),
+                .but(
+                    with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T09:52:52.389929+01:00")),
                     with(AppointmentDtoMaker.coach, coach.toDto()),
-                    with(AppointmentDtoMaker.client, client2.toDto()))
+                    with(AppointmentDtoMaker.client, client1.toDto())
+                )
                 .make()
-                .toAppointment())
+                .toAppointment(),
+            AppointmentDtoBuilder.maker()
+                .but(
+                    with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T09:52:52.389929+01:00")),
+                    with(AppointmentDtoMaker.coach, coach.toDto()),
+                    with(AppointmentDtoMaker.client, client2.toDto())
+                )
+                .make()
+                .toAppointment()
+        )
 
-        val result = appointmentServiceImpl.getAllCoachAppointments(uuidCoach,
-            Optional.of(DateIntervalDto(from, to)))
+        val result = appointmentServiceImpl.getAllCoachAppointments(
+            uuidCoach,
+            Optional.of(DateIntervalDto(from, to))
+        )
 
         verify { coachOperations.getCoach(uuidCoach) }
         verify {
-            appointmentRepository.findAppointmentsByCoachBetweenDates(coach.uuid,
+            appointmentRepository.findAppointmentsByCoachBetweenDates(
+                coach.uuid,
                 from.atStartOfDay(),
-                to.atStartOfDay())
+                to.atStartOfDay()
+            )
         }
 
         then(result).hasSize(2)
@@ -352,8 +405,10 @@ class AppointmentServiceImplTest {
             .make()
 
         val coach = CoachBuilder.maker()
-            .but(with(CoachMaker.uuid, uuidCoach),
-                with(CoachMaker.clients, mutableListOf(client)))
+            .but(
+                with(CoachMaker.uuid, uuidCoach),
+                with(CoachMaker.clients, mutableListOf(client))
+            )
             .make()
 
         val appointmentInjected = slot<Appointment>()
@@ -362,10 +417,12 @@ class AppointmentServiceImplTest {
         every { appointmentRepository.save(capture(appointmentInjected)) } answers { appointmentInjected.captured }
 
         appointmentServiceImpl
-            .createAppointment(uuidCoach, uuidClient, AppointmentDtoBuilder
-                .maker()
-                .but(with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T16:52:52.389929+08:00")))
-                .make())
+            .createAppointment(
+                uuidCoach, uuidClient, AppointmentDtoBuilder
+                    .maker()
+                    .but(with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T16:52:52.389929+08:00")))
+                    .make()
+            )
 
         verify { coachOperations.getCoach(uuidCoach) }
 
@@ -390,10 +447,17 @@ class AppointmentServiceImplTest {
 
         val exception = catchThrowable {
             appointmentServiceImpl
-                .createAppointment(uuidCoach, uuidClient, AppointmentDtoBuilder
-                    .maker()
-                    .but(with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-14T16:52:52.389929+08:00")))
-                    .make())
+                .createAppointment(
+                    uuidCoach, uuidClient, AppointmentDtoBuilder
+                        .maker()
+                        .but(
+                            with(
+                                AppointmentDtoMaker.dttmStarts,
+                                ZonedDateTime.parse("2021-07-14T16:52:52.389929+08:00")
+                            )
+                        )
+                        .make()
+                )
         }
 
         verify { coachOperations.getCoach(uuidCoach) }
@@ -409,29 +473,38 @@ class AppointmentServiceImplTest {
         val appointmentIdentifier = UUID.randomUUID()
 
         val income = IncomeDtoBuilder.maker()
-            .but(with(IncomeDtoMaker.price, 200.5f),
-                with(IncomeDtoMaker.status, IncomeDto.IncomeStatus.REJECTED))
+            .but(
+                with(IncomeDtoMaker.price, 200.5f),
+                with(IncomeDtoMaker.status, IncomeDto.IncomeStatus.REJECTED)
+            )
             .make()
 
         val appointment = AppointmentDtoBuilder.maker()
-            .but(with(AppointmentDtoMaker.identifier, appointmentIdentifier),
+            .but(
+                with(AppointmentDtoMaker.identifier, appointmentIdentifier),
                 with(AppointmentDtoMaker.income, income),
                 with(AppointmentDtoMaker.delete, true),
                 with(AppointmentDtoMaker.notes, "Hey hello!"),
                 with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-06-14T16:52:52.389929+09:00")),
                 with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-06-14T12:52:52.389929+09:00")),
-                with(AppointmentDtoMaker.currency, Currency.getInstance("EUR")))
+                with(AppointmentDtoMaker.currency, Currency.getInstance("EUR"))
+            )
             .make()
 
         val appointmentToUpdate = AppointmentDtoBuilder.maker()
-            .but(with(AppointmentDtoMaker.id, 100L),
+            .but(
+                with(AppointmentDtoMaker.id, 100L),
                 with(AppointmentDtoMaker.identifier, appointmentIdentifier),
                 with(AppointmentDtoMaker.coach, CoachBuilder.default().toDto()),
                 with(AppointmentDtoMaker.client, ClientBuilder.default().toDto()),
-                with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
-                    .but(with(IncomeDtoMaker.price, 500.5f),
-                        with(IncomeDtoMaker.status, IncomeDto.IncomeStatus.ACCEPTED))
-                    .make())
+                with(
+                    AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
+                        .but(
+                            with(IncomeDtoMaker.price, 500.5f),
+                            with(IncomeDtoMaker.status, IncomeDto.IncomeStatus.ACCEPTED)
+                        )
+                        .make()
+                )
             )
             .make()
             .toAppointment()
@@ -469,12 +542,14 @@ class AppointmentServiceImplTest {
             .make()
 
         val appointment = AppointmentDtoBuilder.maker()
-            .but(with(AppointmentDtoMaker.identifier, appointmentIdentifier),
+            .but(
+                with(AppointmentDtoMaker.identifier, appointmentIdentifier),
                 with(AppointmentDtoMaker.income, income),
                 with(AppointmentDtoMaker.delete, true),
                 with(AppointmentDtoMaker.notes, "Hey hello!"),
                 with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-06-14T16:52:52.389929+09:00")),
-                with(AppointmentDtoMaker.currency, Currency.getInstance("EUR")))
+                with(AppointmentDtoMaker.currency, Currency.getInstance("EUR"))
+            )
             .make()
 
         every { appointmentRepository.findByUuidAndDeleteFalse(appointmentIdentifier) } returns null
@@ -492,10 +567,12 @@ class AppointmentServiceImplTest {
         val appointmentIdentifier = UUID.randomUUID()
 
         val appointmentToDelete = AppointmentDtoBuilder.maker()
-            .but(with(AppointmentDtoMaker.id, 100L),
+            .but(
+                with(AppointmentDtoMaker.id, 100L),
                 with(AppointmentDtoMaker.identifier, appointmentIdentifier),
                 with(AppointmentDtoMaker.coach, CoachBuilder.default().toDto()),
-                with(AppointmentDtoMaker.client, ClientBuilder.default().toDto()))
+                with(AppointmentDtoMaker.client, ClientBuilder.default().toDto())
+            )
             .make()
             .toAppointment()
 
@@ -524,6 +601,57 @@ class AppointmentServiceImplTest {
 
         then(result).isInstanceOf(AppointmentMissingDeleteException::class.java)
         then(result).hasMessageContaining("Didn't find the following uuid appointment:")
+
+    }
+
+    @Test
+    fun `test get next client appointment`() {
+
+        val clientIdentifier = UUID.randomUUID()
+
+        every { appointmentRepository.getAppointmentByClientAndDttmStarts(any(), any()) } returns listOf(
+            AppointmentDtoBuilder
+                .makerWithClientAndCoach()
+                .make()
+                .toAppointment()
+        )
+
+        appointmentServiceImpl.getNextAppointment(clientIdentifier, CustomerTypeDto.CLIENT)
+
+        verify { appointmentRepository.getAppointmentByClientAndDttmStarts(clientIdentifier, isNull(inverse = true)) }
+
+    }
+
+    @Test
+    fun `test get next coach appointment`() {
+
+        val coachIdentifier = UUID.randomUUID()
+
+        every { appointmentRepository.getAppointmentByCoachAndDttmStarts(any(), any()) } returns listOf(
+            AppointmentDtoBuilder
+                .makerWithClientAndCoach()
+                .make()
+                .toAppointment()
+        )
+
+        appointmentServiceImpl.getNextAppointment(coachIdentifier, CustomerTypeDto.COACH)
+
+        verify { appointmentRepository.getAppointmentByCoachAndDttmStarts(coachIdentifier, isNull(inverse = true)) }
+
+    }
+
+    @Test
+    fun `test get next coach or client appointment but list is empty`() {
+
+        val uuid = UUID.randomUUID()
+
+        val result = catchThrowable { appointmentServiceImpl.getNextAppointment(uuid, CustomerTypeDto.UNKNOWN) }
+
+        verify(exactly = 0) { appointmentRepository.getAppointmentByCoachAndDttmStarts(any(), any()) }
+        verify(exactly = 0) { appointmentRepository.getAppointmentByClientAndDttmStarts(any(), any()) }
+
+        then(result).isInstanceOf(AppointmentNotFoundException::class.java)
+        then(result).hasMessageContaining("Appointment not found.")
 
     }
 

@@ -11,10 +11,7 @@ import com.coach.flame.aspect.LoggingResponse
 import com.coach.flame.date.DateHelper
 import com.coach.flame.date.DateHelper.toISODateWithOffset
 import com.coach.flame.date.DateHelper.toZonedDateTime
-import com.coach.flame.domain.AppointmentDto
-import com.coach.flame.domain.ClientDto
-import com.coach.flame.domain.DateIntervalDto
-import com.coach.flame.domain.IncomeDto
+import com.coach.flame.domain.*
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
 import java.util.*
@@ -44,6 +41,30 @@ class AppointmentImpl(
                 client = toClient(it.safeClient),
                 incomeStatus = it.income.status.name
             )
+        }
+    }
+
+    @LoggingRequest
+    @LoggingResponse
+    @GetMapping("/client/getNext")
+    @ResponseBody
+    override fun getNextClientAppointment(@RequestParam clientIdentifier: UUID): AppointmentResponse {
+        return APIWrapperException.executeRequest {
+            val appointment = appointmentService.getNextAppointment(clientIdentifier, CustomerTypeDto.CLIENT)
+
+            AppointmentResponse(appointments = hashSetOf(toAppointment(appointment)))
+        }
+    }
+
+    @LoggingRequest
+    @LoggingResponse
+    @GetMapping("/coach/getNext")
+    @ResponseBody
+    override fun getNextCoachAppointment(@RequestParam coachIdentifier: UUID): AppointmentResponse {
+        return APIWrapperException.executeRequest {
+            val appointment = appointmentService.getNextAppointment(coachIdentifier, CustomerTypeDto.COACH)
+
+            AppointmentResponse(appointments = hashSetOf(toAppointment(appointment)))
         }
     }
 
@@ -147,7 +168,8 @@ class AppointmentImpl(
                 dttmEnds = toZonedDateTime(appointmentRequest.dttmEnds),
                 notes = appointmentRequest.notes,
                 income = IncomeDto(appointmentRequest.price, IncomeDto.IncomeStatus.PENDING),
-                delete = false)
+                delete = false
+            )
 
             val appointment =
                 appointmentService.createAppointment(coachIdentifier, clientIdentifier, appointmentToPersist)
@@ -171,8 +193,11 @@ class AppointmentImpl(
                 dttmStarts = toZonedDateTime(appointmentRequest.dttmStarts),
                 dttmEnds = toZonedDateTime(appointmentRequest.dttmEnds),
                 notes = appointmentRequest.notes,
-                income = IncomeDto(appointmentRequest.price,
-                    IncomeDto.IncomeStatus.valueOf(appointmentRequest.incomeStatus)))
+                income = IncomeDto(
+                    appointmentRequest.price,
+                    IncomeDto.IncomeStatus.valueOf(appointmentRequest.incomeStatus)
+                )
+            )
 
             val appointment = appointmentService.updateAppointment(appointmentToUpdate)
 
@@ -194,7 +219,8 @@ class AppointmentImpl(
                     Appointment(
                         identifier = appointmentIdentifier.toString(),
                         incomeStatus = null
-                    ))
+                    )
+                )
             )
         }
     }

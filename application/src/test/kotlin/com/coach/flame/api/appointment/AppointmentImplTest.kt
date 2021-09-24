@@ -4,17 +4,15 @@ import com.coach.flame.api.appointment.request.AppointmentRequest
 import com.coach.flame.appointment.AppointmentService
 import com.coach.flame.date.DateHelper
 import com.coach.flame.domain.AppointmentDto
+import com.coach.flame.domain.CustomerTypeDto
 import com.coach.flame.domain.DateIntervalDto
 import com.coach.flame.domain.IncomeDto
 import com.coach.flame.domain.maker.*
 import com.natpryce.makeiteasy.MakeItEasy.with
-import io.mockk.clearAllMocks
-import io.mockk.every
+import io.mockk.*
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import io.mockk.mockk
-import io.mockk.slot
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
@@ -45,31 +43,41 @@ class AppointmentImplTest {
         val to = "2021-12-31"
 
         val appointment1 = AppointmentDtoBuilder.maker()
-            .but(with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
+            .but(
+                with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
                 with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-15T03:52:52.389929-04:00")),
                 with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-15T04:52:52.389929-04:00")),
                 with(AppointmentDtoMaker.client, ClientDtoBuilder.default()),
-                with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
-                    .but(with(IncomeDtoMaker.price, 200.5f))
-                    .make()),
-                with(AppointmentDtoMaker.notes, "Simple test"))
+                with(
+                    AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
+                        .but(with(IncomeDtoMaker.price, 200.5f))
+                        .make()
+                ),
+                with(AppointmentDtoMaker.notes, "Simple test")
+            )
             .make()
 
         val appointment2 = AppointmentDtoBuilder.maker()
-            .but(with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
+            .but(
+                with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
                 with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-15T03:52:52.389929-04:00")),
                 with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-15T04:52:52.389929-04:00")),
                 with(AppointmentDtoMaker.client, ClientDtoBuilder.default()),
-                with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
-                    .but(with(IncomeDtoMaker.price, 100.5f))
-                    .make()),
-                with(AppointmentDtoMaker.notes, "Simple test 2"))
+                with(
+                    AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
+                        .but(with(IncomeDtoMaker.price, 100.5f))
+                        .make()
+                ),
+                with(AppointmentDtoMaker.notes, "Simple test 2")
+            )
             .make()
 
         every {
-            appointmentService.getAppointments(coachIdentifier,
+            appointmentService.getAppointments(
+                coachIdentifier,
                 clientIdentifier,
-                Optional.of(DateIntervalDto(DateHelper.toDate(from), DateHelper.toDate(to))))
+                Optional.of(DateIntervalDto(DateHelper.toDate(from), DateHelper.toDate(to)))
+            )
         } returns listOf(appointment1, appointment2)
 
         val response = classToTest.getAppointments(coachIdentifier, clientIdentifier, from, to)
@@ -99,30 +107,44 @@ class AppointmentImplTest {
         val to = "2021-12-31"
 
         val appointment1 = AppointmentDtoBuilder.maker()
-            .but(with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
-                with(AppointmentDtoMaker.client, ClientDtoBuilder.maker()
-                    .but(with(ClientDtoMaker.identifier, clientIdentifier1))
-                    .make()),
-                with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
-                    .but(with(IncomeDtoMaker.price, 200.5f))
-                    .make()),
-                with(AppointmentDtoMaker.notes, "Simple test"))
+            .but(
+                with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
+                with(
+                    AppointmentDtoMaker.client, ClientDtoBuilder.maker()
+                        .but(with(ClientDtoMaker.identifier, clientIdentifier1))
+                        .make()
+                ),
+                with(
+                    AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
+                        .but(with(IncomeDtoMaker.price, 200.5f))
+                        .make()
+                ),
+                with(AppointmentDtoMaker.notes, "Simple test")
+            )
             .make()
 
         val appointment2 = AppointmentDtoBuilder.maker()
-            .but(with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
-                with(AppointmentDtoMaker.client, ClientDtoBuilder.maker()
-                    .but(with(ClientDtoMaker.identifier, clientIdentifier2))
-                    .make()),
-                with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
-                    .but(with(IncomeDtoMaker.price, 100.5f))
-                    .make()),
-                with(AppointmentDtoMaker.notes, "Simple test 2"))
+            .but(
+                with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
+                with(
+                    AppointmentDtoMaker.client, ClientDtoBuilder.maker()
+                        .but(with(ClientDtoMaker.identifier, clientIdentifier2))
+                        .make()
+                ),
+                with(
+                    AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
+                        .but(with(IncomeDtoMaker.price, 100.5f))
+                        .make()
+                ),
+                with(AppointmentDtoMaker.notes, "Simple test 2")
+            )
             .make()
 
         every {
-            appointmentService.getAllCoachAppointments(coachIdentifier,
-                Optional.of(DateIntervalDto(DateHelper.toDate(from), DateHelper.toDate(to))))
+            appointmentService.getAllCoachAppointments(
+                coachIdentifier,
+                Optional.of(DateIntervalDto(DateHelper.toDate(from), DateHelper.toDate(to)))
+            )
         } returns listOf(appointment1, appointment2)
 
         val response = classToTest.getAppointmentsCoach(coachIdentifier, from, to)
@@ -158,26 +180,36 @@ class AppointmentImplTest {
             .make()
 
         val appointment1 = AppointmentDtoBuilder.maker()
-            .but(with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
+            .but(
+                with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
                 with(AppointmentDtoMaker.client, client),
-                with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
-                    .but(with(IncomeDtoMaker.price, 200.5f))
-                    .make()),
-                with(AppointmentDtoMaker.notes, "Simple test"))
+                with(
+                    AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
+                        .but(with(IncomeDtoMaker.price, 200.5f))
+                        .make()
+                ),
+                with(AppointmentDtoMaker.notes, "Simple test")
+            )
             .make()
 
         val appointment2 = AppointmentDtoBuilder.maker()
-            .but(with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
+            .but(
+                with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
                 with(AppointmentDtoMaker.client, client),
-                with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
-                    .but(with(IncomeDtoMaker.price, 100.5f))
-                    .make()),
-                with(AppointmentDtoMaker.notes, "Simple test 2"))
+                with(
+                    AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
+                        .but(with(IncomeDtoMaker.price, 100.5f))
+                        .make()
+                ),
+                with(AppointmentDtoMaker.notes, "Simple test 2")
+            )
             .make()
 
         every {
-            appointmentService.getAllClientAppointments(clientIdentifier,
-                Optional.of(DateIntervalDto(DateHelper.toDate(from), DateHelper.toDate(to))))
+            appointmentService.getAllClientAppointments(
+                clientIdentifier,
+                Optional.of(DateIntervalDto(DateHelper.toDate(from), DateHelper.toDate(to)))
+            )
         } returns listOf(appointment1, appointment2)
 
         val response = classToTest.getAppointmentsClient(clientIdentifier, from, to)
@@ -215,14 +247,18 @@ class AppointmentImplTest {
         )
 
         val appointment1 = AppointmentDtoBuilder.maker()
-            .but(with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
+            .but(
+                with(AppointmentDtoMaker.identifier, UUID.randomUUID()),
                 with(AppointmentDtoMaker.client, ClientDtoBuilder.default()),
                 with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-15T15:52:52.389929+08:00")),
                 with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-15T16:52:52.389929+08:00")),
-                with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
-                    .but(with(IncomeDtoMaker.price, 20.5f))
-                    .make()),
-                with(AppointmentDtoMaker.notes, "Simple note"))
+                with(
+                    AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
+                        .but(with(IncomeDtoMaker.price, 20.5f))
+                        .make()
+                ),
+                with(AppointmentDtoMaker.notes, "Simple note")
+            )
             .make()
 
         val appointmentSlot = slot<AppointmentDto>()
@@ -271,15 +307,21 @@ class AppointmentImplTest {
         )
 
         val appointment1 = AppointmentDtoBuilder.maker()
-            .but(with(AppointmentDtoMaker.identifier, uuidAppointment),
+            .but(
+                with(AppointmentDtoMaker.identifier, uuidAppointment),
                 with(AppointmentDtoMaker.dttmStarts, ZonedDateTime.parse("2021-07-15T15:52:52.389929+08:00")),
                 with(AppointmentDtoMaker.dttmEnds, ZonedDateTime.parse("2021-07-17T16:52:52.389929+08:00")),
-                with(AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
-                    .but(with(IncomeDtoMaker.price, 100.5f),
-                        with(IncomeDtoMaker.status, IncomeDto.IncomeStatus.REJECTED))
-                    .make()),
+                with(
+                    AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
+                        .but(
+                            with(IncomeDtoMaker.price, 100.5f),
+                            with(IncomeDtoMaker.status, IncomeDto.IncomeStatus.REJECTED)
+                        )
+                        .make()
+                ),
                 with(AppointmentDtoMaker.client, ClientDtoBuilder.default()),
-                with(AppointmentDtoMaker.notes, "Simple note updated"))
+                with(AppointmentDtoMaker.notes, "Simple note updated")
+            )
             .make()
 
         val appointmentSlot = slot<AppointmentDto>()
@@ -330,6 +372,40 @@ class AppointmentImplTest {
         val firstAppointment = response.appointments.first { it.identifier == uuidAppointment.toString() }
 
         then(firstAppointment.identifier).isEqualTo(uuidAppointment.toString())
+
+    }
+
+    @Test
+    fun `test get next client appointment`() {
+
+        val clientIdentifier = UUID.randomUUID()
+
+        every { appointmentService.getNextAppointment(any(), any()) } returns AppointmentDtoBuilder
+            .makerWithClientAndCoach()
+            .make()
+
+        val response = classToTest.getNextClientAppointment(clientIdentifier)
+
+        then(response.appointments).hasSize(1)
+
+        verify { appointmentService.getNextAppointment(clientIdentifier, CustomerTypeDto.CLIENT) }
+
+    }
+
+    @Test
+    fun `test get next coach appointment`() {
+
+        val coachIdentifier = UUID.randomUUID()
+
+        every { appointmentService.getNextAppointment(any(), any()) } returns AppointmentDtoBuilder
+            .makerWithClientAndCoach()
+            .make()
+
+        val response = classToTest.getNextCoachAppointment(coachIdentifier)
+
+        then(response.appointments).hasSize(1)
+
+        verify { appointmentService.getNextAppointment(coachIdentifier, CustomerTypeDto.COACH) }
 
     }
 

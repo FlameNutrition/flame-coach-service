@@ -6,6 +6,10 @@ import java.util.*
 
 interface AppointmentAPI {
 
+    fun getNextClientAppointment(clientIdentifier: UUID): AppointmentResponse
+
+    fun getNextCoachAppointment(coachIdentifier: UUID): AppointmentResponse
+
     fun getAppointmentsClient(clientIdentifier: UUID, from: String?, to: String?): AppointmentResponse
 
     fun getAppointmentsCoach(coachIdentifier: UUID, from: String?, to: String?): AppointmentResponse

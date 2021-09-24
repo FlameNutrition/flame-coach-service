@@ -1,10 +1,13 @@
 package com.coach.flame.appointment
 
 import com.coach.flame.domain.AppointmentDto
+import com.coach.flame.domain.CustomerTypeDto
 import com.coach.flame.domain.DateIntervalDto
 import java.util.*
 
 interface AppointmentService {
+
+    fun getNextAppointment(identifier: UUID, customerTypeDto: CustomerTypeDto): AppointmentDto
 
     fun createAppointment(coachIdentifier: UUID, clientIdentifier: UUID, appointmentDto: AppointmentDto): AppointmentDto
 

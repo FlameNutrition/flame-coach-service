@@ -4,12 +4,10 @@ import com.coach.flame.jpa.entity.Appointment
 import com.coach.flame.jpa.entity.Client
 import com.coach.flame.jpa.entity.Coach
 import com.coach.flame.jpa.repository.AppointmentRepository
-import com.coach.flame.jpa.repository.CoachRepository
-import io.mockk.Answer
 import io.mockk.CapturingSlot
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.slot
-import org.assertj.core.api.BDDAssertions.then
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.TestComponent
 import java.time.LocalDateTime
@@ -65,6 +63,30 @@ class MockAppointmentsRepository {
 
     fun findByUuidAndDeleteFalse(uuidAppointment: UUID, appointment: Appointment?) {
         every { appointmentRepositoryMock.findByUuidAndDeleteFalse(uuidAppointment) } returns appointment
+    }
+
+    fun mockGetAppointmentByCoachAndDttmStarts(
+        coach: Coach,
+        listOfAppointments: List<Appointment>
+    ) {
+        every {
+            appointmentRepositoryMock.getAppointmentByCoachAndDttmStarts(
+                coach.uuid,
+                any()
+            )
+        } returns listOfAppointments
+    }
+
+    fun mockGetAppointmentByClientAndDttmStarts(
+        client: Client,
+        listOfAppointments: List<Appointment>
+    ) {
+        every {
+            appointmentRepositoryMock.getAppointmentByClientAndDttmStarts(
+                client.uuid,
+                any()
+            )
+        } returns listOfAppointments
     }
 
 }

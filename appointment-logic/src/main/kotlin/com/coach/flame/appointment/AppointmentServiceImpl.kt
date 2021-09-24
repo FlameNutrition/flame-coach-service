@@ -2,6 +2,7 @@ package com.coach.flame.appointment
 
 import com.coach.flame.date.DateHelper.toAnotherZone
 import com.coach.flame.domain.AppointmentDto
+import com.coach.flame.domain.CustomerTypeDto
 import com.coach.flame.domain.DateIntervalDto
 import com.coach.flame.failure.exception.CustomerNotFoundException
 import com.coach.flame.jpa.entity.Appointment.Companion.toAppointment
@@ -12,6 +13,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
 
@@ -24,6 +26,32 @@ class AppointmentServiceImpl(
 
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(AppointmentServiceImpl::class.java)
+    }
+
+    @Transactional(readOnly = true)
+    override fun getNextAppointment(identifier: UUID, customerTypeDto: CustomerTypeDto): AppointmentDto {
+
+        LOGGER.info("opr='getNextAppointment', msg='Retrieve the next appointment', customerType={}", customerTypeDto)
+
+        val appointments = when (customerTypeDto) {
+            CustomerTypeDto.COACH -> appointmentRepository.getAppointmentByCoachAndDttmStarts(
+                identifier,
+                LocalDateTime.now()
+            )
+            CustomerTypeDto.CLIENT -> appointmentRepository.getAppointmentByClientAndDttmStarts(
+                identifier,
+                LocalDateTime.now()
+            )
+            else -> listOf()
+        }
+
+        if (appointments.isEmpty()) {
+            throw AppointmentNotFoundException("Appointment not found.")
+        }
+
+        LOGGER.debug("opr='getNextAppointment', msg='Appointments found', appointments={}", appointments)
+
+        return appointments.first().toDto()
     }
 
     @Transactional
@@ -49,8 +77,10 @@ class AppointmentServiceImpl(
 
         val appointmentPersisted = appointmentRepository.save(appointment).toDto()
 
-        LOGGER.info("opr='createAppointment', msg='Appointment created with success', appointment={}",
-            appointmentPersisted)
+        LOGGER.info(
+            "opr='createAppointment', msg='Appointment created with success', appointment={}",
+            appointmentPersisted
+        )
 
         return appointmentPersisted
 
@@ -62,8 +92,10 @@ class AppointmentServiceImpl(
         intervalFilter: Optional<DateIntervalDto>,
     ): List<AppointmentDto> {
 
-        LOGGER.info("opr='getAllCoachAppointments', msg='Get coach appointments', coachIdentifier={}, intervalFilter={}",
-            coachIdentifier, intervalFilter)
+        LOGGER.info(
+            "opr='getAllCoachAppointments', msg='Get coach appointments', coachIdentifier={}, intervalFilter={}",
+            coachIdentifier, intervalFilter
+        )
 
         val coach = coachOperations.getCoach(coachIdentifier)
 
@@ -71,9 +103,11 @@ class AppointmentServiceImpl(
             val interval = intervalFilter.get()
 
             appointmentRepository
-                .findAppointmentsByCoachBetweenDates(coach.uuid,
+                .findAppointmentsByCoachBetweenDates(
+                    coach.uuid,
                     interval.from.atStartOfDay(),
-                    interval.to.plusDays(1).atStartOfDay())
+                    interval.to.plusDays(1).atStartOfDay()
+                )
                 .map { it.toDto() }
         } else {
             appointmentRepository.findAppointmentsByCoach(coach.uuid)
@@ -87,8 +121,10 @@ class AppointmentServiceImpl(
         intervalFilter: Optional<DateIntervalDto>,
     ): List<AppointmentDto> {
 
-        LOGGER.info("opr='getAllClientAppointments', msg='Get client appointments', clientIdentifier={}, intervalFilter={}",
-            clientIdentifier, intervalFilter)
+        LOGGER.info(
+            "opr='getAllClientAppointments', msg='Get client appointments', clientIdentifier={}, intervalFilter={}",
+            clientIdentifier, intervalFilter
+        )
 
         val client = clientOperations.getClient(clientIdentifier)
 
@@ -96,9 +132,11 @@ class AppointmentServiceImpl(
             val interval = intervalFilter.get()
 
             appointmentRepository
-                .findAppointmentsByClientBetweenDates(client.uuid,
+                .findAppointmentsByClientBetweenDates(
+                    client.uuid,
                     interval.from.atStartOfDay(),
-                    interval.to.plusDays(1).atStartOfDay())
+                    interval.to.plusDays(1).atStartOfDay()
+                )
                 .map { it.toDto() }
         } else {
             appointmentRepository.findAppointmentsByClient(client.uuid)
@@ -114,10 +152,12 @@ class AppointmentServiceImpl(
         intervalFilter: Optional<DateIntervalDto>,
     ): List<AppointmentDto> {
 
-        LOGGER.info("opr='getAppointments', msg='Get appointments', coachIdentifier={}, clientIdentifier={}, intervalFilter={}",
+        LOGGER.info(
+            "opr='getAppointments', msg='Get appointments', coachIdentifier={}, clientIdentifier={}, intervalFilter={}",
             coachIdentifier,
             clientIdentifier,
-            intervalFilter)
+            intervalFilter
+        )
 
         val coach = coachOperations.getCoach(coachIdentifier)
         val client = coach.clients.firstOrNull { it.uuid == clientIdentifier }
@@ -126,9 +166,11 @@ class AppointmentServiceImpl(
         return if (intervalFilter.isPresent) {
             val interval = intervalFilter.get()
             appointmentRepository
-                .findAppointmentsBetweenDates(coach.uuid, client.uuid,
+                .findAppointmentsBetweenDates(
+                    coach.uuid, client.uuid,
                     interval.from.atStartOfDay(),
-                    interval.to.plusDays(1).atStartOfDay())
+                    interval.to.plusDays(1).atStartOfDay()
+                )
                 .map { it.toDto() }
         } else {
             appointmentRepository.findAppointments(coach.uuid, client.uuid)
@@ -142,8 +184,10 @@ class AppointmentServiceImpl(
         LOGGER.info("opr='updateAppointment', msg='Update appointments'")
 
         val appointmentEntity = appointmentRepository.findByUuidAndDeleteFalse(appointmentDto.identifier) ?: run {
-            LOGGER.warn("opr='updateAppointment', msg='Appointment doesn't exist', appointment={}",
-                appointmentDto.identifier)
+            LOGGER.warn(
+                "opr='updateAppointment', msg='Appointment doesn't exist', appointment={}",
+                appointmentDto.identifier
+            )
             throw AppointmentNotFoundException("Appointment not found, please check the identifier.")
         }
 
@@ -162,8 +206,10 @@ class AppointmentServiceImpl(
         val appointmentPersisted = appointmentRepository.save(appointmentToPersist)
             .toDto()
 
-        LOGGER.info("opr='updateAppointment', msg='Appointment updated with success', appointment={}",
-            appointmentPersisted)
+        LOGGER.info(
+            "opr='updateAppointment', msg='Appointment updated with success', appointment={}",
+            appointmentPersisted
+        )
 
         return appointmentPersisted
 
@@ -183,7 +229,9 @@ class AppointmentServiceImpl(
             delete = true
         })
 
-        LOGGER.info("opr='updateAppointment', msg='Appointment marked as deleted with success', appointment={}",
-            appointmentPersisted)
+        LOGGER.info(
+            "opr='updateAppointment', msg='Appointment marked as deleted with success', appointment={}",
+            appointmentPersisted
+        )
     }
 }
