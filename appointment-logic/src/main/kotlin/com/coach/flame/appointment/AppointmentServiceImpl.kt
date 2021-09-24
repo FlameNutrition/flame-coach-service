@@ -73,7 +73,7 @@ class AppointmentServiceImpl(
             appointmentRepository
                 .findAppointmentsByCoachBetweenDates(coach.uuid,
                     interval.from.atStartOfDay(),
-                    interval.to.atStartOfDay())
+                    interval.to.plusDays(1).atStartOfDay())
                 .map { it.toDto() }
         } else {
             appointmentRepository.findAppointmentsByCoach(coach.uuid)
@@ -98,7 +98,7 @@ class AppointmentServiceImpl(
             appointmentRepository
                 .findAppointmentsByClientBetweenDates(client.uuid,
                     interval.from.atStartOfDay(),
-                    interval.to.atStartOfDay())
+                    interval.to.plusDays(1).atStartOfDay())
                 .map { it.toDto() }
         } else {
             appointmentRepository.findAppointmentsByClient(client.uuid)
@@ -128,7 +128,7 @@ class AppointmentServiceImpl(
             appointmentRepository
                 .findAppointmentsBetweenDates(coach.uuid, client.uuid,
                     interval.from.atStartOfDay(),
-                    interval.to.atStartOfDay())
+                    interval.to.plusDays(1).atStartOfDay())
                 .map { it.toDto() }
         } else {
             appointmentRepository.findAppointments(coach.uuid, client.uuid)
