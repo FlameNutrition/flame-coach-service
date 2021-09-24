@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Component - TestingSuite" type="JUnit" factoryName="JUnit" folderName="Test Suites">
+    <module name="testing-framework" />
+    <option name="PACKAGE_NAME" value="com.coach.flame.testing.suites" />
+    <option name="MAIN_CLASS_NAME" value="com.coach.flame.testing.suites.ComponentTestingSuite" />
+    <option name="METHOD_NAME" value="" />
+    <option name="TEST_OBJECT" value="class" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

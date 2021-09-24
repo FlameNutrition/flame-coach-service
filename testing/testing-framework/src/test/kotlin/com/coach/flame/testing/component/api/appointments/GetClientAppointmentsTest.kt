@@ -45,7 +45,7 @@ class GetClientAppointmentsTest : BaseComponentTest() {
         val twoAppointments = twoAppointments(coach, client, listOf(appointment1UUID, appointment2UUID))
 
         mockClientRepository.mockFindByUuid(clientIdentifier, client)
-        mockAppointmentsRepository.mockFindAppointmentsByClient(client, twoAppointments)
+        mockAppointmentsRepository.mockGetAppointmentsByClient(client, twoAppointments)
 
         // when
         val mvnResponse = mockMvc.perform(request!!)

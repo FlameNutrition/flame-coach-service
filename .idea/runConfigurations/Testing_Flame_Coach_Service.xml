@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Testing Flame Coach Service" type="CompoundRunConfigurationType">
+    <toRun name="Unit" type="JUnit" />
+    <toRun name="Component - TestingSuite" type="JUnit" />
+    <toRun name="Integration - TestingSuite" type="JUnit" />
+    <method v="2" />
+  </configuration>
+</component>

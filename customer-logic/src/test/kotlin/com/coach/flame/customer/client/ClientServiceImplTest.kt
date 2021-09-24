@@ -90,7 +90,7 @@ class ClientServiceImplTest {
                     .but(with(CoachMaker.uuid, coach.identifier))
                     .make()))
             .make()
-        every { clientRepository.findClientsWithCoach(coach.identifier) } returns listOf(client0, client1, client2)
+        every { clientRepository.getClientsWithCoach(coach.identifier) } returns listOf(client0, client1, client2)
 
         val result = classToTest.getAllClientsFromCoach(coach.identifier)
 
@@ -109,7 +109,7 @@ class ClientServiceImplTest {
         val client1 = ClientBuilder.maker()
             .but(with(ClientMaker.clientStatus, ClientStatus.AVAILABLE))
             .make()
-        every { clientRepository.findClientsForCoach(uuidCoach.toString()) } returns listOf(client0, client1)
+        every { clientRepository.getClientsForCoach(uuidCoach.toString()) } returns listOf(client0, client1)
 
         val result = classToTest.getAllClientsForCoach(uuidCoach)
 

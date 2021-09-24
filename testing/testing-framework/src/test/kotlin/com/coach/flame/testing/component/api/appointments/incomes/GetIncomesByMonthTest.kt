@@ -72,7 +72,7 @@ class GetIncomesByMonthTest : BaseComponentTest() {
         val coach = oneCoach(coachIdentifier, mutableListOf(client))
         val appointments = multipleAppointments(coach, client, listOfAppointmentsIdentifier, incomesFrom, incomesTo)
 
-        mockAppointmentsRepository.mockFindAppointmentsByCoachBetweenDate(coach, from, to, appointments)
+        mockAppointmentsRepository.mockGetAppointmentsByCoachBetweenDate(coach, from, to, appointments)
 
         // when
         val mvnResponse = mockMvc.perform(request!!)

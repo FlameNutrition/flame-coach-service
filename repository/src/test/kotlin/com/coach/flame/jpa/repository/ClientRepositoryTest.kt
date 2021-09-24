@@ -109,9 +109,9 @@ class ClientRepositoryTest : AbstractHelperTest() {
         entityManager.flush()
         entityManager.clear()
 
-        val listOfClientCoach0 = getClientRepository().findClientsWithCoach(coach0.uuid)
+        val listOfClientCoach0 = getClientRepository().getClientsWithCoach(coach0.uuid)
             .map { it.uuid }
-        val listOfClientCoach1 = getClientRepository().findClientsWithCoach(coach1.uuid)
+        val listOfClientCoach1 = getClientRepository().getClientsWithCoach(coach1.uuid)
             .map { it.uuid }
 
         then(listOfClientCoach0).contains(client0.uuid)
@@ -167,7 +167,7 @@ class ClientRepositoryTest : AbstractHelperTest() {
         entityManager.flush()
         entityManager.clear()
 
-        val result = getClientRepository().findClientsForCoach(coach0.uuid.toString())
+        val result = getClientRepository().getClientsForCoach(coach0.uuid.toString())
             .map { it.uuid }
 
         then(result).hasSize(4)

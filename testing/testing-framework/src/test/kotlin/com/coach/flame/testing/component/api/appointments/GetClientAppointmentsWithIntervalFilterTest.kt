@@ -54,10 +54,10 @@ class GetClientAppointmentsWithIntervalFilterTest : BaseComponentTest() {
             .build()
 
         mockClientRepository.mockFindByUuid(clientIdentifier, client)
-        mockAppointmentsRepository.mockFindAppointmentsByClientBetweenDate(
+        mockAppointmentsRepository.mockGetAppointmentsByClientBetweenDate(
             client,
             LocalDate.of(2021, 1, 12).atStartOfDay(),
-            LocalDate.of(2021, 12, 10).atStartOfDay(),
+            LocalDate.of(2021, 12, 10).plusDays(1).atStartOfDay(),
             appointments
         )
 

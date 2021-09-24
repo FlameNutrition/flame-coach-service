@@ -2,7 +2,6 @@ package com.coach.flame.testing.component.api.appointments
 
 import com.coach.flame.date.DateHelper.toZonedDateTime
 import com.coach.flame.testing.assertion.http.AppointmentAssert
-import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.component.base.utils.AppointmentsDataGenerator
 import com.coach.flame.testing.component.base.utils.ClientHelper.oneClientAvailable
@@ -30,12 +29,12 @@ class GetCoachAppointmentsWithIntervalFilterTest : BaseComponentTest() {
         endpoint = "/api/appointment/coach/get",
         httpMethod = RequestMethod.GET,
         parameters = [
-            "coachIdentifier:0f1c2e7f-a6c8-4f0d-8edc-01c7a5014419",
+            "coachIdentifier:3c5845f1-4a90-4396-8610-7261761369ae",
             "from:2021-01-12",
             "to:2021-12-10"
         ]
     )
-    fun `test get appointments for specific client`() {
+    fun `test get appointments for specific coach`() {
 
         val coachIdentifier = UUID.fromString("3c5845f1-4a90-4396-8610-7261761369ae")
         val clientIdentifier = UUID.fromString("0f1c2e7f-a6c8-4f0d-8edc-01c7a5014419")
@@ -53,11 +52,11 @@ class GetCoachAppointmentsWithIntervalFilterTest : BaseComponentTest() {
             )
             .build()
 
-        mockCoachRepository.mockFindByUuid(clientIdentifier, coach)
-        mockAppointmentsRepository.mockFindAppointmentsByCoachBetweenDate(
+        mockCoachRepository.mockFindByUuid(coachIdentifier, coach)
+        mockAppointmentsRepository.mockGetAppointmentsByCoachBetweenDate(
             coach,
             LocalDate.of(2021, 1, 12).atStartOfDay(),
-            LocalDate.of(2021, 12, 10).atStartOfDay(),
+            LocalDate.of(2021, 12, 10).plusDays(1).atStartOfDay(),
             appointments
         )
 

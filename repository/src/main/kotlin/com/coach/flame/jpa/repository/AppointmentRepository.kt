@@ -18,26 +18,26 @@ interface AppointmentRepository : JpaRepository<Appointment, Long> {
         "select a from Appointment a " +
                 "where a.coach.uuid = :uuidCoach and a.client.uuid = :uuidClient and a.delete = false"
     )
-    fun findAppointments(@Param("uuidCoach") uuidCoach: UUID, @Param("uuidClient") uuidClient: UUID): List<Appointment>
+    fun getAppointments(@Param("uuidCoach") uuidCoach: UUID, @Param("uuidClient") uuidClient: UUID): List<Appointment>
 
     @Query(
         "select a from Appointment a " +
                 "where a.client.uuid = :uuid and a.delete = false"
     )
-    fun findAppointmentsByClient(@Param("uuid") uuid: UUID): List<Appointment>
+    fun getAppointmentsByClient(@Param("uuid") uuid: UUID): List<Appointment>
 
     @Query(
         "select a from Appointment a " +
                 "where a.coach.uuid = :uuid and a.delete = false"
     )
-    fun findAppointmentsByCoach(@Param("uuid") uuid: UUID): List<Appointment>
+    fun getAppointmentsByCoach(@Param("uuid") uuid: UUID): List<Appointment>
 
     @Query(
         "select a from Appointment a " +
                 "where a.coach.uuid = :uuidCoach and a.client.uuid = :uuidClient " +
                 "and a.delete = false and a.dttmStarts between :from and :to"
     )
-    fun findAppointmentsBetweenDates(
+    fun getAppointmentsBetweenDates(
         @Param("uuidCoach") uuidCoach: UUID,
         @Param("uuidClient") uuidClient: UUID,
         @Param("from") from: LocalDateTime,
@@ -48,7 +48,7 @@ interface AppointmentRepository : JpaRepository<Appointment, Long> {
         "select a from Appointment a " +
                 "where a.coach.uuid = :uuid and a.delete = false and a.dttmStarts between :from and :to"
     )
-    fun findAppointmentsByCoachBetweenDates(
+    fun getAppointmentsByCoachBetweenDates(
         @Param("uuid") uuid: UUID,
         @Param("from") from: LocalDateTime,
         @Param("to") to: LocalDateTime,
@@ -58,7 +58,7 @@ interface AppointmentRepository : JpaRepository<Appointment, Long> {
         "select a from Appointment a " +
                 "where a.client.uuid = :uuid and a.delete = false and a.dttmStarts between :from and :to"
     )
-    fun findAppointmentsByClientBetweenDates(
+    fun getAppointmentsByClientBetweenDates(
         @Param("uuid") uuid: UUID,
         @Param("from") from: LocalDateTime,
         @Param("to") to: LocalDateTime,

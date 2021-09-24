@@ -33,14 +33,14 @@ class ClientServiceImpl(
 
     @Transactional(readOnly = true)
     override fun getAllClientsFromCoach(uuid: UUID): Set<ClientDto> {
-        return clientRepository.findClientsWithCoach(uuid)
+        return clientRepository.getClientsWithCoach(uuid)
             .map { it.toDto(it.coach?.toDto()) }
             .toSet()
     }
 
     @Transactional(readOnly = true)
     override fun getAllClientsForCoach(uuid: UUID): Set<ClientDto> {
-        return clientRepository.findClientsForCoach(uuid.toString())
+        return clientRepository.getClientsForCoach(uuid.toString())
             .map { it.toDto(it.coach?.toDto()) }
             .toSet()
     }

@@ -77,8 +77,8 @@ class CoachRepositoryOperationImplTest {
 
         verify { entityManagerFactory.createQuery(expectedQuery, Income::class.java) }
         verify { query.setParameter("uuid", uuid) }
-        verify { query.setParameter("dttmFrom", from) }
-        verify { query.setParameter("dttmTo", to) }
+        verify { query.setParameter("dttmFrom", from.atStartOfDay()) }
+        verify { query.setParameter("dttmTo", to.plusDays(1).atStartOfDay()) }
 
     }
 

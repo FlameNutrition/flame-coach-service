@@ -61,7 +61,7 @@ class IncomeServiceImplTest {
                 .toAppointment())
 
         every {
-            appointmentRepository.findAppointmentsByCoachBetweenDates(
+            appointmentRepository.getAppointmentsByCoachBetweenDates(
                 uuid, from.atStartOfDay(), to.atStartOfDay()
             )
         } returns listOfAppointments

@@ -103,14 +103,14 @@ class AppointmentServiceImpl(
             val interval = intervalFilter.get()
 
             appointmentRepository
-                .findAppointmentsByCoachBetweenDates(
+                .getAppointmentsByCoachBetweenDates(
                     coach.uuid,
                     interval.from.atStartOfDay(),
                     interval.to.plusDays(1).atStartOfDay()
                 )
                 .map { it.toDto() }
         } else {
-            appointmentRepository.findAppointmentsByCoach(coach.uuid)
+            appointmentRepository.getAppointmentsByCoach(coach.uuid)
                 .map { it.toDto() }
         }
     }
@@ -132,14 +132,14 @@ class AppointmentServiceImpl(
             val interval = intervalFilter.get()
 
             appointmentRepository
-                .findAppointmentsByClientBetweenDates(
+                .getAppointmentsByClientBetweenDates(
                     client.uuid,
                     interval.from.atStartOfDay(),
                     interval.to.plusDays(1).atStartOfDay()
                 )
                 .map { it.toDto() }
         } else {
-            appointmentRepository.findAppointmentsByClient(client.uuid)
+            appointmentRepository.getAppointmentsByClient(client.uuid)
                 .map { it.toDto() }
         }
 
@@ -166,14 +166,14 @@ class AppointmentServiceImpl(
         return if (intervalFilter.isPresent) {
             val interval = intervalFilter.get()
             appointmentRepository
-                .findAppointmentsBetweenDates(
+                .getAppointmentsBetweenDates(
                     coach.uuid, client.uuid,
                     interval.from.atStartOfDay(),
                     interval.to.plusDays(1).atStartOfDay()
                 )
                 .map { it.toDto() }
         } else {
-            appointmentRepository.findAppointments(coach.uuid, client.uuid)
+            appointmentRepository.getAppointments(coach.uuid, client.uuid)
                 .map { it.toDto() }
         }
     }

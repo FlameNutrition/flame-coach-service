@@ -73,7 +73,7 @@ class AppointmentServiceImplTest {
         } returns coach
 
         every {
-            appointmentRepository.findAppointments(any(), any())
+            appointmentRepository.getAppointments(any(), any())
         } returns listOf(
             AppointmentDtoBuilder.maker()
                 .but(
@@ -88,7 +88,7 @@ class AppointmentServiceImplTest {
         val result = appointmentServiceImpl.getAppointments(uuidCoach, uuidClient, Optional.empty())
 
         verify { coachOperations.getCoach(uuidCoach) }
-        verify { appointmentRepository.findAppointments(uuidCoach, uuidClient) }
+        verify { appointmentRepository.getAppointments(uuidCoach, uuidClient) }
 
         then(result).hasSize(1)
     }
@@ -116,7 +116,7 @@ class AppointmentServiceImplTest {
         } returns coach
 
         every {
-            appointmentRepository.findAppointmentsBetweenDates(any(), any(), any(), any())
+            appointmentRepository.getAppointmentsBetweenDates(any(), any(), any(), any())
         } returns listOf(
             AppointmentDtoBuilder.maker()
                 .but(
@@ -135,11 +135,11 @@ class AppointmentServiceImplTest {
 
         verify { coachOperations.getCoach(uuidCoach) }
         verify {
-            appointmentRepository.findAppointmentsBetweenDates(
+            appointmentRepository.getAppointmentsBetweenDates(
                 uuidCoach,
                 uuidClient,
                 from.atStartOfDay(),
-                to.atStartOfDay()
+                to.plusDays(1).atStartOfDay()
             )
         }
 
@@ -167,7 +167,7 @@ class AppointmentServiceImplTest {
         } returns client
 
         every {
-            appointmentRepository.findAppointmentsByClient(any())
+            appointmentRepository.getAppointmentsByClient(any())
         } returns listOf(
             AppointmentDtoBuilder.maker()
                 .but(
@@ -182,7 +182,7 @@ class AppointmentServiceImplTest {
         val result = appointmentServiceImpl.getAllClientAppointments(uuidClient, Optional.empty())
 
         verify { clientOperations.getClient(uuidClient) }
-        verify { appointmentRepository.findAppointmentsByClient(client.uuid) }
+        verify { appointmentRepository.getAppointmentsByClient(client.uuid) }
 
         then(result).hasSize(1)
     }
@@ -210,7 +210,7 @@ class AppointmentServiceImplTest {
         } returns client
 
         every {
-            appointmentRepository.findAppointmentsByClientBetweenDates(any(), any(), any())
+            appointmentRepository.getAppointmentsByClientBetweenDates(any(), any(), any())
         } returns listOf(
             AppointmentDtoBuilder.maker()
                 .but(
@@ -229,10 +229,10 @@ class AppointmentServiceImplTest {
 
         verify { clientOperations.getClient(uuidClient) }
         verify {
-            appointmentRepository.findAppointmentsByClientBetweenDates(
+            appointmentRepository.getAppointmentsByClientBetweenDates(
                 client.uuid,
                 from.atStartOfDay(),
-                to.atStartOfDay()
+                to.plusDays(1).atStartOfDay()
             )
         }
 
@@ -288,7 +288,7 @@ class AppointmentServiceImplTest {
         } returns coach
 
         every {
-            appointmentRepository.findAppointmentsByCoach(any())
+            appointmentRepository.getAppointmentsByCoach(any())
         } returns listOf(
             AppointmentDtoBuilder.maker()
                 .but(
@@ -311,7 +311,7 @@ class AppointmentServiceImplTest {
         val result = appointmentServiceImpl.getAllCoachAppointments(uuidCoach, Optional.empty())
 
         verify { coachOperations.getCoach(uuidCoach) }
-        verify { appointmentRepository.findAppointmentsByCoach(coach.uuid) }
+        verify { appointmentRepository.getAppointmentsByCoach(coach.uuid) }
 
         then(result).hasSize(2)
 
@@ -350,7 +350,7 @@ class AppointmentServiceImplTest {
         } returns coach
 
         every {
-            appointmentRepository.findAppointmentsByCoachBetweenDates(any(), any(), any())
+            appointmentRepository.getAppointmentsByCoachBetweenDates(any(), any(), any())
         } returns listOf(
             AppointmentDtoBuilder.maker()
                 .but(
@@ -377,10 +377,10 @@ class AppointmentServiceImplTest {
 
         verify { coachOperations.getCoach(uuidCoach) }
         verify {
-            appointmentRepository.findAppointmentsByCoachBetweenDates(
+            appointmentRepository.getAppointmentsByCoachBetweenDates(
                 coach.uuid,
                 from.atStartOfDay(),
-                to.atStartOfDay()
+                to.plusDays(1).atStartOfDay()
             )
         }
 

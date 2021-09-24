@@ -18,7 +18,7 @@ class IncomeServiceImpl(
         interval: DateIntervalDto,
     ): Map<LocalDate, List<IncomeDto>> {
 
-        val appointments = appointmentRepository.findAppointmentsByCoachBetweenDates(
+        val appointments = appointmentRepository.getAppointmentsByCoachBetweenDates(
             coachIdentifier, interval.from.atStartOfDay(), interval.to.atStartOfDay())
 
         val incomeGroupByDate: Map<LocalDate, List<IncomeDto>> = appointments
