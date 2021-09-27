@@ -98,6 +98,30 @@ class AppointmentImplTest {
     }
 
     @Test
+    fun `test get appointments without from date`() {
+
+        val coachIdentifier = UUID.randomUUID()
+        val clientIdentifier = UUID.randomUUID()
+        val intervalDto = slot<Optional<DateIntervalDto>>()
+        val to = "2021-12-31"
+
+        every {
+            appointmentService.getAppointments(
+                coachIdentifier,
+                clientIdentifier,
+                capture(intervalDto)
+            )
+        } returns listOf(AppointmentDtoBuilder.makerWithClientAndCoach().make())
+
+        classToTest.getAppointments(coachIdentifier, clientIdentifier, null, to)
+
+        then(intervalDto.captured).isNotNull
+        then(intervalDto.captured.get().from).isNotNull
+        then(intervalDto.captured.get().to).isEqualTo(DateHelper.toDate(to))
+
+    }
+
+    @Test
     fun `test get all coach appointments`() {
 
         val coachIdentifier = UUID.randomUUID()

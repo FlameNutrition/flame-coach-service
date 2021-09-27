@@ -79,17 +79,10 @@ class AppointmentImpl(
     ): AppointmentResponse {
         return APIWrapperException.executeRequest {
 
-            val interval = to?.let {
-                val actualFrom = if (from != null) {
-                    DateHelper.toDate(from)
-                } else {
-                    LocalDate.now()
-                }
-                DateIntervalDto(actualFrom, DateHelper.toDate(to))
-            }
+            val interval = getDateIntervalDto(to, from)
 
             val appointments =
-                appointmentService.getAllClientAppointments(clientIdentifier, Optional.ofNullable(interval))
+                appointmentService.getAllClientAppointments(clientIdentifier, interval)
 
             AppointmentResponse(appointments = appointments.map { toAppointment(it) }.toSet())
         }
@@ -106,17 +99,10 @@ class AppointmentImpl(
     ): AppointmentResponse {
         return APIWrapperException.executeRequest {
 
-            val interval = to?.let {
-                val actualFrom = if (from != null) {
-                    DateHelper.toDate(from)
-                } else {
-                    LocalDate.now()
-                }
-                DateIntervalDto(actualFrom, DateHelper.toDate(to))
-            }
+            val interval = getDateIntervalDto(to, from)
 
             val appointments =
-                appointmentService.getAllCoachAppointments(coachIdentifier, Optional.ofNullable(interval))
+                appointmentService.getAllCoachAppointments(coachIdentifier, interval)
 
             AppointmentResponse(appointments = appointments.map { toAppointment(it) }.toSet())
 
@@ -135,17 +121,10 @@ class AppointmentImpl(
     ): AppointmentResponse {
         return APIWrapperException.executeRequest {
 
-            val interval = to?.let {
-                val actualFrom = if (from != null) {
-                    DateHelper.toDate(from)
-                } else {
-                    LocalDate.now()
-                }
-                DateIntervalDto(actualFrom, DateHelper.toDate(to))
-            }
+            val interval = getDateIntervalDto(to, from)
 
             val appointments =
-                appointmentService.getAppointments(coachIdentifier, clientIdentifier, Optional.ofNullable(interval))
+                appointmentService.getAppointments(coachIdentifier, clientIdentifier, interval)
 
             AppointmentResponse(appointments = appointments.map { toAppointment(it) }.toSet())
         }
@@ -225,5 +204,16 @@ class AppointmentImpl(
         }
     }
 
+    private fun getDateIntervalDto(to: String?, from: String?): Optional<DateIntervalDto> {
+        val interval = to?.let {
+            val actualFrom = if (from != null) {
+                DateHelper.toDate(from)
+            } else {
+                LocalDate.now()
+            }
+            DateIntervalDto(actualFrom, DateHelper.toDate(to))
+        }
+        return Optional.ofNullable(interval)
+    }
 
 }
