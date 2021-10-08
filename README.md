@@ -3,14 +3,14 @@ data-canonical-src="./logo.png?raw=true"/>
 # flame-coach-service
 Service API for Flame Coach Application
 
-## Description
+## Description 
 This is the backend source of Flame Coach. Here you will find the API code to create clients, appointments, etc...
 basically, all the core logic to put the application works. Code is using MySQL database to store the information 
 but feel free to apply the necessary changes to support other databases.
 
 Flame Coach backend is using Spring as the core framework and also all the code is written in Kotlin.
 
-## Compile
+## Compile 🏗️
 It's easy to compile and use the Flame Coach Service. The project is using maven to manage dependencies, 
 this way, you only need to run the following command (please visit https://maven.apache.org/run.html):
 ```
@@ -22,7 +22,7 @@ If you want to run a full clean installation, running the test suite, you must r
 e.g: ./mvn clean install
 ```
 
-## Release & Deploy
+## Release & Deploy 🚀
 Please use the following project [flame-coach-tools] to create a new release. 
 If you need access to the project, please open an issue to request access.
 ```
@@ -40,14 +40,14 @@ to a new version you can use the following command line:
 mvn -Dflyway.url=jdbc:mysql://<hostname>:3306/flame-coach -Dflyway.user=<username> -Dflyway.password=<password> flyway:migrate
 ```
 
-## Contributing
+## Contributing ✍️
 Pull requests are welcome. Please check the CONTRIBUTING.md to find the best way to contribute.
 
 ## Authors and acknowledgment
-I'm waiting for you :smile:
+I'm waiting for you 🤟
 
 ## License
-[MIT]
+This opensource project it's under the following license: [MIT]
 
 
 [flywaydb]: https://flywaydb.org/documentation/usage/maven/
