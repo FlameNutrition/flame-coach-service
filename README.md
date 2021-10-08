@@ -5,10 +5,10 @@ Service API for Flame Coach Application
 
 ## Description 
 This is the backend source of Flame Coach. Here you will find the API code to create clients, appointments, etc...
-basically, all the core logic to put the application works. Code is using MySQL database to store the information 
+basically, all the core logic to put the application works. Code uses MySQL database to store the information 
 but feel free to apply the necessary changes to support other databases.
 
-Flame Coach backend is using Spring as the core framework and also all the code is written in Kotlin.
+Flame Coach backend uses Spring as the core framework and also all the code is written in Kotlin.
 
 ## Compile 🏗️
 It's easy to compile and use the Flame Coach Service. The project is using maven to manage dependencies, 
@@ -53,7 +53,7 @@ Pull requests are welcome. Please check the CONTRIBUTING.md to find the best way
 I'm waiting for you 🤟
 
 ## License
-This opensource project it's under the following license: [MIT]
+This opensource project is under the following license: [MIT]
 
 
 [flywaydb]: https://flywaydb.org/documentation/usage/maven/
