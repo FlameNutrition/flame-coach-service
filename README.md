@@ -47,7 +47,7 @@ mvn -Dflyway.url=jdbc:mysql://<hostname>:3306/flame-coach -Dflyway.user=<usernam
 ```
 
 ## Contributing ✍️
-Pull requests are welcome. Please check the CONTRIBUTING.md to find the best way to contribute.
+Pull requests are welcome. Please check the [CONTRIBUTING.md](https://github.com/FlameNutrition/flame-coach-service/blob/master/CONTRIBUTING.md) to find the best way to contribute.
 
 ## Authors and acknowledgment
 I'm waiting for you 🤟
