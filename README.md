@@ -22,6 +22,12 @@ If you want to run a full clean installation, running the test suite, you must r
 e.g: ./mvn clean install
 ```
 
+## Run ▶️
+To run the backend you will need to run the spring profile `local`. Please use the following command, inside launch folder, to run the application:
+```
+mvn spring-boot:run -Dspring-boot.run.profiles=local
+```
+
 ## Release & Deploy 🚀
 Please use the following project [flame-coach-tools] to create a new release. 
 If you need access to the project, please open an issue to request access.
