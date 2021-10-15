@@ -17,10 +17,6 @@ class SecurityExceptionHandler(
     @Value(value = "\${flamecoach.rest.debug.enable}") private val restDebugEnable: Boolean,
 ) : AuthenticationEntryPoint {
 
-    companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(SecurityExceptionHandler::class.java)
-    }
-
     override fun commence(
         httpRequest: HttpServletRequest,
         httpResponse: HttpServletResponse,

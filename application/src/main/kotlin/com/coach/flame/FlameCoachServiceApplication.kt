@@ -2,6 +2,7 @@ package com.coach.flame
 
 import com.coach.flame.appointment.AppointmentModuleConfig
 import com.coach.flame.aspect.LoggingServiceConfig
+import com.coach.flame.calculators.CalculatorsModuleConfig
 import com.coach.flame.configs.ConfigModuleConfig
 import com.coach.flame.customer.CustomerModuleConfig
 import com.coach.flame.customer.measures.MeasureModuleConfig
@@ -26,6 +27,8 @@ import org.springframework.context.annotation.Import
         MeasureModuleConfig::class,
         MetricsModuleConfig::class,
         AppointmentModuleConfig::class,
-        FlameCoachWebConfig::class]
+        CalculatorsModuleConfig::class,
+        FlameCoachWebConfig::class
+    ]
 )
 class FlameCoachServiceApplication

@@ -10,6 +10,7 @@ import org.springframework.core.annotation.Order
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.validation.BindException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -20,10 +21,6 @@ import org.springframework.web.context.request.WebRequest
 class RestExceptionHandler(
     @Value(value = "\${flamecoach.rest.debug.enable}") private val restDebugEnable: Boolean,
 ) {
-
-    companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(RestExceptionHandler::class.java)
-    }
 
     @ExceptionHandler(
         value = [
@@ -55,6 +52,25 @@ class RestExceptionHandler(
     ): ResponseEntity<Any> {
 
         val restException = RestInvalidRequestException(ex.localizedMessage, ex)
+
+        val errorDetail = ErrorDetail.Builder()
+            .withEnableDebug(restDebugEnable)
+            .throwable(restException)
+            .build()
+
+        return ResponseEntity
+            .status(HttpStatus.valueOf(errorDetail.status))
+            .contentType(MediaType.APPLICATION_PROBLEM_JSON)
+            .body(errorDetail)
+    }
+
+    @ExceptionHandler(BindException::class)
+    fun handleBindException(ex: BindException, request: WebRequest): ResponseEntity<Any> {
+
+        val fieldName = ex.fieldError?.field
+        val fieldError = ex.fieldError?.defaultMessage
+
+        val restException = RestInvalidRequestException("param $fieldName: $fieldError", ex)
 
         val errorDetail = ErrorDetail.Builder()
             .withEnableDebug(restDebugEnable)

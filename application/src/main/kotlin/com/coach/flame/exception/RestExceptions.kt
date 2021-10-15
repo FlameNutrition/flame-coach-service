@@ -6,11 +6,14 @@ import com.coach.flame.failure.domain.ErrorCode
 import com.coach.flame.failure.exception.BusinessException
 
 @Status(httpStatus = HttpStatus.INTERNAL_SERVER_ERROR)
-open class InternalServerException(errorCode: ErrorCode, message: String, ex: Exception) :
-    BusinessException(errorCode, message, ex)
+open class InternalServerException : BusinessException {
+    constructor(errorCode: ErrorCode, message: String) : super(errorCode, message)
+    constructor(errorCode: ErrorCode, message: String, ex: Exception) : super(errorCode, message, ex)
+}
 
 @Status(httpStatus = HttpStatus.INTERNAL_SERVER_ERROR)
 open class RestException : InternalServerException {
+    constructor(errorCode: ErrorCode, message: String) : super(errorCode, message)
     constructor(errorCode: ErrorCode, message: String, ex: Exception) : super(errorCode, message, ex)
 }
 
@@ -21,5 +24,6 @@ open class RestAuthenticationException : RestException {
 
 @Status(httpStatus = HttpStatus.BAD_REQUEST)
 open class RestInvalidRequestException : RestException {
+    constructor(message: String) : super(ErrorCode.CODE_0001, message)
     constructor(message: String, ex: Exception) : super(ErrorCode.CODE_1001, message, ex)
 }

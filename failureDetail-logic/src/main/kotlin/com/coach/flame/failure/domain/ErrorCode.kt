@@ -4,6 +4,10 @@ enum class ErrorCode(
     val code: Int,
     val description: String,
 ) {
+    //TODO: Change code to a String values
+    //New method to expose and tracking errors, please increment a number using the last error
+    CODE_0001(9001, "Unsupported calories calculator formula"),
+
     //Request
     CODE_1000(1000, "Request unexpected problem"),
     CODE_1001(1001, "Invalid request"),

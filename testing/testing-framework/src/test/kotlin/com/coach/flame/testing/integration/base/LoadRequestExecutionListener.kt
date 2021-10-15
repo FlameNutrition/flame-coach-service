@@ -91,6 +91,7 @@ class LoadRequestExecutionListener : TestExecutionListener {
             .setter
             .call(testContext.testInstance, request)
 
+        //FIXME: Change this logging, toString does not work
         LOGGER.info("opr='beforeTestMethod', 'Loaded request with: {}'", request)
 
     }

@@ -29,6 +29,11 @@
 
         <dependency>
             <groupId>com.coach.flame</groupId>
+            <artifactId>calculators-logic</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.coach.flame</groupId>
             <artifactId>domain</artifactId>
         </dependency>
 
