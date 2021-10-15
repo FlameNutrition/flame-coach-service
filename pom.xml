@@ -46,6 +46,17 @@
 
     </properties>
 
+    <developers>
+        <developer>
+            <id>nbentoneves</id>
+            <name>Nuno Bento</name>
+            <email>nbento.neves@gmail.com</email>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+
     <dependencyManagement>
         <dependencies>
 
