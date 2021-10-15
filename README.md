@@ -3,6 +3,8 @@ data-canonical-src="./logo.png?raw=true"/>
 # flame-coach-service
 Service API for Flame Coach Application
 
+[![Flame Coach - Service](https://circleci.com/gh/FlameNutrition/flame-coach-service.svg?style=svg)](https://circleci.com/github/FlameNutrition/flame-coach-service)
+
 ## Description 
 This is the backend source of Flame Coach. Here you will find the API code to create clients, appointments, etc...
 basically, all the core logic to put the application works. Code uses MySQL database to store the information 
