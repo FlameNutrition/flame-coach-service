@@ -3,7 +3,7 @@ data-canonical-src="./logo.png?raw=true"/>
 # flame-coach-service
 Service API for Flame Coach Application
 
-[![Flame Coach - Service](https://circleci.com/gh/FlameNutrition/flame-coach-service.svg?style=svg)](https://circleci.com/github/FlameNutrition/flame-coach-service)
+[![Flame Coach - Service](https://circleci.com/gh/FlameNutrition/flame-coach-service.svg?style=svg)](https://app.circleci.com/pipelines/github/FlameNutrition/flame-coach-service)
 
 ## Description 
 This is the backend source of Flame Coach. Here you will find the API code to create clients, appointments, etc...
