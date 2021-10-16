@@ -21,7 +21,9 @@
 
     <properties>
 
-        <java.version>14</java.version>
+        <java.version>11</java.version>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <kotlin.version>1.4.31</kotlin.version>
 
         <!-- Docs -->
@@ -36,9 +38,6 @@
         <easy-random.version>5.0.0</easy-random.version>
         <javafaker.version>1.0.2</javafaker.version>
         <make-it-easy.version>4.0.1</make-it-easy.version>
-
-        <maven.compiler.source>14</maven.compiler.source>
-        <maven.compiler.target>14</maven.compiler.target>
 
         <!-- Plugins -->
         <jacoco-plugin.version>0.8.7</jacoco-plugin.version>
