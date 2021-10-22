@@ -8,6 +8,7 @@ import com.coach.flame.customer.CustomerModuleConfig
 import com.coach.flame.customer.measures.MeasureModuleConfig
 import com.coach.flame.dailyTask.DailyTaskModuleConfig
 import com.coach.flame.metrics.MetricsModuleConfig
+import com.coach.flame.socialnetworking.SocialNetworkingModuleConfig
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Import
 
@@ -27,6 +28,7 @@ import org.springframework.context.annotation.Import
         MeasureModuleConfig::class,
         MetricsModuleConfig::class,
         AppointmentModuleConfig::class,
+        SocialNetworkingModuleConfig::class,
         CalculatorsModuleConfig::class,
         FlameCoachWebConfig::class
     ]

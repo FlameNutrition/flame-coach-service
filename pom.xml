@@ -68,6 +68,12 @@
 
             <dependency>
                 <groupId>com.coach.flame</groupId>
+                <artifactId>social-networking-logic</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.coach.flame</groupId>
                 <artifactId>calculators-logic</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -511,6 +517,7 @@
         <module>metrics-logic</module>
         <module>appointment-logic</module>
         <module>calculators-logic</module>
+        <module>social-networking-logic</module>
     </modules>
 
 </project>

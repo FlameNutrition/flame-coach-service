@@ -1,0 +1,50 @@
+### Get client next appointment
+GET https://localhost:8080/api/appointment/client/getNext?clientIdentifier=dd6483ac-11aa-4eeb-815c-ed565960ad27
+Authorization: Basic {{username}} {{password}}
+
+### Get coach next appointment
+GET https://localhost:8080/api/appointment/coach/getNext?coachIdentifier=dd6483ac-11aa-4eeb-815c-ed565960ad27
+Authorization: Basic {{username}} {{password}}
+
+### Get clients appointments
+GET https://localhost:8080/api/appointment/client/get?clientIdentifier=dd6483ac-11aa-4eeb-815c-ed565960ad27&from=2010-10-01&to=2023-10-01
+Authorization: Basic {{username}} {{password}}
+
+### Get coach appointments
+GET https://localhost:8080/api/appointment/coach/get?coachIdentifier=dd6483ac-11aa-4eeb-815c-ed565960ad27&from=2010-10-01&to=2023-10-01
+Authorization: Basic {{username}} {{password}}
+
+### Get coach appointments
+GET https://localhost:8080/api/appointment/get?coachIdentifier=dd6483ac-11aa-4eeb-815c-ed565960ad27&clientIdentifier=dd6483ac-11aa-4eeb-815c-ed565960ad27&from=2010-10-01&to=2023-10-01
+Authorization: Basic {{username}} {{password}}
+
+### Create appointment
+POST https://localhost:8080/api/appointment/create?coachIdentifier=123eb289-9103-4395-89fe-8b2cc2251cf7&clientIdentifier=7e0e4e3c-1922-4c04-9d77-a04ba742a73e
+Authorization: Basic {{username}} {{password}}
+Content-Type: application/json
+
+{
+  "dttmStarts": "2010-10-01T13:00:00+01:00",
+  "dttmEnds": "2010-10-01T14:00:00+01:00",
+  "price": 100.5,
+  "notes": "This is a simple description",
+  "incomeStatus": "PENDING"
+}
+
+### Update appointment
+POST https://localhost:8080/api/appointment/update?appointmentIdentifier=d9bd29fe-4922-4a21-87e6-21949f73db43
+Authorization: Basic {{username}} {{password}}
+Content-Type: application/json
+
+{
+  "dttmStarts": "2010-10-01T13:00:00+01:00",
+  "dttmEnds": "2010-10-01T14:00:00+01:00",
+  "price": 200.5,
+  "notes": "This is a simple description",
+  "incomeStatus": "PENDING"
+}
+
+### Delete appointment
+DELETE https://localhost:8080/api/appointment/delete?appointmentIdentifier=d9bd29fe-4922-4a21-87e6-21949f73db43
+Authorization: Basic {{username}} {{password}}
+

@@ -1,0 +1,3 @@
+### Get client next appointment
+GET https://localhost:8080/api/appointment/client/getNext?clientIdentifier=dd6483ac-11aa-4eeb-815c-ed565960ad27
+Authorization: Basic {{username}} {{password}}
