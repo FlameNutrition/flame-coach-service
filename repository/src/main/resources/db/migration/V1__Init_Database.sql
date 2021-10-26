@@ -10,9 +10,7 @@
 CREATE TABLE `Client_Measure_Weight_Seq`
 (
     `next_val` bigint DEFAULT NULL
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `hibernate_sequence`
@@ -21,9 +19,7 @@ CREATE TABLE `Client_Measure_Weight_Seq`
 CREATE TABLE `hibernate_sequence`
 (
     `next_val` bigint DEFAULT NULL
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `Client_Type`
@@ -34,9 +30,7 @@ CREATE TABLE `Client_Type`
     `id`   bigint       NOT NULL,
     `type` varchar(255) NOT NULL,
     PRIMARY KEY (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `User_Session`
@@ -49,9 +43,7 @@ CREATE TABLE `User_Session`
     `token`          varchar(255) NOT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `UK_jiu6slb2w59f3f6w96qorudn7` (`token`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `User`
@@ -68,9 +60,7 @@ CREATE TABLE `User`
     UNIQUE KEY `UK_mar7bx6urx3sjlhjt104j61ib` (`userSessionFk`),
     UNIQUE KEY `UK_e6gkqunxajvyxl5uctpl2vl2p` (`email`),
     CONSTRAINT `FKikpgpgltl8bnnasw0lujorr4q` FOREIGN KEY (`userSessionFk`) REFERENCES `User_Session` (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci;
+) ENGINE = InnoDB;
 
 -- Table structure for table `Country_Config`
 --
@@ -81,9 +71,7 @@ CREATE TABLE `Country_Config`
     `countryCode`   varchar(255) NOT NULL,
     `externalValue` varchar(255) NOT NULL,
     PRIMARY KEY (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `Gender_Config`
@@ -95,9 +83,7 @@ CREATE TABLE `Gender_Config`
     `externalValue` varchar(255) NOT NULL,
     `genderCode`    varchar(255) NOT NULL,
     PRIMARY KEY (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `Coach`
@@ -127,9 +113,7 @@ CREATE TABLE `Coach`
     CONSTRAINT `FKch8f3plbukvcarxit4et1udl8` FOREIGN KEY (`countryFk`) REFERENCES `Country_Config` (`id`),
     CONSTRAINT `FKr8vw5krmwc7lucfwxg4pgxs9v` FOREIGN KEY (`userFk`) REFERENCES `User` (`id`),
     CONSTRAINT `FKrqlua0mfl3cg89e2ai9c2thad` FOREIGN KEY (`clientTypeFk`) REFERENCES `Client_Type` (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci;
+) ENGINE = InnoDB;
 
 --
 
@@ -168,9 +152,7 @@ CREATE TABLE `Client`
     CONSTRAINT `FK8a44e4yc8omgym1bt1npit7t9` FOREIGN KEY (`clientTypeFk`) REFERENCES `Client_Type` (`id`),
     CONSTRAINT `FKg9sh4d6eynxf5xd8ee8lju18k` FOREIGN KEY (`countryFk`) REFERENCES `Country_Config` (`id`),
     CONSTRAINT `FKt73y6cea56y7or5hig943pfdl` FOREIGN KEY (`userFk`) REFERENCES `User` (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `Client_Measure_Weight`
@@ -185,9 +167,7 @@ CREATE TABLE `Client_Measure_Weight`
     PRIMARY KEY (`id`),
     KEY `FKno3mu57pv25w0mqmhpa4swo8u` (`clientFk`),
     CONSTRAINT `FKno3mu57pv25w0mqmhpa4swo8u` FOREIGN KEY (`clientFk`) REFERENCES `Client` (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci;
+) ENGINE = InnoDB;
 
 --
 -- Table structure for table `Daily_Task`
@@ -209,9 +189,7 @@ CREATE TABLE `Daily_Task`
     KEY `FK78lyb46m9s6c7pf8s3kbvq6hg` (`createdByFk`),
     CONSTRAINT `FK78lyb46m9s6c7pf8s3kbvq6hg` FOREIGN KEY (`createdByFk`) REFERENCES `Coach` (`id`),
     CONSTRAINT `FKdsu2shjre4aafj3qk3r3l8b7o` FOREIGN KEY (`clientFk`) REFERENCES `Client` (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci;
+) ENGINE = InnoDB;
 
 --
 -- Dumping data for table `hibernate_sequence`

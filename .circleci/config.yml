@@ -34,25 +34,28 @@ jobs:
       - run:
           name: Build
           command: mvn -B -DskipTests clean package
-      - run:
-          name: Build Deploy Folder
-          command: |
-            mkdir ~/flame-coach-service/launch/target/deploy
-            mkdir ~/flame-coach-service/launch/target/deploy/scripts
-            cp ~/flame-coach-service/launch/target/flame-coach.jar ~/flame-coach-service/launch/target/deploy/flame-coach.jar
-            cp ~/flame-coach-service/appspec.yml ~/flame-coach-service/launch/target/deploy/appspec.yml
-            cp ~/flame-coach-service/launch/scripts/start-application.sh ~/flame-coach-service/launch/target/deploy/scripts
-            cp ~/flame-coach-service/launch/scripts/stop-application.sh ~/flame-coach-service/launch/target/deploy/scripts
-            cp ~/flame-coach-service/application/src/main/resources/log4j2-production.xml ~/flame-coach-service/launch/target/deploy/log4j2.xml
-            cat ~/flame-coach-service/pom.xml | grep "^    <version>.*</version>$" | awk -F'[><]' '{print $3}' >> ~/flame-coach-service/launch/target/deploy/build.txt
-      - save_cache:
-          key: flame-coach-{{ .Branch }}-{{ .Revision }}
-          paths:
-            - ~/flame-coach-service/launch/target/deploy
-      # Then run your tests!
-      #- run:
-      #    name: Test
-      #    command: mvn test -Dskip.component.tests=false
+      - when:
+          condition:
+            equal: [ production, << pipeline.git.branch >> ]
+          steps:
+            - run:
+                name: Run Unit & Component Tests
+                command: mvn test -Dskip.component.tests=false
+            - run:
+                name: Build Deploy Folder
+                command: |
+                  mkdir ~/flame-coach-service/launch/target/deploy
+                  mkdir ~/flame-coach-service/launch/target/deploy/scripts
+                  cp ~/flame-coach-service/launch/target/flame-coach.jar ~/flame-coach-service/launch/target/deploy/flame-coach.jar
+                  cp ~/flame-coach-service/appspec.yml ~/flame-coach-service/launch/target/deploy/appspec.yml
+                  cp ~/flame-coach-service/launch/scripts/start-application.sh ~/flame-coach-service/launch/target/deploy/scripts
+                  cp ~/flame-coach-service/launch/scripts/stop-application.sh ~/flame-coach-service/launch/target/deploy/scripts
+                  cp ~/flame-coach-service/application/src/main/resources/log4j2-production.xml ~/flame-coach-service/launch/target/deploy/log4j2.xml
+                  cat ~/flame-coach-service/pom.xml | grep "^    <version>.*</version>$" | awk -F'[><]' '{print $3}' >> ~/flame-coach-service/launch/target/deploy/build.txt
+            - save_cache:
+                key: flame-coach-{{ .Branch }}-{{ .Revision }}
+                paths:
+                  - ~/flame-coach-service/launch/target/deploy
 
   deploy:
     executor: aws-cli/default
@@ -65,15 +68,12 @@ jobs:
       - run:
           name: Push to S3
           command: |
-            cd ~/flame-coach-service/launch/target/deploy
-            ls -l
             VERSION=`cat ~/flame-coach-service/launch/target/deploy/build.txt`
             aws deploy push --application-name FlameCoachAPI --s3-location s3://flamecoach-api/FlameCoachAPIv$VERSION.zip --source ~/flame-coach-service/launch/target/deploy
-
-#2021/10/26 10:55:38 cmd: /usr/local/bin/aws deploy push --application-name FlameCoachAPI --s3-location s3://flamecoach-api/FlameCoachAPIv2021.10.0.zip --source /Users/nbentoneves/Workplace/flame-nutrition/flame-coach-service/launch/target/deploy
-#2021/10/26 10:55:38 cmd: /usr/local/bin/aws deploy create-deployment --application-name FlameCoachAPI --deployment-group-name production --s3-location bucket=flamecoach-api,key=FlameCoachAPIv2021.10.0.zip,bundleType=zip
-#2021/10/26 10:55:38 cmd: /usr/local/bin/git -C /Users/nbentoneves/Workplace/flame-nutrition/flame-coach-service checkout master
-#2021/10/26 10:55:38 cmd: /usr/local/bin/git -C /Users/nbentoneves/Workplace/flame-nutrition/flame-coach-service branch -d release/2021.10.0
+      - run:
+          name: Deploy using AWS CodeDeply
+          command: |
+            aws deploy create-deployment --application-name FlameCoachAPI --deployment-group-name production --s3-location bucket=flamecoach-api,key=FlameCoachAPIv$VERSION.zip,bundleType=zip
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
@@ -95,4 +95,3 @@ workflows:
           filters:
             branches:
               only: production
-
