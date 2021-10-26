@@ -73,6 +73,7 @@ jobs:
       - run:
           name: Deploy using AWS CodeDeply
           command: |
+            VERSION=`cat ~/flame-coach-service/launch/target/deploy/build.txt`
             aws deploy create-deployment --application-name FlameCoachAPI --deployment-group-name production --s3-location bucket=flamecoach-api,key=FlameCoachAPIv$VERSION.zip,bundleType=zip
 
 # Invoke jobs via workflows
