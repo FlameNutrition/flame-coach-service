@@ -36,7 +36,7 @@ jobs:
           command: mvn -B -DskipTests clean package
       - when:
           condition:
-            equals: [ production, << pipeline.git.branch >> ]
+            equal: [ production, << pipeline.git.branch >> ]
           steps:
             - run:
                 name: Run Unit & Component Tests
