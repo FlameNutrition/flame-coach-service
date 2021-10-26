@@ -34,24 +34,28 @@ jobs:
       - run:
           name: Build
           command: mvn -B -DskipTests clean package
-      - run:
-          name: Run Unit & Component Tests
-          command: mvn test -Dskip.component.tests=false
-      - run:
-          name: Build Deploy Folder
-          command: |
-            mkdir ~/flame-coach-service/launch/target/deploy
-            mkdir ~/flame-coach-service/launch/target/deploy/scripts
-            cp ~/flame-coach-service/launch/target/flame-coach.jar ~/flame-coach-service/launch/target/deploy/flame-coach.jar
-            cp ~/flame-coach-service/appspec.yml ~/flame-coach-service/launch/target/deploy/appspec.yml
-            cp ~/flame-coach-service/launch/scripts/start-application.sh ~/flame-coach-service/launch/target/deploy/scripts
-            cp ~/flame-coach-service/launch/scripts/stop-application.sh ~/flame-coach-service/launch/target/deploy/scripts
-            cp ~/flame-coach-service/application/src/main/resources/log4j2-production.xml ~/flame-coach-service/launch/target/deploy/log4j2.xml
-            cat ~/flame-coach-service/pom.xml | grep "^    <version>.*</version>$" | awk -F'[><]' '{print $3}' >> ~/flame-coach-service/launch/target/deploy/build.txt
-      - save_cache:
-          key: flame-coach-{{ .Branch }}-{{ .Revision }}
-          paths:
-            - ~/flame-coach-service/launch/target/deploy
+      - when:
+          condition:
+            equal: [ production, << pipeline.git.branch >> ]
+          steps:
+            - run:
+                name: Run Unit & Component Tests
+                command: mvn test -Dskip.component.tests=false
+            - run:
+                name: Build Deploy Folder
+                command: |
+                  mkdir ~/flame-coach-service/launch/target/deploy
+                  mkdir ~/flame-coach-service/launch/target/deploy/scripts
+                  cp ~/flame-coach-service/launch/target/flame-coach.jar ~/flame-coach-service/launch/target/deploy/flame-coach.jar
+                  cp ~/flame-coach-service/appspec.yml ~/flame-coach-service/launch/target/deploy/appspec.yml
+                  cp ~/flame-coach-service/launch/scripts/start-application.sh ~/flame-coach-service/launch/target/deploy/scripts
+                  cp ~/flame-coach-service/launch/scripts/stop-application.sh ~/flame-coach-service/launch/target/deploy/scripts
+                  cp ~/flame-coach-service/application/src/main/resources/log4j2-production.xml ~/flame-coach-service/launch/target/deploy/log4j2.xml
+                  cat ~/flame-coach-service/pom.xml | grep "^    <version>.*</version>$" | awk -F'[><]' '{print $3}' >> ~/flame-coach-service/launch/target/deploy/build.txt
+            - save_cache:
+                key: flame-coach-{{ .Branch }}-{{ .Revision }}
+                paths:
+                  - ~/flame-coach-service/launch/target/deploy
 
   deploy:
     executor: aws-cli/default
