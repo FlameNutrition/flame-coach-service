@@ -41,11 +41,13 @@ mvn spring-boot:run -Dspring-boot.run.profiles=local
 Please use the following project [flame-coach-tools] to create a new release. 
 If you need access to the project, please open an issue to request access.
 ```
-Release:
-e.g: ./flame-coach-tools --release --releaseVersion <version> --snapshotVersion <version-snapshot> --web/api
-
-Deploy:
-e.g: ./flame-coach-tools --api/web --deploy --version <version>
+1. Run the release script:
+  ./flame-coach-tools --release --releaseVersion <version> --snapshotVersion <version-snapshot> --api
+2. Open a new PR from master -> production
+3. Accept the PR
+4. Wait to production build & deploy finish
+5. Run the snapshot script:
+  ./flame-coach-tools --release --releaseVersion <version> --snapshotVersion <version-snapshot> --api --snapshot
 ```
 
 ## Contributing ✍️
