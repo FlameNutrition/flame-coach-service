@@ -2,19 +2,28 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
+executors:
+  openjdk:
+    # These next lines define a Docker executor: https://circleci.com/docs/2.0/executor-types/
+    # You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
+    # Be sure to update the Docker image tag below to openjdk version of your application.
+    # A list of available CircleCI Docker Convenience Images are available here: https://circleci.com/developer/images/image/cimg/openjdk
+    resource_class: medium
+    working_directory: ~/flame-coach-service
+    docker:
+      - image: cimg/openjdk:11.0
+        environment:
+          TZ: "Europe/London"
+
+orbs:
+  aws-cli: circleci/aws-cli@2.0
+
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
   # Below is the definition of your job to build and test your app, you can rename and customize it as you want.
   build-and-test:
-    # These next lines define a Docker executor: https://circleci.com/docs/2.0/executor-types/
-    # You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # Be sure to update the Docker image tag below to openjdk version of your application.
-    # A list of available CircleCI Docker Convenience Images are available here: https://circleci.com/developer/images/image/cimg/openjdk
-    docker:
-      - image: cimg/openjdk:11.0
-        environment:
-          TZ: "Europe/London"
+    executor: openjdk
     working_directory: ~/flame-coach-service
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
@@ -25,15 +34,65 @@ jobs:
       - run:
           name: Build
           command: mvn -B -DskipTests clean package
-      # Then run your tests!
+      - when:
+          condition:
+            equal: [ production, << pipeline.git.branch >> ]
+          steps:
+            - run:
+                name: Run Unit & Component Tests
+                command: mvn test -Dskip.component.tests=false
+            - run:
+                name: Build Deploy Folder
+                command: |
+                  mkdir ~/flame-coach-service/launch/target/deploy
+                  mkdir ~/flame-coach-service/launch/target/deploy/scripts
+                  cp ~/flame-coach-service/launch/target/flame-coach.jar ~/flame-coach-service/launch/target/deploy/flame-coach.jar
+                  cp ~/flame-coach-service/appspec.yml ~/flame-coach-service/launch/target/deploy/appspec.yml
+                  cp ~/flame-coach-service/launch/scripts/start-application.sh ~/flame-coach-service/launch/target/deploy/scripts
+                  cp ~/flame-coach-service/launch/scripts/stop-application.sh ~/flame-coach-service/launch/target/deploy/scripts
+                  cp ~/flame-coach-service/application/src/main/resources/log4j2-production.xml ~/flame-coach-service/launch/target/deploy/log4j2.xml
+                  cat ~/flame-coach-service/pom.xml | grep "^    <version>.*</version>$" | awk -F'[><]' '{print $3}' >> ~/flame-coach-service/launch/target/deploy/build.txt
+            - save_cache:
+                key: flame-coach-{{ .Branch }}-{{ .Revision }}
+                paths:
+                  - ~/flame-coach-service/launch/target/deploy
+
+  deploy:
+    executor: aws-cli/default
+    working_directory: ~/flame-coach-service
+    steps:
+      - restore_cache:
+          key: flame-coach-{{ .Branch }}-{{ .Revision }}
+      - aws-cli/setup:
+          profile-name: circleci-backend
       - run:
-          name: Test
-          command: mvn test -Dskip.component.tests=false
+          name: Push to S3
+          command: |
+            VERSION=`cat ~/flame-coach-service/launch/target/deploy/build.txt`
+            aws deploy push --application-name FlameCoachAPI --s3-location s3://flamecoach-api/FlameCoachAPIv$VERSION.zip --source ~/flame-coach-service/launch/target/deploy
+      - run:
+          name: Deploy using AWS CodeDeply
+          command: |
+            VERSION=`cat ~/flame-coach-service/launch/target/deploy/build.txt`
+            aws deploy create-deployment --application-name FlameCoachAPI --deployment-group-name production --s3-location bucket=flamecoach-api,key=FlameCoachAPIv$VERSION.zip,bundleType=zip
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  flame-coach: # This is the name of the workflow, feel free to change it to better match your workflow.
+  flame-coach:
+    # This is the name of the workflow, feel free to change it to better match your workflow.
     # Inside the workflow, you define the jobs you want to run.
     jobs:
-      - build-and-test
+      - build-and-test:
+          filters:
+            branches:
+              only:
+                - master
+                - production
+      - deploy:
+          context: aws
+          requires:
+            - build-and-test
+          filters:
+            branches:
+              only: production
