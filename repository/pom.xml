@@ -11,6 +11,7 @@
 
     <properties>
         <database.url>localhost</database.url>
+        <database.port>3320</database.port>
         <database.name>flame-coach</database.name>
         <database.username>root</database.username>
         <database.password/>

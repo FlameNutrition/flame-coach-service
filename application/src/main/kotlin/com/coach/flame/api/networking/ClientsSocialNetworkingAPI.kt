@@ -11,6 +11,15 @@ import com.coach.flame.api.networking.response.LookingForCoachResponse
 interface ClientsSocialNetworkingAPI {
 
     /**
+     * Get status looking for a coach
+     *
+     * @param request information to allows system get status of looking for coach for specific client
+     *
+     * @return looking for coach status if successfully otherwise returns an exception
+     */
+    fun statusLookingForCoach(request: LookingForCoachRequest): LookingForCoachResponse
+
+    /**
      * Enable looking for a coach
      *
      * @param request information to allows system enable the looking for coach for specific client

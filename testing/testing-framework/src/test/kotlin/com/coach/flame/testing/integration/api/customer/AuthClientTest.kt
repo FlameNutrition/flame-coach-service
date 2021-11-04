@@ -1,7 +1,10 @@
 package com.coach.flame.testing.integration.api.customer
 
-import com.coach.flame.jpa.entity.CountryConfig
-import com.coach.flame.jpa.entity.GenderConfig
+import com.coach.flame.domain.CountryDto
+import com.coach.flame.domain.GenderDto
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.domain.maker.ClientDtoMaker
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.jpa.entity.maker.*
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
@@ -30,20 +33,39 @@ class AuthClientTest : BaseIntegrationTest() {
     fun `register new client`() {
 
         // when
-        val coach = coachRepository.saveAndFlush(CoachBuilder.maker().but(with(CoachMaker.uuid,
-            UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")),
-            with(CoachMaker.clientType, coachType),
-            with(CoachMaker.user, userMaker
-                .but(with(UserMaker.userSession, userSessionMaker
-                    .but(with(UserSessionMaker.token, UUID.randomUUID()))
-                    .make()))
-                .make()))
-            .make())
+        val coach = coachRepository.saveAndFlush(
+            CoachBuilder.maker().but(
+                with(
+                    CoachMaker.uuid,
+                    UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
+                ),
+                with(CoachMaker.clientType, coachType),
+                with(
+                    CoachMaker.user, userMaker
+                        .but(
+                            with(
+                                UserMaker.userSession, userSessionMaker
+                                    .but(with(UserSessionMaker.token, UUID.randomUUID()))
+                                    .make()
+                            )
+                        )
+                        .make()
+                )
+            )
+                .make()
+        )
 
-        registrationInviteRepository.saveAndFlush(RegistrationInviteBuilder.maker()
-            .but(with(RegistrationInviteMaker.coachProp, coach),
-                with(RegistrationInviteMaker.registrationKeyProp, "OTk5OS0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ=="))
-            .make())
+        registrationInviteRepository.saveAndFlush(
+            RegistrationInviteBuilder.maker()
+                .but(
+                    with(RegistrationInviteMaker.coachProp, coach),
+                    with(
+                        RegistrationInviteMaker.registrationKeyProp,
+                        "OTk5OS0wMS0wMVQxMjowMDowMF90ZXN0QGdtYWlsLmNvbQ=="
+                    )
+                )
+                .make()
+        )
 
 
         val response = restTemplate.exchange(request!!, String::class.java)
@@ -76,18 +98,24 @@ class AuthClientTest : BaseIntegrationTest() {
         val salt = saltTool.generate()
         val password = hashPasswordTool.generate("12345", salt)
 
-        val client = clientMaker
-            .but(with(ClientMaker.firstname, "Miguel"),
-                with(ClientMaker.lastname, "Teixeira"),
-                with(ClientMaker.clientType, clientTypeRepository.getByType("CLIENT")),
-                with(ClientMaker.user, userMaker
-                    .but(with(UserMaker.email, "test@gmail.com"),
-                        with(UserMaker.password, password),
-                        with(UserMaker.key, salt))
-                    .make()),
-                with(ClientMaker.country, null as CountryConfig?),
-                with(ClientMaker.gender, null as GenderConfig?))
+        val client = ClientDtoBuilder.maker()
+            .but(
+                with(ClientDtoMaker.firstName, "Miguel"),
+                with(ClientDtoMaker.lastName, "Teixeira"),
+                with(
+                    ClientDtoMaker.loginInfo, userMaker
+                        .but(
+                            with(UserMaker.email, "test@gmail.com"),
+                            with(UserMaker.password, password),
+                            with(UserMaker.key, salt)
+                        )
+                        .make().toDto()
+                ),
+                with(ClientDtoMaker.country, null as CountryDto?),
+                with(ClientDtoMaker.gender, null as GenderDto?)
+            )
             .make()
+            .toClient()
 
         clientRepository.saveAndFlush(client)
 

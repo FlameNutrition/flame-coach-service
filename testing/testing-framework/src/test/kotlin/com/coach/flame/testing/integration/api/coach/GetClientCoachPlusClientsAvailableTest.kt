@@ -1,6 +1,10 @@
 package com.coach.flame.testing.integration.api.coach
 
+import com.coach.flame.domain.ClientStatusDto
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.domain.maker.ClientDtoMaker
 import com.coach.flame.jpa.entity.Client
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.jpa.entity.ClientStatus
 import com.coach.flame.jpa.entity.Coach
 import com.coach.flame.jpa.entity.maker.*
@@ -36,43 +40,67 @@ class GetClientCoachPlusClientsAvailableTest : BaseIntegrationTest() {
     override fun setup() {
         super.setup()
 
-        coach1 = coachRepository.saveAndFlush(coachMaker.but(with(CoachMaker.uuid,
-            UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")),
-            with(CoachMaker.clientType, coachType),
-            with(CoachMaker.user, userMaker
-                .but(with(UserMaker.userSession, userSessionMaker
-                    .but(with(UserSessionMaker.token, UUID.randomUUID()))
-                    .make()))
-                .make()))
-            .make())
+        coach1 = coachRepository.saveAndFlush(
+            coachMaker.but(
+                with(
+                    CoachMaker.uuid,
+                    UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
+                ),
+                with(CoachMaker.clientType, coachType),
+                with(
+                    CoachMaker.user, userMaker
+                        .but(
+                            with(
+                                UserMaker.userSession, userSessionMaker
+                                    .but(with(UserSessionMaker.token, UUID.randomUUID()))
+                                    .make()
+                            )
+                        )
+                        .make()
+                )
+            )
+                .make()
+        )
 
-        coach2 = coachRepository.saveAndFlush(coachMaker.but(with(CoachMaker.clientType, coachType))
-            .make())
+        coach2 = coachRepository.saveAndFlush(
+            coachMaker.but(with(CoachMaker.clientType, coachType)).make()
+        )
 
-        client1 = clientRepository.saveAndFlush(clientMaker.but(with(ClientMaker.uuid, UUID.randomUUID()),
-            with(ClientMaker.clientType, clientType))
-            .make())
+        client1 = clientRepository.saveAndFlush(
+            ClientDtoBuilder.makerWithLoginInfo().but(with(ClientDtoMaker.identifier, UUID.randomUUID())).make().toClient()
+        )
 
-        client2 = clientRepository.saveAndFlush(clientMaker.but(with(ClientMaker.uuid, UUID.randomUUID()),
-            with(ClientMaker.clientType, clientType))
-            .make())
+        client2 = clientRepository.saveAndFlush(
+            ClientDtoBuilder.makerWithLoginInfo().but(
+                with(ClientDtoMaker.identifier, UUID.randomUUID())
+            ).make().toClient()
+        )
 
-        client3 = clientRepository.saveAndFlush(clientMaker.but(with(ClientMaker.uuid, UUID.randomUUID()),
-            with(ClientMaker.clientType, clientType))
-            .make())
+        client3 = clientRepository.saveAndFlush(
+            ClientDtoBuilder.makerWithLoginInfo().but(
+                with(ClientDtoMaker.identifier, UUID.randomUUID())
+            ).make().toClient()
+        )
 
-        client4 = clientRepository.saveAndFlush(clientMaker.but(with(ClientMaker.uuid, UUID.randomUUID()),
-            with(ClientMaker.clientType, clientType))
-            .make())
+        client4 = clientRepository.saveAndFlush(
+            ClientDtoBuilder.makerWithLoginInfo().but(
+                with(ClientDtoMaker.identifier, UUID.randomUUID())
+            ).make().toClient()
+        )
 
-        client5 = clientRepository.saveAndFlush(clientMaker.but(with(ClientMaker.uuid, UUID.randomUUID()),
-            with(ClientMaker.clientType, clientType))
-            .make())
+        client5 = clientRepository.saveAndFlush(
+            ClientDtoBuilder.makerWithLoginInfo().but(
+                with(ClientDtoMaker.identifier, UUID.randomUUID()),
+            ).make().toClient()
+        )
 
-        client6 = clientRepository.saveAndFlush(clientMaker.but(with(ClientMaker.uuid, UUID.randomUUID()),
-            with(ClientMaker.clientType, clientType),
-            with(ClientMaker.clientStatus, ClientStatus.ACCEPTED),
-            with(ClientMaker.coach, coach2)).make())
+        client6 = clientRepository.saveAndFlush(
+            ClientDtoBuilder.makerWithLoginInfo().but(
+                with(ClientDtoMaker.identifier, UUID.randomUUID()),
+                with(ClientDtoMaker.clientStatus, ClientStatusDto.ACCEPTED),
+                with(ClientDtoMaker.coach, coach2.toDto())
+            ).make().toClient()
+        )
     }
 
     @Test

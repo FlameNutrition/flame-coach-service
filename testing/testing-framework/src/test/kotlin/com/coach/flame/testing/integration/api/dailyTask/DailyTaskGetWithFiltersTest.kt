@@ -1,9 +1,15 @@
 package com.coach.flame.testing.integration.api.dailyTask
 
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.domain.maker.ClientDtoMaker
 import com.coach.flame.jpa.entity.Client
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.jpa.entity.Coach
 import com.coach.flame.jpa.entity.DailyTask
-import com.coach.flame.jpa.entity.maker.*
+import com.coach.flame.jpa.entity.maker.CoachBuilder
+import com.coach.flame.jpa.entity.maker.CoachMaker
+import com.coach.flame.jpa.entity.maker.DailyTaskBuilder
+import com.coach.flame.jpa.entity.maker.DailyTaskMaker
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
 import com.coach.flame.testing.integration.base.BaseIntegrationTest
@@ -42,39 +48,59 @@ class DailyTaskGetWithFiltersTest : BaseIntegrationTest() {
 
         super.setup()
 
-        coach = coachRepository.saveAndFlush(CoachBuilder.maker()
-            .but(with(CoachMaker.clientType, coachType))
-            .make())
+        coach = coachRepository.saveAndFlush(
+            CoachBuilder.maker()
+                .but(with(CoachMaker.clientType, coachType))
+                .make()
+        )
 
-        client0 = clientRepository.saveAndFlush(ClientBuilder.maker()
-            .but(with(ClientMaker.clientType, clientType),
-                with(ClientMaker.uuid, client0UUID))
-            .make())
+        client0 = clientRepository.saveAndFlush(
+            ClientDtoBuilder.makerWithLoginInfo()
+                .but(with(ClientDtoMaker.identifier, client0UUID))
+                .make().toClient()
+        )
 
-        client1 = clientRepository.saveAndFlush(ClientBuilder.maker()
-            .but(with(ClientMaker.clientType, clientType),
-                with(ClientMaker.uuid, client1UUID))
-            .make())
+        client1 = clientRepository.saveAndFlush(
+            ClientDtoBuilder.makerWithLoginInfo()
+                .but(with(ClientDtoMaker.identifier, client1UUID))
+                .make().toClient()
+        )
 
-        dailyTask0 = dailyTaskRepository.saveAndFlush(DailyTaskBuilder.maker()
-            .but(with(DailyTaskMaker.createdBy, coach),
-                with(DailyTaskMaker.date, LocalDate.parse("2021-03-21")),
-                with(DailyTaskMaker.client, client0))
-            .make())
-        dailyTask1 = dailyTaskRepository.saveAndFlush(DailyTaskBuilder.maker()
-            .but(with(DailyTaskMaker.createdBy, coach),
-                with(DailyTaskMaker.date, LocalDate.parse("2021-03-22")),
-                with(DailyTaskMaker.client, client0))
-            .make())
-        dailyTask2 = dailyTaskRepository.saveAndFlush(DailyTaskBuilder.maker()
-            .but(with(DailyTaskMaker.createdBy, coach),
-                with(DailyTaskMaker.client, client1))
-            .make())
-        dailyTask3 = dailyTaskRepository.saveAndFlush(DailyTaskBuilder.maker()
-            .but(with(DailyTaskMaker.createdBy, coach),
-                with(DailyTaskMaker.date, LocalDate.parse("2021-03-17")),
-                with(DailyTaskMaker.client, client0))
-            .make())
+        dailyTask0 = dailyTaskRepository.saveAndFlush(
+            DailyTaskBuilder.maker()
+                .but(
+                    with(DailyTaskMaker.createdBy, coach),
+                    with(DailyTaskMaker.date, LocalDate.parse("2021-03-21")),
+                    with(DailyTaskMaker.client, client0)
+                )
+                .make()
+        )
+        dailyTask1 = dailyTaskRepository.saveAndFlush(
+            DailyTaskBuilder.maker()
+                .but(
+                    with(DailyTaskMaker.createdBy, coach),
+                    with(DailyTaskMaker.date, LocalDate.parse("2021-03-22")),
+                    with(DailyTaskMaker.client, client0)
+                )
+                .make()
+        )
+        dailyTask2 = dailyTaskRepository.saveAndFlush(
+            DailyTaskBuilder.maker()
+                .but(
+                    with(DailyTaskMaker.createdBy, coach),
+                    with(DailyTaskMaker.client, client1)
+                )
+                .make()
+        )
+        dailyTask3 = dailyTaskRepository.saveAndFlush(
+            DailyTaskBuilder.maker()
+                .but(
+                    with(DailyTaskMaker.createdBy, coach),
+                    with(DailyTaskMaker.date, LocalDate.parse("2021-03-17")),
+                    with(DailyTaskMaker.client, client0)
+                )
+                .make()
+        )
 
 
     }

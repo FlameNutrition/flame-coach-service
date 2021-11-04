@@ -10,7 +10,7 @@ import com.natpryce.makeiteasy.Property
 import java.time.LocalDate
 import java.util.*
 
-object ClientBuilder {
+internal object ClientBuilder {
 
     private val MAKER: Maker<Client> = an(ClientMaker.Client)
 
@@ -24,7 +24,7 @@ object ClientBuilder {
 
 }
 
-class ClientMaker {
+internal class ClientMaker {
 
     companion object {
 
@@ -74,7 +74,8 @@ class ClientMaker {
                 weight = it.valueOf(weight, 0.0f),
                 clientStatus = it.valueOf(clientStatus, ClientStatus.AVAILABLE),
                 measureConfig = it.valueOf(measureConfig, MeasureConfig.KG_CM),
-                registrationDate = it.valueOf(registrationDate, LocalDate.now())
+                registrationDate = it.valueOf(registrationDate, LocalDate.now()),
+                clientLookingForCoach = ClientLookingForCoach()
             )
         }
     }

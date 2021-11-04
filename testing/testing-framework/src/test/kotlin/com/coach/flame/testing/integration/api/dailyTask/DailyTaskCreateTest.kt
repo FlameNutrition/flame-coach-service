@@ -1,12 +1,15 @@
 package com.coach.flame.testing.integration.api.dailyTask
 
-import com.coach.flame.jpa.entity.maker.*
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.domain.maker.ClientDtoMaker
+import com.coach.flame.jpa.entity.Client.Companion.toClient
+import com.coach.flame.jpa.entity.maker.CoachBuilder
+import com.coach.flame.jpa.entity.maker.CoachMaker
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
 import com.coach.flame.testing.integration.base.BaseIntegrationTest
 import com.natpryce.makeiteasy.MakeItEasy.with
 import org.assertj.core.api.BDDAssertions.then
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -37,16 +40,21 @@ class DailyTaskCreateTest : BaseIntegrationTest() {
 
         // given
         // Client
-        clientRepository.saveAndFlush(ClientBuilder.maker()
-            .but(with(ClientMaker.uuid, clientUUID),
-                with(ClientMaker.clientType, clientTypeRepository.getByType("CLIENT")))
-            .make())
+        clientRepository.saveAndFlush(
+            ClientDtoBuilder.makerWithLoginInfo()
+                .but(with(ClientDtoMaker.identifier, clientUUID))
+                .make().toClient()
+        )
 
         // Coach
-        coachRepository.saveAndFlush(CoachBuilder.maker()
-            .but(with(CoachMaker.uuid, coachUUID),
-                with(CoachMaker.clientType, clientTypeRepository.getByType("COACH")))
-            .make())
+        coachRepository.saveAndFlush(
+            CoachBuilder.maker()
+                .but(
+                    with(CoachMaker.uuid, coachUUID),
+                    with(CoachMaker.clientType, clientTypeRepository.getByType("COACH"))
+                )
+                .make()
+        )
 
         // when
         val response = restTemplate.exchange(request!!, String::class.java)

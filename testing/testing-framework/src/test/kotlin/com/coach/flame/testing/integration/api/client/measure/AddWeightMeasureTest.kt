@@ -1,10 +1,9 @@
 package com.coach.flame.testing.integration.api.client.measure
 
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.domain.maker.ClientDtoMaker
 import com.coach.flame.jpa.entity.Client
-import com.coach.flame.jpa.entity.maker.ClientBuilder
-import com.coach.flame.jpa.entity.maker.ClientMaker
-import com.coach.flame.jpa.entity.maker.ClientTypeBuilder
-import com.coach.flame.jpa.entity.maker.ClientTypeMaker
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
 import com.coach.flame.testing.integration.base.BaseIntegrationTest
@@ -30,10 +29,11 @@ class AddWeightMeasureTest : BaseIntegrationTest() {
     override fun setup() {
         super.setup()
 
-        client1 = clientRepository.saveAndFlush(ClientBuilder.maker()
-            .but(with(ClientMaker.uuid, UUID.fromString("79275cc8-ed8a-4f8a-b790-ff66f74d758a")),
-                with(ClientMaker.clientType, clientType))
-            .make())
+        client1 = clientRepository.saveAndFlush(
+            ClientDtoBuilder.makerWithLoginInfo()
+                .but(with(ClientDtoMaker.identifier, UUID.fromString("79275cc8-ed8a-4f8a-b790-ff66f74d758a")))
+                .make().toClient()
+        )
     }
 
     @Test

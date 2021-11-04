@@ -1,29 +1,33 @@
 package com.coach.flame.testing.component.base.utils
 
+import com.coach.flame.domain.ClientStatusDto
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.domain.maker.ClientDtoMaker
 import com.coach.flame.jpa.entity.Client
-import com.coach.flame.jpa.entity.ClientStatus
-import com.coach.flame.jpa.entity.Coach
-import com.coach.flame.jpa.entity.maker.ClientBuilder
-import com.coach.flame.jpa.entity.maker.ClientMaker
-import com.coach.flame.jpa.entity.maker.CoachBuilder
-import com.coach.flame.jpa.entity.maker.CoachMaker
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.natpryce.makeiteasy.MakeItEasy.with
 import java.util.*
 
 object ClientHelper {
 
     val oneClientPending: (UUID) -> Client = { uuid: UUID ->
-        ClientBuilder.maker()
-            .but(with(ClientMaker.uuid, uuid),
-                with(ClientMaker.clientStatus, ClientStatus.PENDING))
+        ClientDtoBuilder.makerWithLoginInfo()
+            .but(
+                with(ClientDtoMaker.identifier, uuid),
+                with(ClientDtoMaker.clientStatus, ClientStatusDto.PENDING)
+            )
             .make()
+            .toClient()
     }
 
     val oneClientAvailable: (UUID) -> Client = { uuid: UUID ->
-        ClientBuilder.maker()
-            .but(with(ClientMaker.uuid, uuid),
-                with(ClientMaker.clientStatus, ClientStatus.AVAILABLE))
+        ClientDtoBuilder.makerWithLoginInfo()
+            .but(
+                with(ClientDtoMaker.identifier, uuid),
+                with(ClientDtoMaker.clientStatus, ClientStatusDto.AVAILABLE)
+            )
             .make()
+            .toClient()
     }
 
 }

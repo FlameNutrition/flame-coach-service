@@ -1,9 +1,10 @@
 package com.coach.flame.testing.integration.api.appointments
 
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.domain.maker.ClientDtoMaker
 import com.coach.flame.jpa.entity.Client
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.jpa.entity.Coach
-import com.coach.flame.jpa.entity.maker.ClientBuilder
-import com.coach.flame.jpa.entity.maker.ClientMaker
 import com.coach.flame.jpa.entity.maker.CoachBuilder
 import com.coach.flame.jpa.entity.maker.CoachMaker
 import com.coach.flame.testing.framework.JsonBuilder
@@ -37,11 +38,11 @@ class CreateAppointmentTest : BaseIntegrationTest() {
                 with(CoachMaker.clientType, coachType))
             .make())
 
-        client = clientRepository.saveAndFlush(ClientBuilder.maker()
-            .but(with(ClientMaker.uuid, UUID.fromString("79275cc8-ed8a-4f8a-b790-ff66f74d758a")),
-                with(ClientMaker.clientType, clientType),
-                with(ClientMaker.coach, coach))
-            .make())
+        client = clientRepository.saveAndFlush(
+            ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.identifier, UUID.fromString("79275cc8-ed8a-4f8a-b790-ff66f74d758a")),
+                with(ClientDtoMaker.coach, coach.toDto()))
+            .make().toClient())
 
 
     }

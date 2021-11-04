@@ -2,13 +2,14 @@ package com.coach.flame.customer.client
 
 import com.coach.flame.customer.CustomerNotFoundException
 import com.coach.flame.domain.ClientStatusDto
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.domain.maker.ClientDtoMaker
 import com.coach.flame.domain.maker.CoachDtoBuilder
+import com.coach.flame.domain.maker.CoachDtoMaker
 import com.coach.flame.jpa.entity.Client
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.jpa.entity.ClientStatus
-import com.coach.flame.jpa.entity.maker.ClientBuilder
-import com.coach.flame.jpa.entity.maker.ClientMaker
 import com.coach.flame.jpa.entity.maker.CoachBuilder
-import com.coach.flame.jpa.entity.maker.CoachMaker
 import com.coach.flame.jpa.repository.ClientRepository
 import com.coach.flame.jpa.repository.CoachRepository
 import com.natpryce.makeiteasy.MakeItEasy.with
@@ -46,16 +47,21 @@ class ClientServiceImplTest {
     @Test
     fun `test get all clients`() {
 
-        val client0 = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.ACCEPTED))
+        val client0 = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.ACCEPTED))
             .make()
-        val client1 = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.PENDING))
+            .toClient()
+        val client1 = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.PENDING))
             .make()
-        val client2 = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.AVAILABLE))
+            .toClient()
+        val client2 = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.AVAILABLE))
             .make()
-        val client3 = ClientBuilder.default()
+            .toClient()
+        val client3 = ClientDtoBuilder.makerWithLoginInfo()
+            .make()
+            .toClient()
         every { clientRepository.findAll() } returns listOf(client0, client1, client2, client3)
 
         val result = classToTest.getAllClients()
@@ -69,27 +75,40 @@ class ClientServiceImplTest {
     fun `test get all clients with same coach`() {
 
         val coach = CoachDtoBuilder.default()
-        val client0 = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.ACCEPTED),
-                with(ClientMaker.coach, CoachBuilder
-                    .maker()
-                    .but(with(CoachMaker.uuid, coach.identifier))
-                    .make()))
+        val client0 = ClientDtoBuilder.makerWithLoginInfo()
+            .but(
+                with(ClientDtoMaker.clientStatus, ClientStatusDto.ACCEPTED),
+                with(
+                    ClientDtoMaker.coach, CoachDtoBuilder.makerWithLoginInfo()
+                        .but(with(CoachDtoMaker.identifier, coach.identifier))
+                        .make()
+                )
+            )
             .make()
-        val client1 = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.ACCEPTED),
-                with(ClientMaker.coach, CoachBuilder
-                    .maker()
-                    .but(with(CoachMaker.uuid, coach.identifier))
-                    .make()))
+            .toClient()
+
+        val client1 = ClientDtoBuilder.makerWithLoginInfo()
+            .but(
+                with(ClientDtoMaker.clientStatus, ClientStatusDto.ACCEPTED),
+                with(
+                    ClientDtoMaker.coach, CoachDtoBuilder.makerWithLoginInfo()
+                        .but(with(CoachDtoMaker.identifier, coach.identifier))
+                        .make()
+                )
+            )
             .make()
-        val client2 = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.ACCEPTED),
-                with(ClientMaker.coach, CoachBuilder
-                    .maker()
-                    .but(with(CoachMaker.uuid, coach.identifier))
-                    .make()))
+            .toClient()
+        val client2 = ClientDtoBuilder.makerWithLoginInfo()
+            .but(
+                with(ClientDtoMaker.clientStatus, ClientStatusDto.ACCEPTED),
+                with(
+                    ClientDtoMaker.coach, CoachDtoBuilder.makerWithLoginInfo()
+                        .but(with(CoachDtoMaker.identifier, coach.identifier))
+                        .make()
+                )
+            )
             .make()
+            .toClient()
         every { clientRepository.getClientsWithCoach(coach.identifier) } returns listOf(client0, client1, client2)
 
         val result = classToTest.getAllClientsFromCoach(coach.identifier)
@@ -103,12 +122,14 @@ class ClientServiceImplTest {
     fun `test get all clients for a coach`() {
 
         val uuidCoach = UUID.randomUUID()
-        val client0 = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.AVAILABLE))
+        val client0 = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.AVAILABLE))
             .make()
-        val client1 = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.AVAILABLE))
+            .toClient()
+        val client1 = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.AVAILABLE))
             .make()
+            .toClient()
         every { clientRepository.getClientsForCoach(uuidCoach.toString()) } returns listOf(client0, client1)
 
         val result = classToTest.getAllClientsForCoach(uuidCoach)
@@ -123,9 +144,10 @@ class ClientServiceImplTest {
 
         val uuid = UUID.randomUUID()
         val clientSlot = slot<Client>()
-        val client = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.AVAILABLE))
+        val client = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.AVAILABLE))
             .make()
+            .toClient()
 
         every { clientRepository.findByUuid(uuid) } returns client
         every { clientRepository.save(capture(clientSlot)) } answers { clientSlot.captured }
@@ -161,9 +183,10 @@ class ClientServiceImplTest {
         val uuidClient = UUID.randomUUID()
         val uuidCoach = UUID.randomUUID()
         val clientSlot = slot<Client>()
-        val client = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.AVAILABLE))
+        val client = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.AVAILABLE))
             .make()
+            .toClient()
         val coach = CoachBuilder.default()
 
         every { clientRepository.findByUuid(uuidClient) } returns client
@@ -182,9 +205,10 @@ class ClientServiceImplTest {
 
         val uuidClient = UUID.randomUUID()
         val uuidCoach = UUID.randomUUID()
-        val client = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.AVAILABLE))
+        val client = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.AVAILABLE))
             .make()
+            .toClient()
 
         every { clientRepository.findByUuid(uuidClient) } returns client
         every { coachRepository.findByUuid(uuidCoach) } returns null
@@ -205,9 +229,10 @@ class ClientServiceImplTest {
 
         val uuidClient = UUID.randomUUID()
         val clientSlot = slot<Client>()
-        val client = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.ACCEPTED))
+        val client = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.ACCEPTED))
             .make()
+            .toClient()
 
         every { clientRepository.findByUuid(uuidClient) } returns client
         every { clientRepository.save(capture(clientSlot)) } answers { clientSlot.captured }

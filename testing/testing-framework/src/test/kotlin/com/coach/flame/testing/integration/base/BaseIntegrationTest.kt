@@ -93,8 +93,6 @@ abstract class BaseIntegrationTest {
     protected lateinit var genderConfigCache: ConfigCache<GenderConfig>
 
     protected val userMaker: Maker<User> = an(UserMaker.User)
-    protected val clientTypeMaker: Maker<ClientType> = an(ClientTypeMaker.ClientType)
-    protected val clientMaker: Maker<Client> = an(ClientMaker.Client)
     protected val coachMaker: Maker<Coach> = an(CoachMaker.Coach)
     protected val userSessionMaker: Maker<UserSession> = an(UserSessionMaker.UserSession)
 
@@ -110,10 +108,17 @@ abstract class BaseIntegrationTest {
 
     @BeforeEach
     fun setup() {
-        clientType = clientTypeRepository
-            .saveAndFlush(ClientTypeBuilder.maker().but(MakeItEasy.with(ClientTypeMaker.type, "CLIENT")).make())
-        coachType = clientTypeRepository.saveAndFlush(ClientTypeBuilder.maker()
-            .but(MakeItEasy.with(ClientTypeMaker.type, "COACH")).make())
+        // FIXME: Please do not change this order. Check [ClientType.toClientType]
+        coachType = clientTypeRepository.saveAndFlush(
+            ClientTypeBuilder.maker()
+                .but(MakeItEasy.with(ClientTypeMaker.type, "COACH"))
+                .make()
+        )
+        clientType = clientTypeRepository.saveAndFlush(
+            ClientTypeBuilder.maker()
+                .but(MakeItEasy.with(ClientTypeMaker.type, "CLIENT"))
+                .make()
+        )
     }
 
     @AfterEach

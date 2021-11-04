@@ -1,6 +1,9 @@
 package com.coach.flame.jpa.entity
 
-import com.coach.flame.domain.*
+import com.coach.flame.domain.ClientDto
+import com.coach.flame.domain.ClientStatusDto
+import com.coach.flame.domain.CoachDto
+import com.coach.flame.domain.MeasureTypeDto
 import com.coach.flame.jpa.converter.MeasureConfigConverter
 import com.coach.flame.jpa.entity.ClientMeasureWeight.Companion.toClientMeasureWeight
 import com.coach.flame.jpa.entity.ClientType.Companion.toClientType
@@ -80,6 +83,10 @@ class Client(
 
     @Column(nullable = false, columnDefinition = "DATE")
     val registrationDate: LocalDate,
+
+    @OneToOne(optional = false, fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST], orphanRemoval = true)
+    @JoinColumn(name = "clientLookingForCoachFk", referencedColumnName = "id", nullable = false)
+    var clientLookingForCoach: ClientLookingForCoach
 ) : AbstractPersistable<Long>() {
 
     fun toDto(coachDto: CoachDto?): ClientDto {
@@ -106,7 +113,8 @@ class Client(
             clientStatus = ClientStatusDto.valueOf(this.clientStatus.name),
             coach = coachDto,
             weightMeasureTimeline = listOfWeightsTimeline.toMutableList(),
-            registrationKey = null
+            registrationKey = null,
+            lookingForCoach = this.clientLookingForCoach.toDto()
         )
 
     }
@@ -122,6 +130,10 @@ class Client(
 
             val listOfWeightsTimeline = weightMeasureTimeline
                 .map { it.toClientMeasureWeight() }
+
+            val clientLookingForCoach = ClientLookingForCoach()
+            clientLookingForCoach.isEnable = lookingForCoach.isEnable
+            clientLookingForCoach.description = lookingForCoach.description
 
             val client = Client(
                 uuid = identifier,
@@ -140,10 +152,12 @@ class Client(
                 clientType = customerType.toClientType(),
                 clientStatus = ClientStatus.valueOf(clientStatus!!.name),
                 registrationDate = registrationDate,
-                coach = coach?.toCoach()
+                coach = coach?.toCoach(),
+                clientLookingForCoach = clientLookingForCoach
             )
 
             client.id = id
+
             return client
         }
     }

@@ -1,10 +1,13 @@
 package com.coach.flame.domain
 
+import java.time.LocalDateTime
 import java.util.*
 
 data class MessageDto(
-    val identifier: UUID? = null,
+    val id: Long? = null,
+    val identifier: UUID,
     val message: String,
+    val time: LocalDateTime,
     val to: UUID,
     val from: UUID,
     val owner: Owner
@@ -19,6 +22,7 @@ data class MessageDto(
                 "identifier=$identifier, " +
                 "to=$to, " +
                 "from=$from, " +
+                "time=$time, " +
                 "message='$message', " +
                 "owner=$owner" +
                 ")"

@@ -1,9 +1,10 @@
 package com.coach.flame.testing.component.api.metrics
 
+import com.coach.flame.domain.ClientStatusDto
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.domain.maker.ClientDtoMaker
 import com.coach.flame.failure.exception.CustomerNotFoundException
-import com.coach.flame.jpa.entity.ClientStatus
-import com.coach.flame.jpa.entity.maker.ClientBuilder
-import com.coach.flame.jpa.entity.maker.ClientMaker
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.jpa.entity.maker.CoachBuilder
 import com.coach.flame.jpa.entity.maker.CoachMaker
 import com.coach.flame.testing.assertion.http.ErrorAssert
@@ -38,20 +39,25 @@ class MetricsGetClientsStatistics : BaseComponentTest() {
     fun `test get clients metrics from coach`() {
 
         // given
-        val client1 = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.PENDING))
+        val client1 = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.PENDING))
             .make()
-        val client2 = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.PENDING))
+            .toClient()
+        val client2 = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.PENDING))
             .make()
-        val client3 = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.ACCEPTED))
+            .toClient()
+        val client3 = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.ACCEPTED))
             .make()
+            .toClient()
         val listOfClients = mutableListOf(client1, client2, client3)
 
         val coach = CoachBuilder.maker()
-            .but(with(CoachMaker.clients, listOfClients),
-                with(CoachMaker.uuid, UUID.fromString("3c5845f1-4a90-4396-8610-7261761369ae")))
+            .but(
+                with(CoachMaker.clients, listOfClients),
+                with(CoachMaker.uuid, UUID.fromString("3c5845f1-4a90-4396-8610-7261761369ae"))
+            )
             .make()
 
         every {

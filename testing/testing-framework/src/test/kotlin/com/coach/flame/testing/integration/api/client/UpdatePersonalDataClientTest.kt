@@ -1,8 +1,13 @@
 package com.coach.flame.testing.integration.api.client
 
+import com.coach.flame.domain.ClientStatusDto
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.domain.maker.ClientDtoMaker
 import com.coach.flame.jpa.entity.Client
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.jpa.entity.ClientStatus
-import com.coach.flame.jpa.entity.maker.*
+import com.coach.flame.jpa.entity.maker.GenderBuilder
+import com.coach.flame.jpa.entity.maker.GenderMaker
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
 import com.coach.flame.testing.integration.base.BaseIntegrationTest
@@ -32,18 +37,23 @@ class UpdatePersonalDataClientTest : BaseIntegrationTest() {
 
         genderConfigRepository.saveAndFlush(
             GenderBuilder.maker()
-                .but(with(GenderMaker.genderCode, "F"),
-                    with(GenderMaker.externalValue, "Female"))
+                .but(
+                    with(GenderMaker.genderCode, "F"),
+                    with(GenderMaker.externalValue, "Female")
+                )
                 .make()
         )
 
-        client0 = clientRepository.saveAndFlush(ClientBuilder.maker()
-            .but(with(ClientMaker.uuid, UUID.fromString("34cbaa17-0da9-4469-82ec-b1b2ceba9665")),
-                with(ClientMaker.firstname, "Nuno"),
-                with(ClientMaker.registrationDate, LocalDate.parse("2021-04-04")),
-                with(ClientMaker.clientStatus, ClientStatus.PENDING),
-                with(ClientMaker.clientType, clientType))
-            .make())
+        client0 = clientRepository.saveAndFlush(
+            ClientDtoBuilder.makerWithLoginInfo()
+                .but(
+                    with(ClientDtoMaker.identifier, UUID.fromString("34cbaa17-0da9-4469-82ec-b1b2ceba9665")),
+                    with(ClientDtoMaker.firstName, "Nuno"),
+                    with(ClientDtoMaker.registrationDate, LocalDate.parse("2021-04-04")),
+                    with(ClientDtoMaker.clientStatus, ClientStatusDto.PENDING)
+                )
+                .make().toClient()
+        )
     }
 
     @Test

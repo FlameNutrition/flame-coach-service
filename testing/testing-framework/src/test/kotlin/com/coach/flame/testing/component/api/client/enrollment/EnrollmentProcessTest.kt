@@ -1,10 +1,11 @@
 package com.coach.flame.testing.component.api.client.enrollment
 
+import com.coach.flame.domain.ClientStatusDto
+import com.coach.flame.domain.CoachDto
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.domain.maker.ClientDtoMaker
 import com.coach.flame.jpa.entity.Client
-import com.coach.flame.jpa.entity.ClientStatus
-import com.coach.flame.jpa.entity.Coach
-import com.coach.flame.jpa.entity.maker.ClientBuilder
-import com.coach.flame.jpa.entity.maker.ClientMaker
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.jpa.entity.maker.CoachBuilder
 import com.coach.flame.jpa.entity.maker.CoachMaker
 import com.coach.flame.testing.component.base.BaseComponentTest
@@ -39,12 +40,13 @@ class EnrollmentProcessTest : BaseComponentTest() {
         // given
         val uuidClient = UUID.fromString("798cf556-7c23-4637-9aef-a862dc62cba8")
         val uuidCoach = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
-        val client0 = ClientBuilder.maker()
+        val client0 = ClientDtoBuilder.makerWithLoginInfo()
             .but(
-                with(ClientMaker.clientStatus, ClientStatus.AVAILABLE),
-                with(ClientMaker.uuid, uuidClient)
+                with(ClientDtoMaker.clientStatus, ClientStatusDto.AVAILABLE),
+                with(ClientDtoMaker.identifier, uuidClient)
             )
             .make()
+            .toClient()
         val coach = CoachBuilder.maker()
             .but(with(CoachMaker.uuid, uuidCoach))
             .make()
@@ -85,13 +87,14 @@ class EnrollmentProcessTest : BaseComponentTest() {
         // given
         val uuidClient = UUID.fromString("798cf556-7c23-4637-9aef-a862dc62cba8")
         val coach = CoachBuilder.default()
-        val client0 = ClientBuilder.maker()
+        val client0 = ClientDtoBuilder.makerWithLoginInfo()
             .but(
-                with(ClientMaker.clientStatus, ClientStatus.PENDING),
-                with(ClientMaker.uuid, uuidClient),
-                with(ClientMaker.coach, coach)
+                with(ClientDtoMaker.clientStatus, ClientStatusDto.PENDING),
+                with(ClientDtoMaker.identifier, uuidClient),
+                with(ClientDtoMaker.coach, coach.toDto())
             )
             .make()
+            .toClient()
 
         val client = slot<Client>()
 
@@ -129,13 +132,14 @@ class EnrollmentProcessTest : BaseComponentTest() {
         // given
         val uuidClient = UUID.fromString("798cf556-7c23-4637-9aef-a862dc62cba8")
         val coach = CoachBuilder.default()
-        val client0 = ClientBuilder.maker()
+        val client0 = ClientDtoBuilder.makerWithLoginInfo()
             .but(
-                with(ClientMaker.clientStatus, ClientStatus.PENDING),
-                with(ClientMaker.uuid, uuidClient),
-                with(ClientMaker.coach, coach)
+                with(ClientDtoMaker.clientStatus, ClientStatusDto.PENDING),
+                with(ClientDtoMaker.identifier, uuidClient),
+                with(ClientDtoMaker.coach, coach.toDto())
             )
             .make()
+            .toClient()
 
         val client = slot<Client>()
 
@@ -171,13 +175,14 @@ class EnrollmentProcessTest : BaseComponentTest() {
         // given
         val uuidClient = UUID.fromString("798cf556-7c23-4637-9aef-a862dc62cba8")
         val coach = CoachBuilder.default()
-        val client0 = ClientBuilder.maker()
+        val client0 = ClientDtoBuilder.makerWithLoginInfo()
             .but(
-                with(ClientMaker.clientStatus, ClientStatus.ACCEPTED),
-                with(ClientMaker.uuid, uuidClient),
-                with(ClientMaker.coach, coach)
+                with(ClientDtoMaker.clientStatus, ClientStatusDto.ACCEPTED),
+                with(ClientDtoMaker.identifier, uuidClient),
+                with(ClientDtoMaker.coach, coach.toDto())
             )
             .make()
+            .toClient()
 
         val client = slot<Client>()
 
@@ -212,13 +217,14 @@ class EnrollmentProcessTest : BaseComponentTest() {
         // given
         val uuidClient = UUID.fromString("798cf556-7c23-4637-9aef-a862dc62cba8")
         val coach = CoachBuilder.default()
-        val client0 = ClientBuilder.maker()
+        val client0 = ClientDtoBuilder.maker()
             .but(
-                with(ClientMaker.clientStatus, ClientStatus.ACCEPTED),
-                with(ClientMaker.uuid, uuidClient),
-                with(ClientMaker.coach, coach)
+                with(ClientDtoMaker.clientStatus, ClientStatusDto.ACCEPTED),
+                with(ClientDtoMaker.identifier, uuidClient),
+                with(ClientDtoMaker.coach, coach.toDto())
             )
             .make()
+            .toClient()
 
         val client = slot<Client>()
 
@@ -253,13 +259,14 @@ class EnrollmentProcessTest : BaseComponentTest() {
 
         // given
         val uuidClient = UUID.fromString("798cf556-7c23-4637-9aef-a862dc62cba8")
-        val client0 = ClientBuilder.maker()
+        val client0 = ClientDtoBuilder.maker()
             .but(
-                with(ClientMaker.clientStatus, ClientStatus.AVAILABLE),
-                with(ClientMaker.uuid, uuidClient),
-                with(ClientMaker.coach, null as Coach?)
+                with(ClientDtoMaker.clientStatus, ClientStatusDto.AVAILABLE),
+                with(ClientDtoMaker.identifier, uuidClient),
+                with(ClientDtoMaker.coach, null as CoachDto?)
             )
             .make()
+            .toClient()
 
         val client = slot<Client>()
 

@@ -1,7 +1,8 @@
 package com.coach.flame.testing.component.api.dailyTask
 
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.jpa.entity.DailyTask
-import com.coach.flame.jpa.entity.maker.ClientBuilder
 import com.coach.flame.jpa.entity.maker.CoachBuilder
 import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
@@ -42,7 +43,7 @@ class DailyTaskCreateTest : BaseComponentTest() {
         val clientUUID = UUID.fromString("3c5845f1-4a90-4396-8610-7261761369ae")
         val coachUUID = UUID.fromString("b2957c86-e493-4f9a-a277-2e24b77f0ffe")
         val coach = CoachBuilder.default()
-        val client = ClientBuilder.default()
+        val client = ClientDtoBuilder.makerWithLoginInfo().make().toClient()
 
         every { coachRepositoryMock.findByUuid(coachUUID) } returns coach
         every { clientRepositoryMock.findByUuid(clientUUID) } returns client
@@ -93,7 +94,7 @@ class DailyTaskCreateTest : BaseComponentTest() {
         val clientUUID = UUID.fromString("3c5845f1-4a90-4396-8610-7261761369ae")
         val coachUUID = UUID.fromString("b2957c86-e493-4f9a-a277-2e24b77f0ffe")
         val coach = CoachBuilder.default()
-        val client = ClientBuilder.default()
+        val client = ClientDtoBuilder.makerWithLoginInfo().make().toClient()
 
         every { coachRepositoryMock.findByUuid(coachUUID) } returns coach
         every { clientRepositoryMock.findByUuid(clientUUID) } returns client
@@ -138,7 +139,7 @@ class DailyTaskCreateTest : BaseComponentTest() {
         val clientUUID = UUID.fromString("3c5845f1-4a90-4396-8610-7261761369ae")
         val coachUUID = UUID.fromString("b2957c86-e493-4f9a-a277-2e24b77f0ffe")
         val coach = CoachBuilder.default()
-        val client = ClientBuilder.default()
+        val client = ClientDtoBuilder.makerWithLoginInfo().make().toClient()
 
         every { coachRepositoryMock.findByUuid(coachUUID) } returns coach
         every { clientRepositoryMock.findByUuid(clientUUID) } returns client

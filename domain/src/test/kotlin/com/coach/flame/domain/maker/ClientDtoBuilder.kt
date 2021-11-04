@@ -17,8 +17,10 @@ object ClientDtoBuilder {
 
     fun makerWithLoginInfo(): Maker<ClientDto> {
         val loginInfo = LoginInfoDtoBuilder.maker()
-            .but(with(LoginInfoDtoMaker.expirationDate, LocalDateTime.now()),
-                with(LoginInfoDtoMaker.token, UUID.randomUUID()))
+            .but(
+                with(LoginInfoDtoMaker.expirationDate, LocalDateTime.now()),
+                with(LoginInfoDtoMaker.token, UUID.randomUUID())
+            )
             .make()
 
         return MAKER
@@ -59,6 +61,7 @@ class ClientDtoMaker {
         val measureType: Property<ClientDto, MeasureTypeDto> = Property.newProperty()
         val listOfWeights: Property<ClientDto, MutableList<MeasureDto>> = Property.newProperty()
         val registrationKey: Property<ClientDto, String?> = Property.newProperty()
+        val lookingForCoach: Property<ClientDto, LookingForCoachDto> = Property.newProperty()
 
         val ClientDto: Instantiator<ClientDto> = Instantiator {
             ClientDto(
@@ -80,7 +83,8 @@ class ClientDtoMaker {
                 height = it.valueOf(height, 0.0f),
                 measureType = it.valueOf(measureType, MeasureTypeDto.KG_CM),
                 weightMeasureTimeline = it.valueOf(listOfWeights, mutableListOf()),
-                registrationKey = it.valueOf(registrationKey, null as String?)
+                registrationKey = it.valueOf(registrationKey, null as String?),
+                lookingForCoach = it.valueOf(lookingForCoach, LookingForCoachDto(false))
             )
         }
     }

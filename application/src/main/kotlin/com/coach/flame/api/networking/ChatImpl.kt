@@ -7,9 +7,12 @@ import com.coach.flame.api.networking.response.ChatResponse
 import com.coach.flame.api.networking.response.MessageResponse
 import com.coach.flame.aspect.LoggingRequest
 import com.coach.flame.aspect.LoggingResponse
+import com.coach.flame.date.DateHelper
 import com.coach.flame.domain.MessageDto
 import com.coach.flame.socialnetworking.ChatService
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.*
 import javax.validation.Valid
 
@@ -24,23 +27,23 @@ class ChatImpl(
     @PostMapping("/sendMessage")
     @ResponseBody
     override fun sendMessage(
-        @RequestBody(required = true) request: MessageRequest
+        @Valid @RequestBody(required = true) request: MessageRequest
     ): MessageResponse {
 
         return APIWrapperException.executeRequest {
-            val client = UUID.fromString(request.from)
-            val coach = UUID.fromString(request.to)
 
             val message = MessageDto(
+                identifier = UUID.randomUUID(),
                 message = request.message,
-                to = if (request.owner == MessageRequest.Owner.CLIENT) client else coach,
-                from = if (request.owner == MessageRequest.Owner.COACH) coach else client,
-                owner = MessageDto.Owner.valueOf(request.owner.name)
+                to = UUID.fromString(request.to),
+                from = UUID.fromString(request.from),
+                owner = MessageDto.Owner.valueOf(request.owner.name),
+                time = LocalDateTime.now()
             )
 
-            val messageDto = chatService.sendMessage(message)
+            val messageDto = chatServiceImpl.sendMessage(message)
 
-            MessageResponse(messageDto.identifier!!.toString())
+            MessageResponse(messageDto.identifier.toString())
         }
     }
 
@@ -56,13 +59,14 @@ class ChatImpl(
             val client = UUID.fromString(request.client)
             val coach = UUID.fromString(request.coach)
 
-            val chatDto = chatService.getChat(client, coach)
+            val chatDto = chatServiceImpl.getChat(client, coach)
 
             ChatResponse(
                 chatDto.listOfMessages.map {
                     ChatResponse.Message(
                         content = it.message,
-                        owner = it.owner.name
+                        owner = it.owner.name,
+                        time = DateHelper.toISODateWithOffset(DateHelper.toUTCDate(it.time))
                     )
                 }.toList()
             )

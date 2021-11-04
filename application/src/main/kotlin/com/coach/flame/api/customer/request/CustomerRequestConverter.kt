@@ -54,7 +54,8 @@ class CustomerRequestConverter : Converter<CustomerRequest, Customer> {
                 weight = 0.0f,
                 height = 0.0f,
                 measureType = MeasureTypeDto.KG_CM,
-                registrationKey = customerRequest.registrationKey
+                registrationKey = customerRequest.registrationKey,
+                lookingForCoach = LookingForCoachDto(false)
             )
         }
 

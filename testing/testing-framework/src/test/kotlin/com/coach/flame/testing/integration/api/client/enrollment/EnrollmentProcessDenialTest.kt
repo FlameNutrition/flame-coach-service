@@ -1,6 +1,9 @@
 package com.coach.flame.testing.integration.api.client.enrollment
 
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.domain.maker.ClientDtoMaker
 import com.coach.flame.jpa.entity.Client
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.jpa.entity.Coach
 import com.coach.flame.jpa.entity.maker.*
 import com.coach.flame.testing.framework.JsonBuilder
@@ -43,28 +46,45 @@ class EnrollmentProcessDenialTest : BaseIntegrationTest() {
             val coachType = clientTypeRepository
                 .saveAndFlush(ClientTypeBuilder.maker().but(with(ClientTypeMaker.type, "COACH")).make())
 
-            coach1 = coachRepository.saveAndFlush(CoachBuilder.maker().but(with(CoachMaker.uuid,
-                UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")),
-                with(CoachMaker.clientType, coachType),
-                with(CoachMaker.user, userMaker
-                    .but(with(UserMaker.userSession, userSessionMaker
-                        .but(with(UserSessionMaker.token, UUID.randomUUID()))
-                        .make()))
-                    .make()))
-                .make())
+            coach1 = coachRepository.saveAndFlush(
+                CoachBuilder.maker().but(
+                    with(
+                        CoachMaker.uuid,
+                        UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
+                    ),
+                    with(CoachMaker.clientType, coachType),
+                    with(
+                        CoachMaker.user, userMaker
+                            .but(
+                                with(
+                                    UserMaker.userSession, userSessionMaker
+                                        .but(with(UserSessionMaker.token, UUID.randomUUID()))
+                                        .make()
+                                )
+                            )
+                            .make()
+                    )
+                )
+                    .make()
+            )
 
-            client1 = clientRepository.saveAndFlush(ClientBuilder.maker()
-                .but(with(ClientMaker.uuid, UUID.fromString("34cbaa17-0da9-4469-82ec-b1b2ceba9665")),
-                    with(ClientMaker.clientType, clientType))
-                .make())
+            client1 = clientRepository.saveAndFlush(
+                ClientDtoBuilder.makerWithLoginInfo()
+                    .but(with(ClientDtoMaker.identifier, UUID.fromString("34cbaa17-0da9-4469-82ec-b1b2ceba9665")))
+                    .make().toClient()
+            )
 
-            client2 = clientRepository.saveAndFlush(ClientBuilder.maker().but(with(ClientMaker.uuid, UUID.randomUUID()),
-                with(ClientMaker.clientType, clientType))
-                .make())
+            client2 = clientRepository.saveAndFlush(
+                ClientDtoBuilder.makerWithLoginInfo()
+                    .but(with(ClientDtoMaker.identifier, UUID.randomUUID()))
+                    .make().toClient()
+            )
 
-            client3 = clientRepository.saveAndFlush(ClientBuilder.maker().but(with(ClientMaker.uuid, UUID.randomUUID()),
-                with(ClientMaker.clientType, clientType))
-                .make())
+            client3 = clientRepository.saveAndFlush(
+                ClientDtoBuilder.makerWithLoginInfo()
+                    .but(with(ClientDtoMaker.identifier, UUID.randomUUID()))
+                    .make().toClient()
+            )
 
             isPopulated = true
         }

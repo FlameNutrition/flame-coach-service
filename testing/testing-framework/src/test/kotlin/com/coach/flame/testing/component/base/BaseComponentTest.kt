@@ -3,18 +3,17 @@ package com.coach.flame.testing.component.base
 import com.coach.flame.FlameCoachServiceApplication
 import com.coach.flame.customer.security.HashPassword
 import com.coach.flame.customer.security.Salt
+import com.coach.flame.domain.ClientDto
+import com.coach.flame.domain.maker.ClientDtoBuilder
 import com.coach.flame.jpa.entity.*
 import com.coach.flame.jpa.entity.maker.*
 import com.coach.flame.jpa.repository.*
 import com.coach.flame.jpa.repository.cache.ConfigCache
 import com.coach.flame.jpa.repository.operations.CoachRepositoryOperation
 import com.coach.flame.testing.component.base.mock.*
-import com.google.gson.JsonObject
 import com.natpryce.makeiteasy.MakeItEasy.an
 import com.natpryce.makeiteasy.Maker
 import io.mockk.clearAllMocks
-import org.assertj.core.api.AbstractStringAssert
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
@@ -101,7 +100,7 @@ abstract class BaseComponentTest {
     @Autowired
     protected lateinit var hashPasswordTool: HashPassword
 
-    protected lateinit var clientMaker: Maker<Client>
+    protected lateinit var clientMaker: Maker<ClientDto>
     protected lateinit var coachMaker: Maker<Coach>
     protected lateinit var clientTypeMaker: Maker<ClientType>
     protected lateinit var userMaker: Maker<User>
@@ -115,7 +114,7 @@ abstract class BaseComponentTest {
 
     @BeforeEach
     fun setup() {
-        clientMaker = an(ClientMaker.Client)
+        clientMaker = ClientDtoBuilder.maker()
         coachMaker = an(CoachMaker.Coach)
         clientTypeMaker = an(ClientTypeMaker.ClientType)
         userMaker = an(UserMaker.User)

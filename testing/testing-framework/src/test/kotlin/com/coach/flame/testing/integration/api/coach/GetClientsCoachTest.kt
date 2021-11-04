@@ -1,9 +1,14 @@
 package com.coach.flame.testing.integration.api.coach
 
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.domain.maker.ClientDtoMaker
 import com.coach.flame.jpa.entity.Client
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.jpa.entity.ClientStatus
 import com.coach.flame.jpa.entity.Coach
-import com.coach.flame.jpa.entity.maker.*
+import com.coach.flame.jpa.entity.maker.CoachMaker
+import com.coach.flame.jpa.entity.maker.UserMaker
+import com.coach.flame.jpa.entity.maker.UserSessionMaker
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
 import com.coach.flame.testing.integration.base.BaseIntegrationTest
@@ -32,27 +37,42 @@ class GetClientsCoachTest : BaseIntegrationTest() {
     override fun setup() {
         super.setup()
 
-        client1 = clientRepository.saveAndFlush(clientMaker.but(with(ClientMaker.uuid, UUID.randomUUID()),
-            with(ClientMaker.clientType, clientType))
-            .make())
+        client1 = clientRepository.saveAndFlush(
+            ClientDtoBuilder.makerWithLoginInfo().but(with(ClientDtoMaker.identifier, UUID.randomUUID()))
+                .make().toClient()
+        )
 
-        client2 = clientRepository.saveAndFlush(clientMaker.but(with(ClientMaker.uuid, UUID.randomUUID()),
-            with(ClientMaker.clientType, clientType))
-            .make())
+        client2 = clientRepository.saveAndFlush(
+            ClientDtoBuilder.makerWithLoginInfo().but(with(ClientDtoMaker.identifier, UUID.randomUUID()))
+                .make().toClient()
+        )
 
-        client3 = clientRepository.saveAndFlush(clientMaker.but(with(ClientMaker.uuid, UUID.randomUUID()),
-            with(ClientMaker.clientType, clientType))
-            .make())
+        client3 = clientRepository.saveAndFlush(
+            ClientDtoBuilder.makerWithLoginInfo().but(with(ClientDtoMaker.identifier, UUID.randomUUID()))
+                .make().toClient()
+        )
 
-        coach = coachRepository.saveAndFlush(coachMaker.but(with(CoachMaker.uuid,
-            UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")),
-            with(CoachMaker.clientType, coachType),
-            with(CoachMaker.user, userMaker
-                .but(with(UserMaker.userSession, userSessionMaker
-                    .but(with(UserSessionMaker.token, UUID.randomUUID()))
-                    .make()))
-                .make()))
-            .make())
+        coach = coachRepository.saveAndFlush(
+            coachMaker.but(
+                with(
+                    CoachMaker.uuid,
+                    UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
+                ),
+                with(CoachMaker.clientType, coachType),
+                with(
+                    CoachMaker.user, userMaker
+                        .but(
+                            with(
+                                UserMaker.userSession, userSessionMaker
+                                    .but(with(UserSessionMaker.token, UUID.randomUUID()))
+                                    .make()
+                            )
+                        )
+                        .make()
+                )
+            )
+                .make()
+        )
     }
 
     @Test

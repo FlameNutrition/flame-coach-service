@@ -33,6 +33,8 @@
         <Logger name="com.coach.flame" level="INFO"/>
         <Logger name="org.springframework" level="INFO"/>
         <Logger name="org.springframework.security" level="DEBUG"/>
+        <!-- Show datasource configs -->
+        <!-- <Logger name="com.zaxxer.hikari" level="TRACE"/> -->
     </Loggers>
 
 </Configuration>

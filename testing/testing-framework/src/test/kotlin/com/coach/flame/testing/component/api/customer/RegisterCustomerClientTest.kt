@@ -1,6 +1,8 @@
 package com.coach.flame.testing.component.api.customer
 
-import com.coach.flame.jpa.entity.maker.ClientMaker
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.domain.maker.ClientDtoMaker
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.jpa.entity.maker.RegistrationInviteBuilder
 import com.coach.flame.jpa.entity.maker.UserMaker
 import com.coach.flame.jpa.entity.maker.UserSessionMaker
@@ -49,13 +51,15 @@ class RegisterCustomerClientTest : BaseComponentTest() {
                 )
             )
             .make()
-        val client = clientMaker
+            .toDto()
+        val client = ClientDtoBuilder.maker()
             .but(
-                with(ClientMaker.firstname, "Nuno"),
-                with(ClientMaker.lastname, "Bento"),
-                with(ClientMaker.user, user)
+                with(ClientDtoMaker.firstName, "Nuno"),
+                with(ClientDtoMaker.lastName, "Bento"),
+                with(ClientDtoMaker.loginInfo, user)
             )
             .make()
+            .toClient()
         val registrationInvite = RegistrationInviteBuilder.default()
 
         every { clientTypeRepositoryMock.getByType("CLIENT") } returns clientTypeMaker.make()
@@ -234,13 +238,15 @@ class RegisterCustomerClientTest : BaseComponentTest() {
                 )
             )
             .make()
-        val client = clientMaker
+            .toDto()
+        val client = ClientDtoBuilder.maker()
             .but(
-                with(ClientMaker.firstname, "Nuno"),
-                with(ClientMaker.lastname, "Bento"),
-                with(ClientMaker.user, user)
+                with(ClientDtoMaker.firstName, "Nuno"),
+                with(ClientDtoMaker.lastName, "Bento"),
+                with(ClientDtoMaker.loginInfo, user)
             )
             .make()
+            .toClient()
         every { clientTypeRepositoryMock.getByType("CLIENT") } returns clientTypeMaker.make()
         every { clientRepositoryMock.saveAndFlush(any()) } returns client
 
@@ -291,13 +297,15 @@ class RegisterCustomerClientTest : BaseComponentTest() {
                 )
             )
             .make()
-        val client = clientMaker
+            .toDto()
+        val client = ClientDtoBuilder.maker()
             .but(
-                with(ClientMaker.firstname, "Nuno"),
-                with(ClientMaker.lastname, "Bento"),
-                with(ClientMaker.user, user)
+                with(ClientDtoMaker.firstName, "Nuno"),
+                with(ClientDtoMaker.lastName, "Bento"),
+                with(ClientDtoMaker.loginInfo, user)
             )
             .make()
+            .toClient()
         every { clientTypeRepositoryMock.getByType("CLIENT") } returns clientTypeMaker.make()
         every { clientRepositoryMock.saveAndFlush(any()) } returns client
 

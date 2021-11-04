@@ -18,8 +18,8 @@ class CoachTest {
     @Test
     fun `test convert coach to dto with null values`() {
 
-        val client0 = ClientBuilder.default()
-        val client1 = ClientBuilder.default()
+        val client0 = ClientDtoBuilder.makerWithLoginInfo().make().toClient()
+        val client1 = ClientDtoBuilder.makerWithLoginInfo().make().toClient()
 
         val coach = CoachBuilder.maker()
             .but(with(CoachMaker.clients, mutableListOf(client0, client1)))
@@ -48,8 +48,10 @@ class CoachTest {
     fun `test convert coach to dto all values`() {
 
         val coach = CoachBuilder.maker()
-            .but(with(CoachMaker.country, CountryBuilder.default()),
-                with(CoachMaker.gender, GenderBuilder.default()))
+            .but(
+                with(CoachMaker.country, CountryBuilder.default()),
+                with(CoachMaker.gender, GenderBuilder.default())
+            )
             .make()
 
         val dto = coach.toDto()
@@ -63,8 +65,10 @@ class CoachTest {
     fun `test convert dto to entity with null values`() {
 
         val loginInfoDto = LoginInfoDtoBuilder.maker()
-            .but(with(LoginInfoDtoMaker.token, UUID.randomUUID()),
-                with(LoginInfoDtoMaker.expirationDate, LocalDateTime.now()))
+            .but(
+                with(LoginInfoDtoMaker.token, UUID.randomUUID()),
+                with(LoginInfoDtoMaker.expirationDate, LocalDateTime.now())
+            )
             .make()
 
         val coachDto = CoachDtoBuilder.maker()
@@ -91,15 +95,19 @@ class CoachTest {
     fun `test convert dto to entity all values`() {
 
         val loginInfoDto = LoginInfoDtoBuilder.maker()
-            .but(with(LoginInfoDtoMaker.token, UUID.randomUUID()),
-                with(LoginInfoDtoMaker.expirationDate, LocalDateTime.now()))
+            .but(
+                with(LoginInfoDtoMaker.token, UUID.randomUUID()),
+                with(LoginInfoDtoMaker.expirationDate, LocalDateTime.now())
+            )
             .make()
 
         val coachDto = CoachDtoBuilder.maker()
-            .but(with(CoachDtoMaker.id, 100L),
+            .but(
+                with(CoachDtoMaker.id, 100L),
                 with(CoachDtoMaker.loginInfo, loginInfoDto),
                 with(CoachDtoMaker.country, CountryDtoBuilder.default()),
-                with(CoachDtoMaker.gender, GenderDtoBuilder.default()))
+                with(CoachDtoMaker.gender, GenderDtoBuilder.default())
+            )
             .make()
 
         val entity = coachDto.toCoach()

@@ -1,6 +1,12 @@
 package com.coach.flame.testing.component.api.client
 
-import com.coach.flame.jpa.entity.maker.*
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.domain.maker.ClientDtoMaker
+import com.coach.flame.domain.maker.LoginInfoDtoBuilder
+import com.coach.flame.domain.maker.LoginInfoDtoMaker
+import com.coach.flame.jpa.entity.Client.Companion.toClient
+import com.coach.flame.jpa.entity.maker.CoachBuilder
+import com.coach.flame.jpa.entity.maker.CoachMaker
 import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.component.base.mock.MockClientRepository
@@ -18,6 +24,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.web.bind.annotation.RequestMethod
+import java.time.LocalDateTime
 import java.util.*
 
 class RegistrationInviteTest : BaseComponentTest() {
@@ -89,15 +96,19 @@ class RegistrationInviteTest : BaseComponentTest() {
 
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
-        val client = ClientBuilder.maker()
+        val client = ClientDtoBuilder.makerWithLoginInfo()
             .but(
                 with(
-                    ClientMaker.user, UserBuilder.maker()
-                        .but(with(UserMaker.email, "test@gmail.com"))
-                        .make()
+                    ClientDtoMaker.loginInfo, LoginInfoDtoBuilder.maker()
+                        .but(
+                            with(LoginInfoDtoMaker.username, "test@gmail.com"),
+                            with(LoginInfoDtoMaker.token, UUID.randomUUID()),
+                            with(LoginInfoDtoMaker.expirationDate, LocalDateTime.now())
+                        ).make()
                 )
             )
             .make()
+            .toClient()
         val coach = CoachBuilder.maker()
             .but(with(CoachMaker.uuid, uuid))
             .make()

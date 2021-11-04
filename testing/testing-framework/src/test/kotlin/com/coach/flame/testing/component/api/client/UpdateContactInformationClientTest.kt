@@ -1,8 +1,11 @@
 package com.coach.flame.testing.component.api.client
 
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.domain.maker.ClientDtoMaker
+import com.coach.flame.domain.maker.CountryDtoBuilder
+import com.coach.flame.domain.maker.CountryDtoMaker
 import com.coach.flame.jpa.entity.Client
-import com.coach.flame.jpa.entity.maker.ClientBuilder
-import com.coach.flame.jpa.entity.maker.ClientMaker
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.jpa.entity.maker.CountryBuilder
 import com.coach.flame.jpa.entity.maker.CountryMaker
 import com.coach.flame.testing.assertion.http.ErrorAssert
@@ -38,23 +41,24 @@ class UpdateContactInformationClientTest : BaseComponentTest() {
 
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
-        val client = ClientBuilder.maker()
+        val client = ClientDtoBuilder.makerWithLoginInfo()
             .but(
-                with(ClientMaker.uuid, uuid),
-                with(ClientMaker.firstname, "Nuno"),
-                with(ClientMaker.lastname, "Bento"),
-                with(ClientMaker.phoneCode, "+44"),
-                with(ClientMaker.phoneNumber, "2244556677"),
+                with(ClientDtoMaker.identifier, uuid),
+                with(ClientDtoMaker.firstName, "Nuno"),
+                with(ClientDtoMaker.lastName, "Bento"),
+                with(ClientDtoMaker.phoneCode, "+44"),
+                with(ClientDtoMaker.phoneNumber, "2244556677"),
                 with(
-                    ClientMaker.country, CountryBuilder.maker()
+                    ClientDtoMaker.country, CountryDtoBuilder.maker()
                         .but(
-                            with(CountryMaker.countryCode, "PT"),
-                            with(CountryMaker.externalValue, "Portugal")
+                            with(CountryDtoMaker.countryCode, "PT"),
+                            with(CountryDtoMaker.externalValue, "Portugal")
                         )
                         .make()
                 )
             )
             .make()
+            .toClient()
         val clientCapture = slot<Client>()
 
         every { clientRepositoryMock.findByUuid(uuid) } returns client
@@ -133,23 +137,24 @@ class UpdateContactInformationClientTest : BaseComponentTest() {
 
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
-        val client = ClientBuilder.maker()
+        val client = ClientDtoBuilder.makerWithLoginInfo()
             .but(
-                with(ClientMaker.uuid, uuid),
-                with(ClientMaker.firstname, "Nuno"),
-                with(ClientMaker.lastname, "Neves"),
-                with(ClientMaker.phoneCode, "+44"),
-                with(ClientMaker.phoneNumber, "1122345"),
+                with(ClientDtoMaker.identifier, uuid),
+                with(ClientDtoMaker.firstName, "Nuno"),
+                with(ClientDtoMaker.lastName, "Neves"),
+                with(ClientDtoMaker.phoneCode, "+44"),
+                with(ClientDtoMaker.phoneNumber, "1122345"),
                 with(
-                    ClientMaker.country, CountryBuilder.maker()
+                    ClientDtoMaker.country, CountryDtoBuilder.maker()
                         .but(
-                            with(CountryMaker.countryCode, "PT"),
-                            with(CountryMaker.externalValue, "Portugal")
+                            with(CountryDtoMaker.countryCode, "PT"),
+                            with(CountryDtoMaker.externalValue, "Portugal")
                         )
                         .make()
                 )
             )
             .make()
+            .toClient()
         val clientCapture = slot<Client>()
 
         every { clientRepositoryMock.findByUuid(uuid) } returns client
@@ -187,23 +192,24 @@ class UpdateContactInformationClientTest : BaseComponentTest() {
 
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
-        val client = ClientBuilder.maker()
+        val client = ClientDtoBuilder.makerWithLoginInfo()
             .but(
-                with(ClientMaker.uuid, uuid),
-                with(ClientMaker.firstname, "Nuno"),
-                with(ClientMaker.lastname, "Bento"),
-                with(ClientMaker.phoneCode, "+44"),
-                with(ClientMaker.phoneNumber, "2244556677"),
+                with(ClientDtoMaker.identifier, uuid),
+                with(ClientDtoMaker.firstName, "Nuno"),
+                with(ClientDtoMaker.lastName, "Bento"),
+                with(ClientDtoMaker.phoneCode, "+44"),
+                with(ClientDtoMaker.phoneNumber, "2244556677"),
                 with(
-                    ClientMaker.country, CountryBuilder.maker()
+                    ClientDtoMaker.country, CountryDtoBuilder.maker()
                         .but(
-                            with(CountryMaker.countryCode, "PT"),
-                            with(CountryMaker.externalValue, "Portugal")
+                            with(CountryDtoMaker.countryCode, "PT"),
+                            with(CountryDtoMaker.externalValue, "Portugal")
                         )
                         .make()
                 )
             )
             .make()
+            .toClient()
         val clientCapture = slot<Client>()
 
         every { clientRepositoryMock.findByUuid(uuid) } returns client

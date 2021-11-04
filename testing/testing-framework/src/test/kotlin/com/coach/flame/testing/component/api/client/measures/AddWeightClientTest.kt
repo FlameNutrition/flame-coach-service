@@ -1,12 +1,12 @@
 package com.coach.flame.testing.component.api.client.measures
 
+import com.coach.flame.domain.MeasureDto
+import com.coach.flame.domain.MeasureTypeDto
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.domain.maker.ClientDtoMaker
 import com.coach.flame.domain.maker.MeasureDtoBuilder
 import com.coach.flame.domain.maker.MeasureDtoMaker
-import com.coach.flame.jpa.entity.ClientMeasureWeight
-import com.coach.flame.jpa.entity.ClientMeasureWeight.Companion.toClientMeasureWeight
-import com.coach.flame.jpa.entity.MeasureConfig
-import com.coach.flame.jpa.entity.maker.ClientBuilder
-import com.coach.flame.jpa.entity.maker.ClientMaker
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.component.base.mock.MockClientRepository
@@ -42,7 +42,7 @@ class AddWeightClientTest : BaseComponentTest() {
         // given
         val uuid = UUID.fromString("79275cc8-ed8a-4f8a-b790-ff66f74d758a")
 
-        val client = ClientBuilder.default()
+        val client = ClientDtoBuilder.makerWithLoginInfo().make().toClient()
         mockClientRepository
             .mock(MockClientRepository.FIND_BY_UUID)
             .params(mapOf(Pair("uuid", uuid)))
@@ -91,15 +91,13 @@ class AddWeightClientTest : BaseComponentTest() {
                 with(MeasureDtoMaker.value, 86.32f)
             )
             .make()
-        val client = ClientBuilder.maker()
+        val client = ClientDtoBuilder.makerWithLoginInfo()
             .but(
-                with(
-                    ClientMaker.clientMeasureWeight,
-                    mutableListOf(weight1.toClientMeasureWeight())
-                ),
-                with(ClientMaker.measureConfig, MeasureConfig.LBS_IN)
+                with(ClientDtoMaker.listOfWeights, mutableListOf(weight1)),
+                with(ClientDtoMaker.measureType, MeasureTypeDto.LBS_IN)
             )
             .make()
+            .toClient()
 
         mockClientRepository
             .mock(MockClientRepository.FIND_BY_UUID)
@@ -150,14 +148,15 @@ class AddWeightClientTest : BaseComponentTest() {
 
         // given
         val uuid = UUID.fromString("79275cc8-ed8a-4f8a-b790-ff66f74d758a")
-        val client = ClientBuilder.maker()
+        val client = ClientDtoBuilder.makerWithLoginInfo()
             .but(
                 with(
-                    ClientMaker.clientMeasureWeight,
-                    mutableListOf(ClientMeasureWeight(weight = 80.5f, measureDate = LocalDate.now()))
+                    ClientDtoMaker.listOfWeights,
+                    mutableListOf(MeasureDto(value = 80.5f, date = LocalDate.now()))
                 )
             )
             .make()
+            .toClient()
 
         mockClientRepository
             .mock(MockClientRepository.FIND_BY_UUID)

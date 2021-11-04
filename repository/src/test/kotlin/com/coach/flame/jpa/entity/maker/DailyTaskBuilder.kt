@@ -1,6 +1,8 @@
 package com.coach.flame.jpa.entity.maker
 
+import com.coach.flame.domain.maker.ClientDtoBuilder
 import com.coach.flame.jpa.entity.Client
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.jpa.entity.Coach
 import com.coach.flame.jpa.entity.DailyTask
 import com.github.javafaker.Faker
@@ -46,7 +48,7 @@ class DailyTaskMaker {
                 date = it.valueOf(date, LocalDate.now()),
                 ticked = it.valueOf(ticked, false),
                 createdBy = it.valueOf(createdBy, CoachBuilder.default()),
-                client = it.valueOf(client, ClientBuilder.default())
+                client = it.valueOf(client, ClientDtoBuilder.makerWithLoginInfo().make().toClient())
             )
         }
     }

@@ -1,7 +1,10 @@
 package com.coach.flame.testing.component.api.customer
 
-import com.coach.flame.jpa.entity.maker.ClientBuilder
-import com.coach.flame.jpa.entity.maker.ClientMaker
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.domain.maker.ClientDtoMaker
+import com.coach.flame.domain.maker.LoginInfoDtoBuilder
+import com.coach.flame.domain.maker.LoginInfoDtoMaker
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.jpa.entity.maker.UserBuilder
 import com.coach.flame.jpa.entity.maker.UserMaker
 import com.coach.flame.testing.assertion.http.ErrorAssert
@@ -21,6 +24,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.web.bind.annotation.RequestMethod
 import java.sql.SQLException
 import java.time.LocalDateTime
+import java.util.*
 
 class GetNewCustomerSessionTest : BaseComponentTest() {
 
@@ -38,16 +42,27 @@ class GetNewCustomerSessionTest : BaseComponentTest() {
         // given
         val oldDate = LocalDateTime.now()
         val salt = saltTool.generate()
-        val client = clientMaker
-            .but(with(ClientMaker.user, userMaker
-                .but(with(UserMaker.email, "test@gmail.com"))
-                .make()))
+        val client = ClientDtoBuilder.makerWithLoginInfo()
+            .but(
+                with(
+                    ClientDtoMaker.loginInfo,
+                    LoginInfoDtoBuilder.maker()
+                        .but(
+                            with(LoginInfoDtoMaker.username, "test@gmail.com"),
+                            with(LoginInfoDtoMaker.token, UUID.randomUUID()),
+                            with(LoginInfoDtoMaker.expirationDate, LocalDateTime.now())
+                        ).make()
+                )
+            )
             .make()
+            .toClient()
         val user = UserBuilder.maker()
-            .but(with(UserMaker.email, "test@gmail.com"),
+            .but(
+                with(UserMaker.email, "test@gmail.com"),
                 with(UserMaker.client, client),
                 with(UserMaker.key, salt),
-                with(UserMaker.password, hashPasswordTool.generate("12345", salt)))
+                with(UserMaker.password, hashPasswordTool.generate("12345", salt))
+            )
             .make()
         every { userRepositoryMock.findUserByEmail("test@gmail.com") } returns user
         every { userSessionRepositoryMock.save(any()) } returns mockk()
@@ -122,10 +137,12 @@ class GetNewCustomerSessionTest : BaseComponentTest() {
         //given
         val salt = saltTool.generate()
         val user = UserBuilder.maker()
-            .but(with(UserMaker.email, "test.test@gmail.com"),
-                with(UserMaker.client, ClientBuilder.default()),
+            .but(
+                with(UserMaker.email, "test.test@gmail.com"),
+                with(UserMaker.client, ClientDtoBuilder.makerWithLoginInfo().make().toClient()),
                 with(UserMaker.key, salt),
-                with(UserMaker.password, hashPasswordTool.generate("other_password", salt)))
+                with(UserMaker.password, hashPasswordTool.generate("other_password", salt))
+            )
             .make()
         every { userRepositoryMock.findUserByEmail("test.test@gmail.com") } returns user
 
@@ -165,9 +182,11 @@ class GetNewCustomerSessionTest : BaseComponentTest() {
         // given
         val salt = saltTool.generate()
         val user = UserBuilder.maker()
-            .but(with(UserMaker.client, ClientBuilder.default()),
+            .but(
+                with(UserMaker.client, ClientDtoBuilder.makerWithLoginInfo().make().toClient()),
                 with(UserMaker.key, salt),
-                with(UserMaker.password, hashPasswordTool.generate("12345", salt)))
+                with(UserMaker.password, hashPasswordTool.generate("12345", salt))
+            )
             .make()
         every { userRepositoryMock.findUserByEmail("test@gmail.com") } returns user
         every { userSessionRepositoryMock.save(any()) } throws SQLException("This is a sensible information")

@@ -1,7 +1,8 @@
 package com.coach.flame.testing.component.api.dailyTask
 
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.jpa.entity.DailyTask
-import com.coach.flame.jpa.entity.maker.ClientBuilder
 import com.coach.flame.jpa.entity.maker.CoachBuilder
 import com.coach.flame.jpa.entity.maker.DailyTaskBuilder
 import com.coach.flame.jpa.entity.maker.DailyTaskMaker
@@ -42,7 +43,7 @@ class DailyTaskUpdateTest : BaseComponentTest() {
         // given
         val dailyTask = slot<DailyTask>()
         val taskUUID = UUID.fromString("3c5845f1-4a90-4396-8610-7261761369ae")
-        val client = ClientBuilder.default()
+        val client = ClientDtoBuilder.makerWithLoginInfo().make().toClient()
         val coach = CoachBuilder.default()
         val task = DailyTaskBuilder.maker()
             .but(

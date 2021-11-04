@@ -1,10 +1,9 @@
 package com.coach.flame.testing.integration.api.client
 
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.domain.maker.ClientDtoMaker
 import com.coach.flame.jpa.entity.Client
-import com.coach.flame.jpa.entity.maker.ClientBuilder
-import com.coach.flame.jpa.entity.maker.ClientMaker
-import com.coach.flame.jpa.entity.maker.ClientTypeBuilder
-import com.coach.flame.jpa.entity.maker.ClientTypeMaker
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
 import com.coach.flame.testing.integration.base.BaseIntegrationTest
@@ -31,12 +30,15 @@ class GetPersonalDataClientTest : BaseIntegrationTest() {
 
         super.setup()
 
-        client0 = clientRepository.saveAndFlush(ClientBuilder.maker()
-            .but(with(ClientMaker.uuid, UUID.fromString("34cbaa17-0da9-4469-82ec-b1b2ceba9665")),
-                with(ClientMaker.weight, 76.5f),
-                with(ClientMaker.height, 176f),
-                with(ClientMaker.clientType, clientType))
-            .make())
+        client0 = clientRepository.saveAndFlush(
+            ClientDtoBuilder.makerWithLoginInfo()
+                .but(
+                    with(ClientDtoMaker.identifier, UUID.fromString("34cbaa17-0da9-4469-82ec-b1b2ceba9665")),
+                    with(ClientDtoMaker.weight, 76.5f),
+                    with(ClientDtoMaker.height, 176f)
+                )
+                .make().toClient()
+        )
     }
 
     @Test

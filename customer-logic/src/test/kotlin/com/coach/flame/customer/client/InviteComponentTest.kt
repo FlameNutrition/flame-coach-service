@@ -2,10 +2,8 @@ package com.coach.flame.customer.client
 
 import com.coach.flame.customer.register.RegistrationCustomerService
 import com.coach.flame.domain.ClientStatusDto
-import com.coach.flame.domain.maker.CoachDtoBuilder
-import com.coach.flame.domain.maker.RegistrationInviteDtoBuilder
-import com.coach.flame.domain.maker.RegistrationInviteDtoMaker
-import com.coach.flame.jpa.entity.maker.ClientBuilder
+import com.coach.flame.domain.maker.*
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.jpa.repository.ClientRepository
 import com.natpryce.makeiteasy.MakeItEasy.with
 import io.mockk.clearAllMocks
@@ -43,7 +41,9 @@ class InviteComponentTest {
     fun `test send invite for client registration completed`() {
 
         val coachDto = CoachDtoBuilder.makerWithLoginInfo().make()
-        val client = ClientBuilder.default()
+        val client = ClientDtoBuilder.makerWithLoginInfo()
+            .make()
+            .toClient()
 
         every { clientRepository.findByUserEmailIs("test@gmail.com") } returns client
         every {

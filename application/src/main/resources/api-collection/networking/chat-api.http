@@ -1,0 +1,13 @@
+POST https://localhost:8080/api/socialNetworking/chat/sendMessage
+Authorization: Basic {{username}} {{password}}
+Content-Type: application/json
+
+{
+  "from": "5ec75ea3-3bbe-486b-8092-0ce793f6170f",
+  "to": "c4fad329-31a0-45ba-9d34-9413ff57964b",
+  "message": "Hello",
+  "owner": "COACH"
+}
+
+###
+

@@ -51,7 +51,6 @@ class CustomerServiceImpl(
                 val coach = getCoach(uuid)
 
                 coach.toDto()
-
             }
             else -> throw CustomerException(ErrorCode.CODE_2004, "$customerType is an invalid customer type.")
         }
@@ -142,7 +141,8 @@ class CustomerServiceImpl(
                         clientType = clientType,
                         user = user,
                         clientStatus = ClientStatus.AVAILABLE,
-                        registrationDate = customer.registrationDate
+                        registrationDate = customer.registrationDate,
+                        clientLookingForCoach = ClientLookingForCoach()
                     )
                     var client = clientRepository.saveAndFlush(entity).toDto().apply {
                         registrationKey = customer.registrationKey

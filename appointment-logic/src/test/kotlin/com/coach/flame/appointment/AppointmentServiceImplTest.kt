@@ -3,15 +3,11 @@ package com.coach.flame.appointment
 import com.coach.flame.domain.CustomerTypeDto
 import com.coach.flame.domain.DateIntervalDto
 import com.coach.flame.domain.IncomeDto
-import com.coach.flame.domain.maker.AppointmentDtoBuilder
-import com.coach.flame.domain.maker.AppointmentDtoMaker
-import com.coach.flame.domain.maker.IncomeDtoBuilder
-import com.coach.flame.domain.maker.IncomeDtoMaker
+import com.coach.flame.domain.maker.*
 import com.coach.flame.failure.exception.CustomerNotFoundException
 import com.coach.flame.jpa.entity.Appointment
 import com.coach.flame.jpa.entity.Appointment.Companion.toAppointment
-import com.coach.flame.jpa.entity.maker.ClientBuilder
-import com.coach.flame.jpa.entity.maker.ClientMaker
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.jpa.entity.maker.CoachBuilder
 import com.coach.flame.jpa.entity.maker.CoachMaker
 import com.coach.flame.jpa.repository.AppointmentRepository
@@ -58,9 +54,10 @@ class AppointmentServiceImplTest {
         val uuidCoach = UUID.randomUUID()
         val uuidClient = UUID.randomUUID()
 
-        val client = ClientBuilder.maker()
-            .but(with(ClientMaker.uuid, uuidClient))
+        val client = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.identifier, uuidClient))
             .make()
+            .toClient()
         val coach = CoachBuilder.maker()
             .but(
                 with(CoachMaker.uuid, uuidCoach),
@@ -101,9 +98,10 @@ class AppointmentServiceImplTest {
         val from = LocalDate.of(2021, 1, 31)
         val to = LocalDate.of(2021, 12, 31)
 
-        val client = ClientBuilder.maker()
-            .but(with(ClientMaker.uuid, uuidClient))
+        val client = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.identifier, uuidClient))
             .make()
+            .toClient()
         val coach = CoachBuilder.maker()
             .but(
                 with(CoachMaker.uuid, uuidCoach),
@@ -152,9 +150,10 @@ class AppointmentServiceImplTest {
         val uuidCoach = UUID.randomUUID()
         val uuidClient = UUID.randomUUID()
 
-        val client = ClientBuilder.maker()
-            .but(with(ClientMaker.uuid, uuidClient))
+        val client = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.identifier, uuidClient))
             .make()
+            .toClient()
         val coach = CoachBuilder.maker()
             .but(
                 with(CoachMaker.uuid, uuidCoach),
@@ -195,9 +194,10 @@ class AppointmentServiceImplTest {
         val from = LocalDate.of(2021, 1, 31)
         val to = LocalDate.of(2021, 12, 31)
 
-        val client = ClientBuilder.maker()
-            .but(with(ClientMaker.uuid, uuidClient))
+        val client = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.identifier, uuidClient))
             .make()
+            .toClient()
         val coach = CoachBuilder.maker()
             .but(
                 with(CoachMaker.uuid, uuidCoach),
@@ -270,12 +270,14 @@ class AppointmentServiceImplTest {
         val uuidClient1 = UUID.randomUUID()
         val uuidClient2 = UUID.randomUUID()
 
-        val client1 = ClientBuilder.maker()
-            .but(with(ClientMaker.uuid, uuidClient1))
+        val client1 = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.identifier, uuidClient1))
             .make()
-        val client2 = ClientBuilder.maker()
-            .but(with(ClientMaker.uuid, uuidClient2))
+            .toClient()
+        val client2 = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.identifier, uuidClient2))
             .make()
+            .toClient()
         val coach = CoachBuilder.maker()
             .but(
                 with(CoachMaker.uuid, uuidCoach),
@@ -332,12 +334,14 @@ class AppointmentServiceImplTest {
         val from = LocalDate.of(2021, 1, 31)
         val to = LocalDate.of(2021, 12, 31)
 
-        val client1 = ClientBuilder.maker()
-            .but(with(ClientMaker.uuid, uuidClient1))
+        val client1 = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.identifier, uuidClient1))
             .make()
-        val client2 = ClientBuilder.maker()
-            .but(with(ClientMaker.uuid, uuidClient2))
+            .toClient()
+        val client2 = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.identifier, uuidClient2))
             .make()
+            .toClient()
         val coach = CoachBuilder.maker()
             .but(
                 with(CoachMaker.uuid, uuidCoach),
@@ -400,9 +404,10 @@ class AppointmentServiceImplTest {
         val uuidCoach = UUID.randomUUID()
         val uuidClient = UUID.randomUUID()
 
-        val client = ClientBuilder.maker()
-            .but(with(ClientMaker.uuid, uuidClient))
+        val client = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.identifier, uuidClient))
             .make()
+            .toClient()
 
         val coach = CoachBuilder.maker()
             .but(
@@ -496,7 +501,7 @@ class AppointmentServiceImplTest {
                 with(AppointmentDtoMaker.id, 100L),
                 with(AppointmentDtoMaker.identifier, appointmentIdentifier),
                 with(AppointmentDtoMaker.coach, CoachBuilder.default().toDto()),
-                with(AppointmentDtoMaker.client, ClientBuilder.default().toDto()),
+                with(AppointmentDtoMaker.client, ClientDtoBuilder.makerWithLoginInfo().make()),
                 with(
                     AppointmentDtoMaker.income, IncomeDtoBuilder.maker()
                         .but(
@@ -571,7 +576,7 @@ class AppointmentServiceImplTest {
                 with(AppointmentDtoMaker.id, 100L),
                 with(AppointmentDtoMaker.identifier, appointmentIdentifier),
                 with(AppointmentDtoMaker.coach, CoachBuilder.default().toDto()),
-                with(AppointmentDtoMaker.client, ClientBuilder.default().toDto())
+                with(AppointmentDtoMaker.client, ClientDtoBuilder.makerWithLoginInfo().make())
             )
             .make()
             .toAppointment()

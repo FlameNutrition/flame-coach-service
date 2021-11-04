@@ -1,8 +1,12 @@
 package com.coach.flame.testing.integration.api.client.measure
 
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.domain.maker.ClientDtoMaker
 import com.coach.flame.jpa.entity.Client
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.jpa.entity.ClientMeasureWeight
-import com.coach.flame.jpa.entity.maker.*
+import com.coach.flame.jpa.entity.maker.ClientMeasureWeightBuilder
+import com.coach.flame.jpa.entity.maker.ClientMeasureWeightMaker
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
 import com.coach.flame.testing.integration.base.BaseIntegrationTest
@@ -32,15 +36,21 @@ class EditWeightMeasureTest : BaseIntegrationTest() {
         super.setup()
 
         weight0 = ClientMeasureWeightBuilder.maker()
-            .but(with(ClientMeasureWeightMaker.weight, 70.5f),
-                with(ClientMeasureWeightMaker.measureDate, LocalDate.of(2021, 5, 20)))
+            .but(
+                with(ClientMeasureWeightMaker.weight, 70.5f),
+                with(ClientMeasureWeightMaker.measureDate, LocalDate.of(2021, 5, 20))
+            )
             .make()
 
-        client1 = clientRepository.saveAndFlush(ClientBuilder.maker()
-            .but(with(ClientMaker.uuid, UUID.fromString("79275cc8-ed8a-4f8a-b790-ff66f74d758a")),
-                with(ClientMaker.clientMeasureWeight, mutableListOf(weight0)),
-                with(ClientMaker.clientType, clientType))
-            .make())
+        client1 = clientRepository.saveAndFlush(
+            ClientDtoBuilder.makerWithLoginInfo()
+                .but(
+                    with(ClientDtoMaker.identifier, UUID.fromString("79275cc8-ed8a-4f8a-b790-ff66f74d758a")),
+                    with(ClientDtoMaker.listOfWeights, mutableListOf(weight0.toDto()))
+                )
+                .make()
+                .toClient()
+        )
     }
 
     @Test
@@ -68,7 +78,7 @@ class EditWeightMeasureTest : BaseIntegrationTest() {
         then(body.getAsJsonArray("weights")).hasSize(1)
 
         val weight0 = body.getAsJsonArray("weights")
-            .find { it.asJsonObject.getAsJsonPrimitive("identifier").asLong == weight0.toDto().id }?.asJsonObject
+            .first().asJsonObject
 
         then(weight0?.getAsJsonPrimitive("date")?.asString).isEqualTo("2021-05-01")
         then(weight0?.getAsJsonPrimitive("value")?.asFloat).isEqualTo(80.7f)

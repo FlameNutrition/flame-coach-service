@@ -1,10 +1,10 @@
 package com.coach.flame.testing.component.api.client.measures
 
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.domain.maker.ClientDtoMaker
 import com.coach.flame.domain.maker.MeasureDtoBuilder
 import com.coach.flame.domain.maker.MeasureDtoMaker
-import com.coach.flame.jpa.entity.ClientMeasureWeight.Companion.toClientMeasureWeight
-import com.coach.flame.jpa.entity.maker.ClientBuilder
-import com.coach.flame.jpa.entity.maker.ClientMaker
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.component.base.mock.MockClientRepository
@@ -47,16 +47,12 @@ class DeleteWeightClientTest : BaseComponentTest() {
                 with(MeasureDtoMaker.value, 70.5f)
             )
             .make()
-        val client = ClientBuilder.maker()
+        val client = ClientDtoBuilder.makerWithLoginInfo()
             .but(
-                with(
-                    ClientMaker.clientMeasureWeight, mutableListOf(
-                        weight0.toClientMeasureWeight(),
-                        weight1.toClientMeasureWeight()
-                    )
-                )
+                with(ClientDtoMaker.listOfWeights, mutableListOf(weight0, weight1))
             )
             .make()
+            .toClient()
 
         mockClientRepository
             .mock(MockClientRepository.FIND_BY_UUID)
@@ -109,9 +105,10 @@ class DeleteWeightClientTest : BaseComponentTest() {
                 with(MeasureDtoMaker.value, 70.5f)
             )
             .make()
-        val client = ClientBuilder.maker()
-            .but(with(ClientMaker.clientMeasureWeight, mutableListOf(weight0.toClientMeasureWeight())))
+        val client = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.listOfWeights, mutableListOf(weight0)))
             .make()
+            .toClient()
 
         mockClientRepository
             .mock(MockClientRepository.FIND_BY_UUID)

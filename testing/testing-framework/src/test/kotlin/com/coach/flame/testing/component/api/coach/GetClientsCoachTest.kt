@@ -1,8 +1,9 @@
 package com.coach.flame.testing.component.api.coach
 
-import com.coach.flame.jpa.entity.ClientStatus
-import com.coach.flame.jpa.entity.maker.ClientBuilder
-import com.coach.flame.jpa.entity.maker.ClientMaker
+import com.coach.flame.domain.ClientStatusDto
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.domain.maker.ClientDtoMaker
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.jpa.entity.maker.CoachMaker
 import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
@@ -35,12 +36,14 @@ class GetClientsCoachTest : BaseComponentTest() {
 
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
-        val client0 = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.ACCEPTED))
+        val client0 = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.ACCEPTED))
             .make()
-        val client1 = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.ACCEPTED))
+            .toClient()
+        val client1 = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.ACCEPTED))
             .make()
+            .toClient()
         val coach = coachMaker
             .but(
                 with(CoachMaker.clients, mutableListOf(client0, client1)),

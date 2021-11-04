@@ -1,6 +1,11 @@
 package com.coach.flame.testing.integration.api.customer
 
-import com.coach.flame.jpa.entity.maker.ClientMaker
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.domain.maker.ClientDtoMaker
+import com.coach.flame.domain.maker.CoachDtoBuilder
+import com.coach.flame.domain.maker.CoachDtoMaker
+import com.coach.flame.jpa.entity.Client.Companion.toClient
+import com.coach.flame.jpa.entity.Coach.Companion.toCoach
 import com.coach.flame.jpa.entity.maker.UserMaker
 import com.coach.flame.testing.framework.JsonBuilder
 import com.coach.flame.testing.framework.LoadRequest
@@ -58,18 +63,24 @@ class AuthCoachTest : BaseIntegrationTest() {
         val password = hashPasswordTool.generate("12345", salt)
 
         // when
-        val client = clientMaker
-            .but(with(ClientMaker.firstname, "Miguel"),
-                with(ClientMaker.lastname, "Teixeira"),
-                with(ClientMaker.clientType, coachType),
-                with(ClientMaker.user, userMaker
-                    .but(with(UserMaker.email, "test@gmail.com"),
-                        with(UserMaker.password, password),
-                        with(UserMaker.key, salt))
-                    .make()))
+        val coach = CoachDtoBuilder.maker()
+            .but(
+                with(CoachDtoMaker.firstName, "Miguel"),
+                with(CoachDtoMaker.lastName, "Teixeira"),
+                with(
+                    CoachDtoMaker.loginInfo, userMaker
+                        .but(
+                            with(UserMaker.email, "test@gmail.com"),
+                            with(UserMaker.password, password),
+                            with(UserMaker.key, salt)
+                        )
+                        .make().toDto()
+                )
+            )
             .make()
+            .toCoach()
 
-        clientRepository.saveAndFlush(client)
+        coachRepository.saveAndFlush(coach)
 
         val response = restTemplate.exchange(request!!, String::class.java)
 
@@ -86,7 +97,7 @@ class AuthCoachTest : BaseIntegrationTest() {
         then(body.getAsJsonPrimitive("token").asString).isNotEmpty
         then(body.getAsJsonPrimitive("expiration").asString).isNotEmpty
         then(body.getAsJsonPrimitive("type").asString).isEqualTo("COACH")
-        then(body.getAsJsonPrimitive("identifier").asString).isEqualTo(client.uuid.toString())
+        then(body.getAsJsonPrimitive("identifier").asString).isEqualTo(coach.uuid.toString())
 
     }
 

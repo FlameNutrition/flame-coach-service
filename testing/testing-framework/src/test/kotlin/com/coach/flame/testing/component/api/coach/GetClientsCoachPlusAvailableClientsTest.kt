@@ -1,8 +1,9 @@
 package com.coach.flame.testing.component.api.coach
 
-import com.coach.flame.jpa.entity.ClientStatus
-import com.coach.flame.jpa.entity.maker.ClientBuilder
-import com.coach.flame.jpa.entity.maker.ClientMaker
+import com.coach.flame.domain.ClientStatusDto
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.domain.maker.ClientDtoMaker
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.jpa.entity.maker.CoachMaker
 import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
@@ -35,18 +36,22 @@ class GetClientsCoachPlusAvailableClientsTest : BaseComponentTest() {
 
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
-        val client0 = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.ACCEPTED))
+        val client0 = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.ACCEPTED))
             .make()
-        val client1 = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.PENDING))
+            .toClient()
+        val client1 = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.PENDING))
             .make()
-        val client2 = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.AVAILABLE))
+            .toClient()
+        val client2 = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.AVAILABLE))
             .make()
-        val client3 = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.AVAILABLE))
+            .toClient()
+        val client3 = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.AVAILABLE))
             .make()
+            .toClient()
         val coach = coachMaker
             .but(
                 with(CoachMaker.clients, mutableListOf(client0, client1)),
@@ -99,12 +104,14 @@ class GetClientsCoachPlusAvailableClientsTest : BaseComponentTest() {
 
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
-        val client0 = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.AVAILABLE))
+        val client0 = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.AVAILABLE))
             .make()
-        val client1 = ClientBuilder.maker()
-            .but(with(ClientMaker.clientStatus, ClientStatus.AVAILABLE))
+            .toClient()
+        val client1 = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.AVAILABLE))
             .make()
+            .toClient()
         val coach = coachMaker
             .but(with(CoachMaker.uuid, uuid)).make()
 

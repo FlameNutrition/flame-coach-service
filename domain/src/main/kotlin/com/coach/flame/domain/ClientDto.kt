@@ -25,6 +25,7 @@ data class ClientDto(
     val coach: CoachDto?,
     val weightMeasureTimeline: MutableList<MeasureDto> = mutableListOf(),
     var registrationKey: String?,
+    val lookingForCoach: LookingForCoachDto
 ) : Customer {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -46,6 +47,7 @@ data class ClientDto(
                 "identifier=$identifier, " +
                 "firstName='$firstName', " +
                 "lastName='$lastName', " +
+                "lookingForCoach='$lookingForCoach', " +
                 "birthday=$birthday, " +
                 "phoneCode=$phoneCode, " +
                 "phoneNumber=$phoneNumber, " +

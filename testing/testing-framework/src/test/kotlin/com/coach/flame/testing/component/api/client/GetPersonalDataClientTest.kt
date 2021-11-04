@@ -1,11 +1,12 @@
 package com.coach.flame.testing.component.api.client
 
-import com.coach.flame.jpa.entity.GenderConfig
-import com.coach.flame.jpa.entity.MeasureConfig
-import com.coach.flame.jpa.entity.maker.ClientBuilder
-import com.coach.flame.jpa.entity.maker.ClientMaker
-import com.coach.flame.jpa.entity.maker.GenderBuilder
-import com.coach.flame.jpa.entity.maker.GenderMaker
+import com.coach.flame.domain.GenderDto
+import com.coach.flame.domain.MeasureTypeDto
+import com.coach.flame.domain.maker.ClientDtoBuilder
+import com.coach.flame.domain.maker.ClientDtoMaker
+import com.coach.flame.domain.maker.GenderDtoBuilder
+import com.coach.flame.domain.maker.GenderDtoMaker
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.testing.assertion.http.ErrorAssert
 import com.coach.flame.testing.component.base.BaseComponentTest
 import com.coach.flame.testing.framework.JsonBuilder
@@ -37,22 +38,23 @@ class GetPersonalDataClientTest : BaseComponentTest() {
 
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
-        val client = ClientBuilder.maker()
+        val client = ClientDtoBuilder.makerWithLoginInfo()
             .but(
-                with(ClientMaker.uuid, uuid),
-                with(ClientMaker.weight, 80.5f),
-                with(ClientMaker.height, 1.75f),
+                with(ClientDtoMaker.identifier, uuid),
+                with(ClientDtoMaker.weight, 80.5f),
+                with(ClientDtoMaker.height, 1.75f),
                 with(
-                    ClientMaker.gender, GenderBuilder.maker()
+                    ClientDtoMaker.gender, GenderDtoBuilder.maker()
                         .but(
-                            with(GenderMaker.externalValue, "Male"),
-                            with(GenderMaker.genderCode, "M")
+                            with(GenderDtoMaker.externalValue, "Male"),
+                            with(GenderDtoMaker.genderCode, "M")
                         )
                         .make()
                 ),
-                with(ClientMaker.measureConfig, MeasureConfig.KG_CM)
+                with(ClientDtoMaker.measureType, MeasureTypeDto.KG_CM)
             )
             .make()
+            .toClient()
 
         every { clientRepositoryMock.findByUuid(uuid) } returns client
 
@@ -119,15 +121,16 @@ class GetPersonalDataClientTest : BaseComponentTest() {
 
         // given
         val uuid = UUID.fromString("e59343bc-6563-4488-a77e-112e886c57ae")
-        val client = ClientBuilder.maker()
+        val client = ClientDtoBuilder.makerWithLoginInfo()
             .but(
-                with(ClientMaker.uuid, uuid),
-                with(ClientMaker.weight, 0.0f),
-                with(ClientMaker.height, 0.0f),
-                with(ClientMaker.gender, null as GenderConfig?),
-                with(ClientMaker.measureConfig, MeasureConfig.LBS_IN)
+                with(ClientDtoMaker.identifier, uuid),
+                with(ClientDtoMaker.weight, 0.0f),
+                with(ClientDtoMaker.height, 0.0f),
+                with(ClientDtoMaker.gender, null as GenderDto?),
+                with(ClientDtoMaker.measureType, MeasureTypeDto.LBS_IN)
             )
             .make()
+            .toClient()
 
         every { clientRepositoryMock.findByUuid(uuid) } returns client
 

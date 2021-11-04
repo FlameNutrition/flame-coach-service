@@ -7,6 +7,7 @@ import com.coach.flame.customer.security.Salt
 import com.coach.flame.domain.*
 import com.coach.flame.domain.maker.*
 import com.coach.flame.jpa.entity.*
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.jpa.entity.maker.*
 import com.coach.flame.jpa.repository.*
 import com.coach.flame.jpa.repository.cache.ConfigCache
@@ -79,10 +80,11 @@ class CustomerServiceImplTest {
         // given
         val uuid1 = UUID.randomUUID()
         val uuid2 = UUID.randomUUID()
-        val clientWithoutCoach = ClientBuilder.default()
-        val clientWithCoach = ClientBuilder.maker()
-            .but(with(ClientMaker.coach, CoachBuilder.default()))
+        val clientWithoutCoach = ClientDtoBuilder.makerWithLoginInfo().make().toClient()
+        val clientWithCoach = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.coach, CoachDtoBuilder.makerWithLoginInfo().make()))
             .make()
+            .toClient()
 
         every { clientRepository.findByUuid(uuid1) } returns clientWithoutCoach
         every { clientRepository.findByUuid(uuid2) } returns clientWithCoach
@@ -183,7 +185,8 @@ class CustomerServiceImplTest {
             clientCaptorSlot.captured.toDto()
                 .copy(
                     clientStatus = ClientStatusDto.PENDING,
-                    coach = registrationCoachSender
+                    coach = registrationCoachSender,
+                    lookingForCoach = preClientDto.lookingForCoach
                 )
         }
 
@@ -255,7 +258,7 @@ class CustomerServiceImplTest {
     fun `register a new client duplicated`() {
 
         // given
-        val entityClient = ClientBuilder.default()
+        val entityClient = ClientDtoBuilder.makerWithLoginInfo().make().toClient()
         val clientDto = ClientDtoBuilder.maker()
             .but(with(ClientDtoMaker.loginInfo, LoginInfoDtoBuilder.default()))
             .make()
@@ -281,7 +284,7 @@ class CustomerServiceImplTest {
     fun `register a new client but raised a exception`() {
 
         // given
-        val entityClient = ClientBuilder.default()
+        val entityClient = ClientDtoBuilder.makerWithLoginInfo().make().toClient()
         val clientDto = ClientDtoBuilder.maker()
             .but(with(ClientDtoMaker.loginInfo, LoginInfoDtoBuilder.default()))
             .make()
@@ -334,18 +337,25 @@ class CustomerServiceImplTest {
         val password = "12345"
         val userSession = slot<UserSession>()
         val actualDate = LocalDateTime.now()
-        val entityClientWithoutCoach = ClientBuilder.maker()
-            .but(with(ClientMaker.user,
-                make(a(UserMaker.User,
-                    with(UserMaker.email, "test@gmail.com"),
-                    with(UserMaker.password, "HASHING_PASSWORD")))))
+        val entityClientWithoutCoach = ClientDtoBuilder.maker()
+            .but(with(ClientDtoMaker.loginInfo, LoginInfoDtoBuilder.maker().but(
+                    with(LoginInfoDtoMaker.token, UUID.randomUUID()),
+                    with(LoginInfoDtoMaker.username, "test@gmail.com"),
+                    with(LoginInfoDtoMaker.expirationDate, LocalDateTime.now()),
+                    with(LoginInfoDtoMaker.keyDecrypt, "salt"),
+                    with(LoginInfoDtoMaker.password, "HASHING_PASSWORD")).make()))
             .make()
-        val entityClientWithCoach = ClientBuilder.maker()
-            .but(with(ClientMaker.user, make(a(UserMaker.User,
-                with(UserMaker.email, "test@gmail.com"),
-                with(UserMaker.password, "HASHING_PASSWORD")))),
-                with(ClientMaker.coach, CoachBuilder.default()))
+            .toClient()
+        val entityClientWithCoach = ClientDtoBuilder.maker()
+            .but(with(ClientDtoMaker.loginInfo, LoginInfoDtoBuilder.maker().but(
+                with(LoginInfoDtoMaker.token, UUID.randomUUID()),
+                with(LoginInfoDtoMaker.username, "test@gmail.com"),
+                with(LoginInfoDtoMaker.expirationDate, LocalDateTime.now()),
+                with(LoginInfoDtoMaker.keyDecrypt, "salt"),
+                with(LoginInfoDtoMaker.password, "HASHING_PASSWORD")).make()),
+                with(ClientDtoMaker.coach, CoachDtoBuilder.makerWithLoginInfo().make()))
             .make()
+            .toClient()
         val userWithoutCoach = UserBuilder.maker()
             .but(with(UserMaker.email, "test@gmail.com"),
                 with(UserMaker.password, "HASHING_PASSWORD"),
@@ -481,15 +491,16 @@ class CustomerServiceImplTest {
                 with(GenderDtoMaker.externalValue, "Male"))
             .make()
         val entity = slot<Client>()
-        val client = ClientBuilder.maker()
-            .but(with(ClientMaker.user, UserBuilder.default()),
-                with(ClientMaker.clientStatus, ClientStatus.ACCEPTED),
-                with(ClientMaker.coach, CoachBuilder.default()))
+        val client = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.ACCEPTED),
+                with(ClientDtoMaker.coach, CoachDtoBuilder.makerWithLoginInfo().make()))
             .make()
-        val clientWithoutCoach = ClientBuilder.maker()
-            .but(with(ClientMaker.user, UserBuilder.default()),
-                with(ClientMaker.clientStatus, ClientStatus.ACCEPTED))
+            .toClient()
+
+        val clientWithoutCoach = ClientDtoBuilder.makerWithLoginInfo()
+            .but(with(ClientDtoMaker.clientStatus, ClientStatusDto.ACCEPTED))
             .make()
+            .toClient()
         val clientDto = ClientDtoBuilder.maker()
             .but(
                 with(ClientDtoMaker.firstName, "FIRSTNAME"),

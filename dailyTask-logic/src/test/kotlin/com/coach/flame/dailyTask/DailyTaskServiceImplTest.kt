@@ -2,10 +2,11 @@ package com.coach.flame.dailyTask
 
 import com.coach.flame.dailyTask.filter.BetweenDatesFilter
 import com.coach.flame.dailyTask.filter.IdentifierFilter
+import com.coach.flame.domain.maker.ClientDtoBuilder
 import com.coach.flame.domain.maker.DailyTaskDtoBuilder
 import com.coach.flame.domain.maker.DailyTaskDtoMaker
+import com.coach.flame.jpa.entity.Client.Companion.toClient
 import com.coach.flame.jpa.entity.DailyTask
-import com.coach.flame.jpa.entity.maker.ClientBuilder
 import com.coach.flame.jpa.entity.maker.CoachBuilder
 import com.coach.flame.jpa.entity.maker.DailyTaskBuilder
 import com.coach.flame.jpa.entity.maker.DailyTaskMaker
@@ -191,7 +192,9 @@ class DailyTaskServiceImplTest {
     fun `create daily task when something wrong happened`() {
 
         // given
-        every { clientRepository.findByUuid(any()) } returns ClientBuilder.default()
+        every { clientRepository.findByUuid(any()) } returns ClientDtoBuilder.makerWithLoginInfo()
+            .make()
+            .toClient()
         every { coachRepository.findByUuid(any()) } returns CoachBuilder.default()
         every { dailyTaskRepository.save(any()) } throws SQLException("SQL error message")
 
@@ -223,15 +226,23 @@ class DailyTaskServiceImplTest {
 
         // given
         val dailyTaskDto = DailyTaskDtoBuilder.maker()
-            .but(with(DailyTaskDtoMaker.name, "Test Update"),
+            .but(
+                with(DailyTaskDtoMaker.name, "Test Update"),
                 with(DailyTaskDtoMaker.description, "Valid description"),
                 with(DailyTaskDtoMaker.date, LocalDate.now()),
-                with(DailyTaskDtoMaker.ticked, true))
+                with(DailyTaskDtoMaker.ticked, true)
+            )
             .make()
 
         val dailyTaskEntity = DailyTaskBuilder.maker()
-            .but(with(DailyTaskMaker.client, ClientBuilder.default()),
-                with(DailyTaskMaker.createdBy, CoachBuilder.default()))
+            .but(
+                with(
+                    DailyTaskMaker.client, ClientDtoBuilder.makerWithLoginInfo()
+                        .make()
+                        .toClient()
+                ),
+                with(DailyTaskMaker.createdBy, CoachBuilder.default())
+            )
             .make()
         every { dailyTaskRepository.findByUuid(dailyTaskDto.identifier) } returns dailyTaskEntity
         every { dailyTaskRepository.save(capture(entity)) } answers { entity.captured }
@@ -259,7 +270,9 @@ class DailyTaskServiceImplTest {
         // given
         val dailyTaskDto = DailyTaskDtoBuilder.default()
         val coach = CoachBuilder.default()
-        val client = ClientBuilder.default()
+        val client = ClientDtoBuilder.makerWithLoginInfo()
+            .make()
+            .toClient()
         val postDailyTask = DailyTaskBuilder.maker()
             .but(with(DailyTaskMaker.client, client))
             .make()
@@ -292,7 +305,9 @@ class DailyTaskServiceImplTest {
         // given
         val dailyTaskDto = DailyTaskDtoBuilder.default()
         val coach = CoachBuilder.default()
-        val client = ClientBuilder.default()
+        val client = ClientDtoBuilder.makerWithLoginInfo()
+            .make()
+            .toClient()
         every { clientRepository.findByUuid(dailyTaskDto.clientIdentifier!!) } returns client
         every { coachRepository.findByUuid(dailyTaskDto.coachIdentifier!!) } returns coach
         every { dailyTaskRepository.save(capture(dailyTask)) } answers { dailyTask.captured }
