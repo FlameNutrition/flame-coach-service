@@ -13,7 +13,8 @@
         <database.url>localhost</database.url>
         <database.name>flame-coach</database.name>
         <database.username>root</database.username>
-        <database.password/>
+        <database.port>3320</database.port>
+        <database.password></database.password>
     </properties>
 
     <artifactId>repository</artifactId>
