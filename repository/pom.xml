@@ -5,7 +5,7 @@
     <parent>
         <artifactId>flame-coach-service</artifactId>
         <groupId>com.coach.flame</groupId>
-        <version>2021.10.3</version>
+        <version>2021.11.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -13,7 +13,8 @@
         <database.url>localhost</database.url>
         <database.name>flame-coach</database.name>
         <database.username>root</database.username>
-        <database.password/>
+        <database.port>3320</database.port>
+        <database.password></database.password>
     </properties>
 
     <artifactId>repository</artifactId>

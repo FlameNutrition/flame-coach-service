@@ -6,6 +6,9 @@
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
+# Plugins
+.jpb
+
 # User-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml
@@ -33,14 +36,15 @@
 # When using Gradle or Maven with auto-import, you should exclude module files,
 # since they will be recreated, and may cause churn.  Uncomment if using
 # auto-import.
-# .idea/artifacts
-# .idea/compiler.xml
-# .idea/jarRepositories.xml
-# .idea/modules.xml
-# .idea/*.iml
-# .idea/modules
-# *.iml
-# *.ipr
+
+.idea/artifacts
+.idea/compiler.xml
+.idea/jarRepositories.xml
+.idea/modules.xml
+.idea/*.iml
+.idea/modules
+*.iml
+*.ipr
 
 # CMake
 cmake-build-*/
@@ -153,6 +157,13 @@ buildNumber.properties
 # Ignore all local history of files
 .history
 .ionide
+
+### Docker ###
+build.txt
+.db-data
+
+## Database ##
+repository/src/main/resources/db/ddl_jpa_creation.sql
 
 # End of https://www.toptal.com/developers/gitignore/api/kotlin,intellij,visualstudiocode,maven
 

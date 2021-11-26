@@ -1,0 +1,27 @@
+version: '3'
+services:
+  db:
+    image: mysql:8.0
+    container_name: flame-coach-database
+    environment:
+      MYSQL_DATABASE: flame-coach
+      MYSQL_ROOT_PASSWORD: ''
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
+      MYSQL_USER: flame-coach
+      MYSQL_PASSWORD: ''
+    ports:
+      - "3320:3306"
+    volumes:
+      - ./.db-data:/var/lib/mysql
+    healthcheck:
+      test: "/usr/bin/mysql --user=root --port=3306 -h localhost --execute \"SHOW DATABASES;\""
+      interval: 2s
+      timeout: 20s
+    networks:
+      - flame-coach
+
+volumes:
+  db-data:
+
+networks:
+  flame-coach:
