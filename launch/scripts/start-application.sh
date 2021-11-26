@@ -2,6 +2,7 @@
 
 cd /etc/app || exit 1
 java -Dspring.datasource.password=$FLAME_COACH_DB_PASSWORD \
+  -Dspring.datasource.port=3306 \
   -Dserver.ssl.key-store=classpath:cert/flame-coach.p12 \
   -Dserver.ssl.key-store-password=$FLAME_COACH_SSL_PASSWORD \
   -Dlog4j.configurationFile=log4j2.xml \
