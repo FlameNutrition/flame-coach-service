@@ -30,7 +30,7 @@
         <springdoc-openapi.version>1.5.9</springdoc-openapi.version>
 
         <!-- Third Parties and Frameworks -->
-        <spring-boot.version>2.4.2</spring-boot.version>
+        <spring-boot.version>2.5.12</spring-boot.version>
         <guava.version>30.1-jre</guava.version>
 
         <!-- Testing -->
